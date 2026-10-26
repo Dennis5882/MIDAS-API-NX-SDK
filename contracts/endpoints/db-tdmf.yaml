@@ -34,7 +34,7 @@ verification:
   status: verified_both
   records:
     - product: civil
-      ref: db-read-sweep-2026-08-16
+      ref: tdmf-civil-2026-10-26
     - product: gen
       ref: db-read-sweep-2026-08-16
 
@@ -214,8 +214,14 @@ manualDefects:
       section's own worked example has answered "Wrong Field" on both
       products since 2026-08-16 and was left unresolved for want of a
       fresh angle. A field the server declares and the example never sends
-      is a candidate cause. It has not been tested, and this contract
-      claims nothing about it.
+      is a candidate cause. Measured 2026-10-26 on Civil NX: it is one of two.
+      A CREEP record is stored only when it also sends `ELAST`, non-zero,
+      and `RELAXATION`, which this table marks Relax-only; `ELAST` alone
+      answers "Wrong Field", `RELAXATION` alone an empty message with
+      nothing stored, and `ELAST` 0 "input data contain errors". No source
+      states what `ELAST` should be; the fixture sends 1. The conditions
+      below are left as the manual states them until the Relax and
+      Shrinkage branches are measured too.
     evidence: >-
       Found by scripts/info_baseline.py --against-contracts on 2026-09-04,
       sweeping the 2026-09-03 /info capture against every contract. The

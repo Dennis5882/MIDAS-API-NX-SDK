@@ -1,0 +1,336 @@
+{
+ "source": "Records returned by GET from copies of MIDAS Civil NX 2026's own bundled tutorial models (Tutorial folder of the installation), read 2026-10-26. A record here is the product's own output, used where the CRUD base model lacks a precondition and no manual example supplies one.",
+ "records": {
+  "psc_section": {
+   "model": "21 PSC Design (Eurocode)_completed model.mcb",
+   "endpoint": "/db/SECT",
+   "id": 1,
+   "record": {
+    "SECTTYPE": "PSC",
+    "SECT_NAME": "Span",
+    "SECT_BEFORE": {
+     "OFFSET_PT": "CT",
+     "OFFSET_CENTER": 0,
+     "USER_OFFSET_REF": 0,
+     "HORZ_OFFSET_OPT": 0,
+     "USERDEF_OFFSET_YI": 0,
+     "VERT_OFFSET_OPT": 0,
+     "USERDEF_OFFSET_ZI": 0,
+     "USE_SHEAR_DEFORM": true,
+     "USE_WARPING_EFFECT": false,
+     "SHAPE": "1CEL",
+     "SECT_I": {
+      "vSIZE_PSC_A": [
+       0.2,
+       0.3,
+       0,
+       0,
+       2.5,
+       0
+      ],
+      "vSIZE_PSC_B": [
+       1.5,
+       0.5,
+       0,
+       0.5,
+       0,
+       2.25
+      ],
+      "vSIZE_PSC_C": [
+       0.24,
+       0.26,
+       0,
+       0,
+       2.05,
+       0.71,
+       0.2,
+       0,
+       0,
+       0.25
+      ],
+      "vSIZE_PSC_D": [
+       2.2,
+       0.7,
+       0,
+       2.2,
+       1.932,
+       0.7,
+       0,
+       0
+      ],
+      "SWIDTH": 0.2
+     },
+     "WARPING_CHK_AUTO_I": true,
+     "WARPING_CHK_AUTO_J": true,
+     "SHEAR_CHK": true,
+     "WARPING_CHK_POS_I": [
+      [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     ],
+     "WARPING_CHK_POS_J": [
+      [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     ],
+     "USE_AUTO_SHEAR_CHK_POS": [
+      [
+       true,
+       false,
+       true
+      ],
+      [
+       false,
+       false,
+       false
+      ]
+     ],
+     "SHEAR_CHK_POS": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "USE_WEB_THICK": [
+      true,
+      false
+     ],
+     "WEB_THICK": [
+      0,
+      0
+     ],
+     "USE_WEB_THICK_SHEAR": [
+      [
+       true,
+       true,
+       true
+      ],
+      [
+       false,
+       false,
+       false
+      ]
+     ],
+     "WEB_THICK_SHEAR": [
+      [
+       0,
+       0,
+       0
+      ],
+      [
+       0,
+       0,
+       0
+      ]
+     ],
+     "USE_SYMMETRIC": true,
+     "USE_SMALL_HOLE": false,
+     "USE_USER_DEF_MESHSIZE": false,
+     "USE_USER_INTPUT_STIFF": false,
+     "PSC_OPT1": "",
+     "PSC_OPT2": "",
+     "JOINT": [
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      true
+     ]
+    }
+   }
+  },
+  "lrb_link_property": {
+   "model": "18 LRB for non- linear.mcb",
+   "endpoint": "/db/NLLP",
+   "id": 1,
+   "record": {
+    "PROPERTY_NAME": "LRB-A",
+    "APPLICATION_TYPE": "FORCE",
+    "APPLICATION_TYPE_D": "LRBI",
+    "DESC": "",
+    "TOTAL_WEIGHT": 0,
+    "L_WEIGHT_RATIO": 0.5,
+    "OPT_USE_MASS": false,
+    "TOTAL_MASS": 0,
+    "L_MASS_RATIO": 0.5,
+    "OPT_SHEAR_SPR_LOC": false,
+    "COUPLED_INPUT_METHOD": 0,
+    "DIST_RATIO_DY": 0.5,
+    "DIST_RATIO_DZ": 0.5,
+    "SEIS_TYPE": "Viscous/Oil Damper",
+    "SEIS_PROP": "",
+    "LDP_EFF_STIFF_COUPLED_ITEMS": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "LDP_EFF_DAMPING_COUPLED_ITEMS": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "ITEMS": [
+     {
+      "LINEAR_PROP": true,
+      "EFF_STIFF": 479100,
+      "EFF_DAMPING": 0,
+      "NONLINEAR_PROP": false
+     },
+     {
+      "LINEAR_PROP": true,
+      "EFF_STIFF": 336.1,
+      "EFF_DAMPING": 0,
+      "NONLINEAR_PROP": true,
+      "LRBI": {
+       "STIFFNESS": 1099,
+       "YIELD_STRENGTH": 15.69,
+       "POST_YIELD_STIFF_RATIO": 0.08917,
+       "LOOP_PARAM_A": 0.5,
+       "LOOP_PARAM_B": 0.5
+      }
+     },
+     {
+      "LINEAR_PROP": true,
+      "EFF_STIFF": 336.1,
+      "EFF_DAMPING": 0,
+      "NONLINEAR_PROP": true,
+      "LRBI": {
+       "STIFFNESS": 1099,
+       "YIELD_STRENGTH": 15.69,
+       "POST_YIELD_STIFF_RATIO": 0.08917,
+       "LOOP_PARAM_A": 0.5,
+       "LOOP_PARAM_B": 0.5
+      }
+     },
+     {
+      "LINEAR_PROP": false,
+      "EFF_STIFF": 0,
+      "EFF_DAMPING": 0,
+      "NONLINEAR_PROP": false
+     },
+     {
+      "LINEAR_PROP": false,
+      "EFF_STIFF": 0,
+      "EFF_DAMPING": 0,
+      "NONLINEAR_PROP": false
+     },
+     {
+      "LINEAR_PROP": false,
+      "EFF_STIFF": 0,
+      "EFF_DAMPING": 0,
+      "NONLINEAR_PROP": false
+     }
+    ]
+   }
+  },
+  "eurocode_vehicle_lm1": {
+   "model": "13 Eurocode Moving Load - complete.mcb",
+   "endpoint": "/db/MVHL",
+   "id": 1,
+   "record": {
+    "MVLD_CODE": 11,
+    "VEHICLE_LOAD_NAME": "Load Model 1",
+    "VEHICLE_LOAD_NUM": 1,
+    "VEHICLE_TYPE_NAME": "Load Model 1",
+    "VEH_EUROCODE": {
+     "SUB_TYPE": 19,
+     "AMP_VALUES": [
+      0.75,
+      0.4
+     ],
+     "TANDEM_ADJUST_VALUES": [
+      1,
+      1,
+      1
+     ],
+     "UDL_ADJUST_VALUES": [
+      1,
+      1,
+      1,
+      1
+     ]
+    }
+   }
+  },
+  "eurocode_case_lm1": {
+   "model": "13 Eurocode Moving Load - complete.mcb",
+   "endpoint": "/db/MVLDeu",
+   "id": 1,
+   "record": {
+    "LCNAME": "MV-LM1",
+    "OPT_AUTO_OPTIMIZE": false,
+    "TYPE_LOADMODEL": 1,
+    "DESC": "",
+    "VHLNAME1": "Load Model 1",
+    "OPT_LEADING": false,
+    "SLN_LIST": [
+     "Lane_A",
+     "Lane_B",
+     "Lane_C"
+    ],
+    "SRA_LIST": [
+     "RA"
+    ]
+   }
+  }
+ }
+}

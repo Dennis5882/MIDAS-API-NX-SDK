@@ -46,7 +46,7 @@ verification:
   status: verified_both
   records:
     - product: civil
-      ref: db-read-sweep-2026-07-26
+      ref: tutorial-models-civil-2026-10-26
     - product: gen
       ref: db-read-sweep-2026-07-26
 
@@ -91,7 +91,12 @@ operations:
       itemSchema: fields
     response:
       wrapper: table
-      keyStability: stable
+      keyStability: unstable
+    notes: >-
+      The server renumbers a POSTed record to the next free id. On Civil NX
+      (2026-10-26, a copy of the BD37 arch tutorial model holding ids 1-4) a record
+      sent under key 50 landed at id 5 while the response echoed key 50. Read the
+      table back and match on LCNAME before updating or deleting by id.
   - method: PUT
     risk: write
     request:

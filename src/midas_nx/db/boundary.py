@@ -1,7 +1,7 @@
 """Source: docs/manual/05_DB_Boundary.md, items 1-24."""
 from __future__ import annotations
 
-from typing import Any, List, TypedDict
+from typing import Any, Dict, List, TypedDict
 
 from .base import GEN_ONLY, HYPER_S_ONLY, NO_DELETE_METHODS, DbResource, ItemGroupFields
 
@@ -242,6 +242,12 @@ class GeneralLinkPropertyPayload(TypedDict, total=False):
     the strongest signal available for these fields' shape; the endpoint's
     write path itself is unresolved on both products, unrelated to this
     change.
+
+    ✅ 2026-10-26 on Civil NX: the manual's SPG example is still refused,
+    while the "FORCE"/"LRBI" record a Civil tutorial model returns is
+    stored and round-trips. The server renumbers a POSTed record to the
+    next free id and echoes the key you sent: read the table back and
+    match on PROPERTY_NAME before updating or deleting by id.
     """
 
     PROPERTY_NAME: str  # required
@@ -257,6 +263,13 @@ class GeneralLinkPropertyPayload(TypedDict, total=False):
     DIST_RATIO_DY: float  # Distance Ratio from End I (Dy), optional
     DIST_RATIO_DZ: float  # Distance Ratio from End I (Dz), optional
     COUPLED_INPUT_METHOD: int  # Coupled Input Method, optional
+    # From /info and the LRB tutorial record Civil NX stores (2026-10-26);
+    # the manual lists only the common envelope above.
+    SEIS_TYPE: str  # Seismic Control Devices Type, optional
+    SEIS_PROP: str  # Seismic Control Devices Properties, optional
+    LDP_EFF_STIFF_COUPLED_ITEMS: List[float]  # Effective Stiffness Coupled, optional
+    LDP_EFF_DAMPING_COUPLED_ITEMS: List[float]  # Effective Damping Coupled, optional
+    ITEMS: List[Dict[str, Any]]  # per-component detail; keys by device (LRBI, FPSI, ...) as /info declares, optional
 
 
 class GeneralLinkProperty(DbResource):

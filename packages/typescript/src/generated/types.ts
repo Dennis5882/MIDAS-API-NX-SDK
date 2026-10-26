@@ -2277,6 +2277,147 @@ export namespace DbBoundaryTypes {
     DIST_RATIO_DZ?: number;
     /** Coupled Input Method */
     COUPLED_INPUT_METHOD?: number;
+    /** Seismic Control Devices Type */
+    SEIS_TYPE?: string;
+    /** Seismic Control Devices Properties */
+    SEIS_PROP?: string;
+    /** Effective Stiffness Coupled */
+    LDP_EFF_STIFF_COUPLED_ITEMS?: Array<number>;
+    /** Effective Damping Coupled */
+    LDP_EFF_DAMPING_COUPLED_ITEMS?: Array<number>;
+    /** Selected Items Detail */
+    ITEMS?: Array<{
+      /** Double Friction Pendulum System Isolator */
+      DFPSI?: {
+        /** Area for Pressure */
+        AREA_PRESSURE?: number;
+        /** High-velocity coefficient of friction at reference axial pres. (uref) */
+        COEFF_UREF_ITEMS?: Array<number>;
+        /** Parameter for pressure dependent coeff. (ap) */
+        PARAM_COEFF_AP_ITEMS?: Array<number>;
+        /** Parameter for pressure dependent coeff. (hp) */
+        PARAM_COEFF_HP_ITEMS?: Array<number>;
+        /** Radius of Sliding Surface (R) */
+        RADIUS_ITEMS?: Array<number>;
+        /** Rate Param (a) */
+        RATE_PARAMETER_ITEMS?: Array<number>;
+        /** Ratio of coefficient of friction at high pressure to uref (up) */
+        RATIO_COEFF_UP_ITEMS?: Array<number>;
+        /** Ratio of coefficient of friction at small velocity to uref (uv) */
+        RATIO_COEFF_UV_ITEMS?: Array<number>;
+        /** Reference axial pressure(po) */
+        REF_AXIAL_PRESSURE?: number;
+        /** Stiffness(k) */
+        STIFFNESS_ITEMS?: Array<number>;
+        /** Stop Distance (d) */
+        STOP_DISTANCE_ITEMS?: Array<number>;
+      };
+      /** Effective Damping */
+      EFF_DAMPING?: number;
+      /** Effective Stiffness */
+      EFF_STIFF?: number;
+      /** Friction Pendulum System Isolator */
+      FPSI?: {
+        /** Frictional Coefficient, Fast (uf) */
+        FRIC_COEFF_FAST?: number;
+        /** Frictional Coefficient, Slow (us) */
+        FRIC_COEFF_SLOW?: number;
+        /** Hystertic Loop Parameter (a) */
+        LOOP_PARAM_A?: number;
+        /** Hystertic Loop Parameter (b) */
+        LOOP_PARAM_B?: number;
+        /** Radius of Sliding Surface (R) */
+        RADIUS_OF_SLIDING_SURFACE?: number;
+        /** Rate Parameter (r) */
+        RATE_PARAMETER?: number;
+        /** Stiffness (k) */
+        STIFFNESS?: number;
+      };
+      /** Gap */
+      GAP?: {
+        /** Open (o) */
+        OPN?: number;
+        /** Stiffness (k) */
+        STIFFNESS?: number;
+      };
+      /** Hook */
+      HOOK?: {
+        /** Open (o) */
+        OPN?: number;
+        /** Stiffness (k) */
+        STIFFNESS?: number;
+      };
+      /** Hysteretic System */
+      HS?: {
+        /** Hystertic Loop Parameter (a) */
+        LOOP_PARAM_A?: number;
+        /** Hystertic Loop Parameter (b) */
+        LOOP_PARAM_B?: number;
+        /** Post Yield Stiffness Ratio (r) */
+        POST_YIELD_STIFF_RATIO?: number;
+        /** Stiffness (kd) */
+        STIFFNESS?: number;
+        /** Yield Exponent (s) */
+        YIELD_EXP?: number;
+        /** Yield Strength (Fy) */
+        YIELD_STRENGTH?: number;
+      };
+      /** Index */
+      INDEX?: number;
+      /** Linear Properties */
+      LINEAR_PROP?: boolean;
+      /** Lead Rubber Bearing Isolator */
+      LRBI?: {
+        /** Hystertic Loop Parameter (a) */
+        LOOP_PARAM_A?: number;
+        /** Hystertic Loop Parameter (b) */
+        LOOP_PARAM_B?: number;
+        /** Post Yield Stiffness Ratio (r) */
+        POST_YIELD_STIFF_RATIO?: number;
+        /** Stiffness (kd) */
+        STIFFNESS?: number;
+        /** Yield Strength (Fy) */
+        YIELD_STRENGTH?: number;
+      };
+      /** Nonlinear Properties */
+      NONLINEAR_PROP?: boolean;
+      /** Triple Friction Pendulum System Isolator */
+      TFPSI?: {
+        /** Frictional Coefficient, Fast (uf) */
+        FRIC_COEFF_FAST_ITEMS?: Array<number>;
+        /** Frictional Coefficient, Slow (us) */
+        FRIC_COEFF_SLOW_ITEMS?: Array<number>;
+        /** Height In */
+        HEIGHT_IN?: number;
+        /** Height Out */
+        HEIGHT_OUT?: number;
+        /** Symmetric of Outer Surface */
+        OPT_SYM_OUT?: boolean;
+        /** Radius of Sliding Surface (R) */
+        RADIUS_OF_SLIDING_SURFACE_ITEMS?: Array<number>;
+        /** Rate Parameter (r) */
+        RATE_PARAMETER_ITEMS?: Array<number>;
+        /** Stiffness (k) */
+        STIFFNESS_ITEMS?: Array<number>;
+        /** Stop Distance (d) */
+        STOP_DISTANCE_ITEMS?: Array<number>;
+      };
+      /** Visco-elastic Damper */
+      VD?: {
+        /** Bracing Stiffness (kb) */
+        BRACING_STIFFNESS?: number;
+        /** Damper Stiffness (kd) */
+        DAMPER_STIFFNESS?: number;
+        /** Damper Type */
+        DAMPER_TYPE?: number;
+        /** Reference Damping Force */
+        DAMPING?: number;
+        /** Damping Exponent (s) */
+        DAMPING_EXP?: number;
+        /** Reference Velocity (V0) */
+        REF_VELOCITY?: number;
+      };
+    }>;
   }
   /** Generated from contracts/endpoints/. */
   export interface GeneralSpringSupportItem {

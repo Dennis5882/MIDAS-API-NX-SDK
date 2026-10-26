@@ -387,6 +387,35 @@
         }
       }
     },
+    "moving_case_vehicle_EUROCODE": {
+      "endpoint": "/db/MVHL",
+      "records": {
+        "1": {
+          "MVLD_CODE": 11,
+          "VEHICLE_LOAD_NAME": "Load Model 1",
+          "VEHICLE_LOAD_NUM": 1,
+          "VEHICLE_TYPE_NAME": "Load Model 1",
+          "VEH_EUROCODE": {
+            "SUB_TYPE": 19,
+            "AMP_VALUES": [
+              0.75,
+              0.4
+            ],
+            "TANDEM_ADJUST_VALUES": [
+              1,
+              1,
+              1
+            ],
+            "UDL_ADJUST_VALUES": [
+              1,
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      }
+    },
     "lane_code_POLAND": {
       "endpoint": "/db/MVCD",
       "records": {
@@ -694,21 +723,211 @@
     "nllp_seed": {
       "endpoint": "/db/NLLP",
       "records": {
-        "90": {
+        "1": {
           "PROPERTY_NAME": "NLLP_SEED",
-          "DESC": "Foundation Spring",
-          "APPLICATION_TYPE": "ELEMENT",
-          "APPLICATION_TYPE_D": "SPG",
+          "APPLICATION_TYPE": "FORCE",
+          "APPLICATION_TYPE_D": "LRBI",
+          "DESC": "",
           "TOTAL_WEIGHT": 0,
-          "OPT_USE_MASS": false
+          "L_WEIGHT_RATIO": 0.5,
+          "OPT_USE_MASS": false,
+          "TOTAL_MASS": 0,
+          "L_MASS_RATIO": 0.5,
+          "OPT_SHEAR_SPR_LOC": false,
+          "COUPLED_INPUT_METHOD": 0,
+          "DIST_RATIO_DY": 0.5,
+          "DIST_RATIO_DZ": 0.5,
+          "SEIS_TYPE": "Viscous/Oil Damper",
+          "SEIS_PROP": "",
+          "LDP_EFF_STIFF_COUPLED_ITEMS": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "LDP_EFF_DAMPING_COUPLED_ITEMS": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "ITEMS": [
+            {
+              "LINEAR_PROP": true,
+              "EFF_STIFF": 479100,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": false
+            },
+            {
+              "LINEAR_PROP": true,
+              "EFF_STIFF": 336.1,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": true,
+              "LRBI": {
+                "STIFFNESS": 1099,
+                "YIELD_STRENGTH": 15.69,
+                "POST_YIELD_STIFF_RATIO": 0.08917,
+                "LOOP_PARAM_A": 0.5,
+                "LOOP_PARAM_B": 0.5
+              }
+            },
+            {
+              "LINEAR_PROP": true,
+              "EFF_STIFF": 336.1,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": true,
+              "LRBI": {
+                "STIFFNESS": 1099,
+                "YIELD_STRENGTH": 15.69,
+                "POST_YIELD_STIFF_RATIO": 0.08917,
+                "LOOP_PARAM_A": 0.5,
+                "LOOP_PARAM_B": 0.5
+              }
+            },
+            {
+              "LINEAR_PROP": false,
+              "EFF_STIFF": 0,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": false
+            },
+            {
+              "LINEAR_PROP": false,
+              "EFF_STIFF": 0,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": false
+            },
+            {
+              "LINEAR_PROP": false,
+              "EFF_STIFF": 0,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": false
+            }
+          ]
         },
-        "91": {
+        "2": {
           "PROPERTY_NAME": "NLLP_SEED_2",
-          "DESC": "Foundation Spring",
-          "APPLICATION_TYPE": "ELEMENT",
-          "APPLICATION_TYPE_D": "SPG",
+          "APPLICATION_TYPE": "FORCE",
+          "APPLICATION_TYPE_D": "LRBI",
+          "DESC": "",
           "TOTAL_WEIGHT": 0,
-          "OPT_USE_MASS": false
+          "L_WEIGHT_RATIO": 0.5,
+          "OPT_USE_MASS": false,
+          "TOTAL_MASS": 0,
+          "L_MASS_RATIO": 0.5,
+          "OPT_SHEAR_SPR_LOC": false,
+          "COUPLED_INPUT_METHOD": 0,
+          "DIST_RATIO_DY": 0.5,
+          "DIST_RATIO_DZ": 0.5,
+          "SEIS_TYPE": "Viscous/Oil Damper",
+          "SEIS_PROP": "",
+          "LDP_EFF_STIFF_COUPLED_ITEMS": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "LDP_EFF_DAMPING_COUPLED_ITEMS": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "ITEMS": [
+            {
+              "LINEAR_PROP": true,
+              "EFF_STIFF": 479100,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": false
+            },
+            {
+              "LINEAR_PROP": true,
+              "EFF_STIFF": 336.1,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": true,
+              "LRBI": {
+                "STIFFNESS": 1099,
+                "YIELD_STRENGTH": 15.69,
+                "POST_YIELD_STIFF_RATIO": 0.08917,
+                "LOOP_PARAM_A": 0.5,
+                "LOOP_PARAM_B": 0.5
+              }
+            },
+            {
+              "LINEAR_PROP": true,
+              "EFF_STIFF": 336.1,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": true,
+              "LRBI": {
+                "STIFFNESS": 1099,
+                "YIELD_STRENGTH": 15.69,
+                "POST_YIELD_STIFF_RATIO": 0.08917,
+                "LOOP_PARAM_A": 0.5,
+                "LOOP_PARAM_B": 0.5
+              }
+            },
+            {
+              "LINEAR_PROP": false,
+              "EFF_STIFF": 0,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": false
+            },
+            {
+              "LINEAR_PROP": false,
+              "EFF_STIFF": 0,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": false
+            },
+            {
+              "LINEAR_PROP": false,
+              "EFF_STIFF": 0,
+              "EFF_DAMPING": 0,
+              "NONLINEAR_PROP": false
+            }
+          ]
         }
       }
     },
@@ -778,6 +997,179 @@
           "ELEM_LIST": [
             4
           ]
+        }
+      }
+    },
+    "rpsc_psc_section": {
+      "endpoint": "/db/SECT",
+      "records": {
+        "2": {
+          "SECTTYPE": "PSC",
+          "SECT_NAME": "Span",
+          "SECT_BEFORE": {
+            "OFFSET_PT": "CT",
+            "OFFSET_CENTER": 0,
+            "USER_OFFSET_REF": 0,
+            "HORZ_OFFSET_OPT": 0,
+            "USERDEF_OFFSET_YI": 0,
+            "VERT_OFFSET_OPT": 0,
+            "USERDEF_OFFSET_ZI": 0,
+            "USE_SHEAR_DEFORM": true,
+            "USE_WARPING_EFFECT": false,
+            "SHAPE": "1CEL",
+            "SECT_I": {
+              "vSIZE_PSC_A": [
+                0.2,
+                0.3,
+                0,
+                0,
+                2.5,
+                0
+              ],
+              "vSIZE_PSC_B": [
+                1.5,
+                0.5,
+                0,
+                0.5,
+                0,
+                2.25
+              ],
+              "vSIZE_PSC_C": [
+                0.24,
+                0.26,
+                0,
+                0,
+                2.05,
+                0.71,
+                0.2,
+                0,
+                0,
+                0.25
+              ],
+              "vSIZE_PSC_D": [
+                2.2,
+                0.7,
+                0,
+                2.2,
+                1.932,
+                0.7,
+                0,
+                0
+              ],
+              "SWIDTH": 0.2
+            },
+            "WARPING_CHK_AUTO_I": true,
+            "WARPING_CHK_AUTO_J": true,
+            "SHEAR_CHK": true,
+            "WARPING_CHK_POS_I": [
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "WARPING_CHK_POS_J": [
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "USE_AUTO_SHEAR_CHK_POS": [
+              [
+                true,
+                false,
+                true
+              ],
+              [
+                false,
+                false,
+                false
+              ]
+            ],
+            "SHEAR_CHK_POS": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ],
+            "USE_WEB_THICK": [
+              true,
+              false
+            ],
+            "WEB_THICK": [
+              0,
+              0
+            ],
+            "USE_WEB_THICK_SHEAR": [
+              [
+                true,
+                true,
+                true
+              ],
+              [
+                false,
+                false,
+                false
+              ]
+            ],
+            "WEB_THICK_SHEAR": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ],
+            "USE_SYMMETRIC": true,
+            "USE_SMALL_HOLE": false,
+            "USE_USER_DEF_MESHSIZE": false,
+            "USE_USER_INTPUT_STIFF": false,
+            "PSC_OPT1": "",
+            "PSC_OPT2": "",
+            "JOINT": [
+              true,
+              false,
+              false,
+              true,
+              false,
+              true,
+              false,
+              true
+            ]
+          }
         }
       }
     },
@@ -4260,8 +4652,7 @@
         "OPT_AUTO_OPTIMIZE": false,
         "TYPE_LOADMODEL": 1,
         "DESC": "",
-        "VHLNAME1": "EU_(R)_LoadModel1",
-        "VHLNAME2": "EU_(FF)_Uniformload(Road)",
+        "VHLNAME1": "Load Model 1",
         "OPT_LEADING": false,
         "SLN_LIST": [
           "LL_01",
@@ -4269,9 +4660,6 @@
         ],
         "SRA_LIST": [
           "LL_04"
-        ],
-        "FLN_LIST": [
-          "LL_03"
         ]
       },
       "updatePayload": {
@@ -4279,8 +4667,7 @@
         "OPT_AUTO_OPTIMIZE": false,
         "TYPE_LOADMODEL": 1,
         "DESC": "crud updated",
-        "VHLNAME1": "EU_(R)_LoadModel1",
-        "VHLNAME2": "EU_(FF)_Uniformload(Road)",
+        "VHLNAME1": "Load Model 1",
         "OPT_LEADING": false,
         "SLN_LIST": [
           "LL_01",
@@ -4288,9 +4675,6 @@
         ],
         "SRA_LIST": [
           "LL_04"
-        ],
-        "FLN_LIST": [
-          "LL_03"
         ]
       },
       "expected": {
@@ -4299,7 +4683,8 @@
       },
       "needs": [
         "lane_code_EUROCODE",
-        "moving_case_lanes_EUROCODE"
+        "moving_case_lanes_EUROCODE",
+        "moving_case_vehicle_EUROCODE"
       ],
       "setup": [
         {
@@ -4307,6 +4692,9 @@
         },
         {
           "seed": "moving_case_lanes_EUROCODE"
+        },
+        {
+          "seed": "moving_case_vehicle_EUROCODE"
         }
       ],
       "blockedSeeds": [],
@@ -4326,14 +4714,13 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "LCNAME": "MV_Case1",
         "OPT_AUTO_OPTIMIZE": false,
         "TYPE_LOADMODEL": 1,
         "DESC": "",
-        "VHLNAME1": "EU_(R)_LoadModel1",
-        "VHLNAME2": "EU_(FF)_Uniformload(Road)",
+        "VHLNAME1": "Load Model 1",
         "OPT_LEADING": false,
         "SLN_LIST": [
           "LL_01",
@@ -4341,9 +4728,6 @@
         ],
         "SRA_LIST": [
           "LL_04"
-        ],
-        "FLN_LIST": [
-          "LL_03"
         ]
       },
       "updatePayload": {
@@ -4351,8 +4735,7 @@
         "OPT_AUTO_OPTIMIZE": false,
         "TYPE_LOADMODEL": 1,
         "DESC": "crud updated",
-        "VHLNAME1": "EU_(R)_LoadModel1",
-        "VHLNAME2": "EU_(FF)_Uniformload(Road)",
+        "VHLNAME1": "Load Model 1",
         "OPT_LEADING": false,
         "SLN_LIST": [
           "LL_01",
@@ -4360,9 +4743,6 @@
         ],
         "SRA_LIST": [
           "LL_04"
-        ],
-        "FLN_LIST": [
-          "LL_03"
         ]
       },
       "expected": {
@@ -4371,7 +4751,8 @@
       },
       "needs": [
         "lane_code_EUROCODE",
-        "moving_case_lanes_EUROCODE"
+        "moving_case_lanes_EUROCODE",
+        "moving_case_vehicle_EUROCODE"
       ],
       "setup": [
         {
@@ -4379,6 +4760,9 @@
         },
         {
           "seed": "moving_case_lanes_EUROCODE"
+        },
+        {
+          "seed": "moving_case_vehicle_EUROCODE"
         }
       ],
       "blockedSeeds": [],
@@ -7313,10 +7697,245 @@
       "tier": "extras1",
       "endpoint": "/db/NLLP",
       "name": "General Link Properties",
-      "id": 1,
+      "id": 3,
       "products": [
-        "gen",
         "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "PROPERTY_NAME": "NLLP_CRUD",
+        "APPLICATION_TYPE": "FORCE",
+        "APPLICATION_TYPE_D": "LRBI",
+        "DESC": "",
+        "TOTAL_WEIGHT": 0,
+        "L_WEIGHT_RATIO": 0.5,
+        "OPT_USE_MASS": false,
+        "TOTAL_MASS": 0,
+        "L_MASS_RATIO": 0.5,
+        "OPT_SHEAR_SPR_LOC": false,
+        "COUPLED_INPUT_METHOD": 0,
+        "DIST_RATIO_DY": 0.5,
+        "DIST_RATIO_DZ": 0.5,
+        "SEIS_TYPE": "Viscous/Oil Damper",
+        "SEIS_PROP": "",
+        "LDP_EFF_STIFF_COUPLED_ITEMS": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LDP_EFF_DAMPING_COUPLED_ITEMS": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ITEMS": [
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 479100,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 336.1,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": true,
+            "LRBI": {
+              "STIFFNESS": 1099,
+              "YIELD_STRENGTH": 15.69,
+              "POST_YIELD_STIFF_RATIO": 0.08917,
+              "LOOP_PARAM_A": 0.5,
+              "LOOP_PARAM_B": 0.5
+            }
+          },
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 336.1,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": true,
+            "LRBI": {
+              "STIFFNESS": 1099,
+              "YIELD_STRENGTH": 15.69,
+              "POST_YIELD_STIFF_RATIO": 0.08917,
+              "LOOP_PARAM_A": 0.5,
+              "LOOP_PARAM_B": 0.5
+            }
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          }
+        ]
+      },
+      "updatePayload": {
+        "PROPERTY_NAME": "NLLP_CRUD_2",
+        "APPLICATION_TYPE": "FORCE",
+        "APPLICATION_TYPE_D": "LRBI",
+        "DESC": "",
+        "TOTAL_WEIGHT": 0,
+        "L_WEIGHT_RATIO": 0.5,
+        "OPT_USE_MASS": false,
+        "TOTAL_MASS": 0,
+        "L_MASS_RATIO": 0.5,
+        "OPT_SHEAR_SPR_LOC": false,
+        "COUPLED_INPUT_METHOD": 0,
+        "DIST_RATIO_DY": 0.5,
+        "DIST_RATIO_DZ": 0.5,
+        "SEIS_TYPE": "Viscous/Oil Damper",
+        "SEIS_PROP": "",
+        "LDP_EFF_STIFF_COUPLED_ITEMS": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LDP_EFF_DAMPING_COUPLED_ITEMS": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ITEMS": [
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 479100,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 336.1,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": true,
+            "LRBI": {
+              "STIFFNESS": 1099,
+              "YIELD_STRENGTH": 15.69,
+              "POST_YIELD_STIFF_RATIO": 0.08917,
+              "LOOP_PARAM_A": 0.5,
+              "LOOP_PARAM_B": 0.5
+            }
+          },
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 336.1,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": true,
+            "LRBI": {
+              "STIFFNESS": 1099,
+              "YIELD_STRENGTH": 15.69,
+              "POST_YIELD_STIFF_RATIO": 0.08917,
+              "LOOP_PARAM_A": 0.5,
+              "LOOP_PARAM_B": 0.5
+            }
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          }
+        ]
+      },
+      "expected": {
+        "created": "NLLP_CRUD",
+        "updated": "NLLP_CRUD_2"
+      },
+      "needs": [
+        "nllp_seed"
+      ],
+      "setup": [
+        {
+          "seed": "nllp_seed"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras1",
+      "endpoint": "/db/NLLP",
+      "name": "General Link Properties",
+      "id": 3,
+      "products": [
+        "gen"
       ],
       "methods": [
         "DELETE",
@@ -7327,26 +7946,222 @@
       "confirmed": false,
       "createPayload": {
         "PROPERTY_NAME": "NLLP_CRUD",
-        "DESC": "Foundation Spring",
-        "APPLICATION_TYPE": "ELEMENT",
-        "APPLICATION_TYPE_D": "SPG",
+        "APPLICATION_TYPE": "FORCE",
+        "APPLICATION_TYPE_D": "LRBI",
+        "DESC": "",
         "TOTAL_WEIGHT": 0,
-        "OPT_USE_MASS": false
+        "L_WEIGHT_RATIO": 0.5,
+        "OPT_USE_MASS": false,
+        "TOTAL_MASS": 0,
+        "L_MASS_RATIO": 0.5,
+        "OPT_SHEAR_SPR_LOC": false,
+        "COUPLED_INPUT_METHOD": 0,
+        "DIST_RATIO_DY": 0.5,
+        "DIST_RATIO_DZ": 0.5,
+        "SEIS_TYPE": "Viscous/Oil Damper",
+        "SEIS_PROP": "",
+        "LDP_EFF_STIFF_COUPLED_ITEMS": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LDP_EFF_DAMPING_COUPLED_ITEMS": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ITEMS": [
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 479100,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 336.1,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": true,
+            "LRBI": {
+              "STIFFNESS": 1099,
+              "YIELD_STRENGTH": 15.69,
+              "POST_YIELD_STIFF_RATIO": 0.08917,
+              "LOOP_PARAM_A": 0.5,
+              "LOOP_PARAM_B": 0.5
+            }
+          },
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 336.1,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": true,
+            "LRBI": {
+              "STIFFNESS": 1099,
+              "YIELD_STRENGTH": 15.69,
+              "POST_YIELD_STIFF_RATIO": 0.08917,
+              "LOOP_PARAM_A": 0.5,
+              "LOOP_PARAM_B": 0.5
+            }
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          }
+        ]
       },
       "updatePayload": {
         "PROPERTY_NAME": "NLLP_CRUD_2",
-        "DESC": "Foundation Spring",
-        "APPLICATION_TYPE": "ELEMENT",
-        "APPLICATION_TYPE_D": "SPG",
+        "APPLICATION_TYPE": "FORCE",
+        "APPLICATION_TYPE_D": "LRBI",
+        "DESC": "",
         "TOTAL_WEIGHT": 0,
-        "OPT_USE_MASS": false
+        "L_WEIGHT_RATIO": 0.5,
+        "OPT_USE_MASS": false,
+        "TOTAL_MASS": 0,
+        "L_MASS_RATIO": 0.5,
+        "OPT_SHEAR_SPR_LOC": false,
+        "COUPLED_INPUT_METHOD": 0,
+        "DIST_RATIO_DY": 0.5,
+        "DIST_RATIO_DZ": 0.5,
+        "SEIS_TYPE": "Viscous/Oil Damper",
+        "SEIS_PROP": "",
+        "LDP_EFF_STIFF_COUPLED_ITEMS": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "LDP_EFF_DAMPING_COUPLED_ITEMS": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "ITEMS": [
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 479100,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 336.1,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": true,
+            "LRBI": {
+              "STIFFNESS": 1099,
+              "YIELD_STRENGTH": 15.69,
+              "POST_YIELD_STIFF_RATIO": 0.08917,
+              "LOOP_PARAM_A": 0.5,
+              "LOOP_PARAM_B": 0.5
+            }
+          },
+          {
+            "LINEAR_PROP": true,
+            "EFF_STIFF": 336.1,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": true,
+            "LRBI": {
+              "STIFFNESS": 1099,
+              "YIELD_STRENGTH": 15.69,
+              "POST_YIELD_STIFF_RATIO": 0.08917,
+              "LOOP_PARAM_A": 0.5,
+              "LOOP_PARAM_B": 0.5
+            }
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          },
+          {
+            "LINEAR_PROP": false,
+            "EFF_STIFF": 0,
+            "EFF_DAMPING": 0,
+            "NONLINEAR_PROP": false
+          }
+        ]
       },
       "expected": {
         "created": "NLLP_CRUD",
         "updated": "NLLP_CRUD_2"
       },
-      "needs": [],
-      "setup": [],
+      "needs": [
+        "nllp_seed"
+      ],
+      "setup": [
+        {
+          "seed": "nllp_seed"
+        }
+      ],
       "blockedSeeds": [],
       "crashes": null
     },
@@ -7356,8 +8171,55 @@
       "name": "General Link",
       "id": 1,
       "products": [
-        "gen",
         "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "NODE1": 23,
+        "NODE2": 24,
+        "PROP_NAME": "NLLP_SEED",
+        "REF_SYSTEM": 0,
+        "BETA_ANGLE": 0
+      },
+      "updatePayload": {
+        "NODE1": 23,
+        "NODE2": 24,
+        "PROP_NAME": "NLLP_SEED",
+        "REF_SYSTEM": 0,
+        "BETA_ANGLE": 15
+      },
+      "expected": {
+        "created": 0,
+        "updated": 15
+      },
+      "needs": [
+        "nllp_seed",
+        "extras1_nodes"
+      ],
+      "setup": [
+        {
+          "seed": "nllp_seed"
+        },
+        {
+          "seed": "extras1_nodes"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras1",
+      "endpoint": "/db/NLNK",
+      "name": "General Link",
+      "id": 1,
+      "products": [
+        "gen"
       ],
       "methods": [
         "DELETE",
@@ -7413,7 +8275,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "PROP_NAME": "NLLP_SEED",
         "NODE1": 23,
@@ -7453,8 +8315,53 @@
       "name": "Change General Link Property",
       "id": 1,
       "products": [
-        "gen",
         "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "GLINK_KEY": 90,
+        "CHANGE_PROPERTY_NAME": "NLLP_SEED"
+      },
+      "updatePayload": {
+        "GLINK_KEY": 90,
+        "CHANGE_PROPERTY_NAME": "NLLP_SEED_2"
+      },
+      "expected": {
+        "created": "NLLP_SEED",
+        "updated": "NLLP_SEED_2"
+      },
+      "needs": [
+        "nllp_seed",
+        "extras1_nodes",
+        "glink_seed"
+      ],
+      "setup": [
+        {
+          "seed": "nllp_seed"
+        },
+        {
+          "seed": "extras1_nodes"
+        },
+        {
+          "seed": "glink_seed"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras1",
+      "endpoint": "/db/CGLP",
+      "name": "Change General Link Property",
+      "id": 1,
+      "products": [
+        "gen"
       ],
       "methods": [
         "DELETE",
@@ -7477,11 +8384,15 @@
       },
       "needs": [
         "nllp_seed",
+        "extras1_nodes",
         "glink_seed"
       ],
       "setup": [
         {
           "seed": "nllp_seed"
+        },
+        {
+          "seed": "extras1_nodes"
         },
         {
           "seed": "glink_seed"
@@ -8554,7 +9465,6 @@
       "name": "Time Dependent Material – User Defined",
       "id": 1,
       "products": [
-        "gen",
         "civil"
       ],
       "methods": [
@@ -8563,13 +9473,15 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "NAME": "CreepFunc_1",
         "FTYPE": "CREEP",
         "CTYPE": "CC",
         "SCALE": 1.0,
         "DESC": "",
+        "RELAXATION": 0,
+        "ELAST": 1,
         "vDAY": [
           {
             "DAY": 28,
@@ -8595,6 +9507,86 @@
         "CTYPE": "CC",
         "SCALE": 1.2,
         "DESC": "",
+        "RELAXATION": 0,
+        "ELAST": 1,
+        "vDAY": [
+          {
+            "DAY": 28,
+            "VALUE": 0.5
+          },
+          {
+            "DAY": 90,
+            "VALUE": 1.0
+          },
+          {
+            "DAY": 365,
+            "VALUE": 1.5
+          },
+          {
+            "DAY": 3650,
+            "VALUE": 2.0
+          }
+        ]
+      },
+      "expected": {
+        "created": 1.0,
+        "updated": 1.2
+      },
+      "needs": [],
+      "setup": [],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras3",
+      "endpoint": "/db/TDMF",
+      "name": "Time Dependent Material – User Defined",
+      "id": 1,
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": false,
+      "createPayload": {
+        "NAME": "CreepFunc_1",
+        "FTYPE": "CREEP",
+        "CTYPE": "CC",
+        "SCALE": 1.0,
+        "DESC": "",
+        "RELAXATION": 0,
+        "ELAST": 1,
+        "vDAY": [
+          {
+            "DAY": 28,
+            "VALUE": 0.5
+          },
+          {
+            "DAY": 90,
+            "VALUE": 1.0
+          },
+          {
+            "DAY": 365,
+            "VALUE": 1.5
+          },
+          {
+            "DAY": 3650,
+            "VALUE": 2.0
+          }
+        ]
+      },
+      "updatePayload": {
+        "NAME": "CreepFunc_1",
+        "FTYPE": "CREEP",
+        "CTYPE": "CC",
+        "SCALE": 1.2,
+        "DESC": "",
+        "RELAXATION": 0,
+        "ELAST": 1,
         "vDAY": [
           {
             "DAY": 28,
@@ -8627,10 +9619,99 @@
       "tier": "extras3",
       "endpoint": "/db/RPSC",
       "name": "Section Manager – Reinforcements",
-      "id": 1,
+      "id": 2,
       "products": [
-        "gen",
         "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "OPT_MBAR_J": false,
+        "OPT_SBAR_J": false,
+        "OPT_CRACKED": false,
+        "SBAR_ITEMS": [
+          {
+            "OPT_DR": false
+          },
+          {
+            "OPT_DR": false
+          }
+        ],
+        "MBARS": [
+          {
+            "MBAR_ITEMS": [
+              {
+                "IJ": "I",
+                "NAME": "D25",
+                "REF_Y": 0,
+                "Y": 0,
+                "REF_Z": 1,
+                "Z": 0.05,
+                "NUM": 4,
+                "SPACING": 0.15,
+                "PART": 0
+              }
+            ]
+          }
+        ]
+      },
+      "updatePayload": {
+        "OPT_MBAR_J": false,
+        "OPT_SBAR_J": false,
+        "OPT_CRACKED": true,
+        "SBAR_ITEMS": [
+          {
+            "OPT_DR": false
+          },
+          {
+            "OPT_DR": false
+          }
+        ],
+        "MBARS": [
+          {
+            "MBAR_ITEMS": [
+              {
+                "IJ": "I",
+                "NAME": "D25",
+                "REF_Y": 0,
+                "Y": 0,
+                "REF_Z": 1,
+                "Z": 0.05,
+                "NUM": 4,
+                "SPACING": 0.15,
+                "PART": 0
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "created": false,
+        "updated": true
+      },
+      "needs": [
+        "rpsc_psc_section"
+      ],
+      "setup": [
+        {
+          "seed": "rpsc_psc_section"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras3",
+      "endpoint": "/db/RPSC",
+      "name": "Section Manager – Reinforcements",
+      "id": 2,
+      "products": [
+        "gen"
       ],
       "methods": [
         "DELETE",
@@ -8662,7 +9743,8 @@
                 "REF_Z": 1,
                 "Z": 0.05,
                 "NUM": 4,
-                "SPACING": 0.15
+                "SPACING": 0.15,
+                "PART": 0
               }
             ]
           }
@@ -8691,7 +9773,8 @@
                 "REF_Z": 1,
                 "Z": 0.05,
                 "NUM": 4,
-                "SPACING": 0.15
+                "SPACING": 0.15,
+                "PART": 0
               }
             ]
           }
@@ -8701,8 +9784,14 @@
         "created": false,
         "updated": true
       },
-      "needs": [],
-      "setup": [],
+      "needs": [
+        "rpsc_psc_section"
+      ],
+      "setup": [
+        {
+          "seed": "rpsc_psc_section"
+        }
+      ],
       "blockedSeeds": [],
       "crashes": null
     },

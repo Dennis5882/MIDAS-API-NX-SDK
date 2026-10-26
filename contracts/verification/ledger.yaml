@@ -6183,3 +6183,111 @@ records:
     document holding the CRUD base model, the fiber_materials seed and the confirmed /db/FIBR case: VIEW_TYPE
     FIBR, OPTION ID 1 answered command complete and wrote a 4,494-byte JPG of the section preview; ID 2, no such
     division, answered second query is wrong. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-26-5
+  endpoints:
+  - /db/NLLP
+  - /db/NLNK
+  - /db/NLNK-M1
+  - /db/CGLP
+  - /db/RPSC
+  date: '2026-10-26'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    On the author's request (2026-10-26, "제품이 거부하는 부분을 더미모델링을 해서 한번 다시 try 해볼까?"), on the machine holding this
+    checkout, which is also the NX host. 195 of Civil's bundled tutorial and verification models were opened
+    from copies under C:/temp and read for the endpoints the CRUD base model is refused on. The LRB tutorial's
+    /db/NLLP record (APPLICATION_TYPE FORCE, LRBI) is stored where the manual's SPG example answers Unknown
+    Error; with it as nllp_seed and as the NLLP case, scripts/live_crud_check.py's extras1 tier passed NLLP,
+    NLNK, NLNK-M1 and CGLP on the base model for the first time, twice. /db/RPSC's case answered Wrong Field
+    without MBAR_ITEMS[].PART and, with PART 0 as the PSC tutorial's record has it, "The section is not a PSC or
+    Composite Type" on the base model's DBUSER section; with a PSC section seeded from the tutorial's own
+    /db/SECT record it passed. npm replayed the same emitted fixture on Civil on 2026-10-26 (live-crud.mjs on
+    the same five endpoints) with the same answers, after CGLP's case was given the node seed its link needs.
+    The cases are split per product: Civil confirmed, Gen not measured. Evidence in
+    docs/live_verification_notes.md.
+- id: ledger-write-2026-10-26-6
+  endpoints:
+  - /db/MVLDeu
+  - /db/MVLDbs
+  - /db/PHGE
+  - /db/NLNK
+  - /db/NLNK-M1
+  date: '2026-10-26'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    On the author's request (2026-10-26, "제품이 거부하는 부분을 더미모델링을 해서 한번 다시 try 해볼까?"), on the machine holding this
+    checkout, which is also the NX host. Round trips on copies of the tutorial models that carry these records,
+    every payload a record the model returned with one field moved: /db/MVLDeu (13 Eurocode Moving Load -
+    complete, a copy of case 1 as MV-CRUD: POST, GET, PUT OPT_LEADING, GET, DELETE, GET); /db/MVLDbs (Tut 4 Arch
+    Bridge - BD37, a copy of case 1: POST, PUT SCALEFACTOR 0.9, DELETE; the POST under key 50 landed at id 5
+    while the response echoed 50, as /db/NLLP's did, landing at id 3); /db/PHGE (MNL-01, hinge record 1 deleted
+    per id, POSTed back as read, PUT to another hinge type of the model); /db/NLNK and /db/NLNK-M1 (LRB
+    tutorial, links on a new property). Each read back as sent and the session answered throughout. Evidence in
+    docs/live_verification_notes.md.
+- id: ledger-read-2026-10-26-7
+  endpoints:
+  - /db/ACTL
+  date: '2026-10-26'
+  level: read
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+  outcome: write_rejected
+  method: >-
+    On the author's request (2026-10-26, "제품이 거부하는 부분을 더미모델링을 해서 한번 다시 try 해볼까?"), on the machine holding this
+    checkout, which is also the NX host. On copies of real models: /db/ACTL PUT on the LRB tutorial with ITER 20
+    to 25, then TOL 0.001 to 0.0005, answered each record as sent and read back 20 and 0.001; /db/STCT PUT on
+    the PSC Eurocode tutorial with iITER_CR 5 to 7 read back 5. /db/HHCT PUT on the heat-of-hydration tutorial
+    with INIT_TEMP 20 to 18 read back 18. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-26-8
+  endpoints:
+  - /db/MVLDeu
+  date: '2026-10-26'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    On the author's request to keep going on Civil (2026-10-26), on the machine holding this checkout, which is
+    also the NX host. The moving_case_eurocode tier gained a vehicle seed - Load Model 1 as Civil's Eurocode
+    tutorial model stores it - and its case follows the tutorial's LM1 shape: VHLNAME1 names that vehicle, and
+    the manual's VHLNAME2 and FLN_LIST (a footway load on a footway lane the base model lacks) are left out.
+    With only VHLNAME1 renamed the case still answered Unknown Error; in the LM1 shape
+    scripts/live_crud_check.py completed create/read/update(DESC)/read/delete/read on the base model, and npm
+    replayed the same emitted fixture on Civil on 2026-10-26 (live-crud.mjs --endpoints /db/MVLDeu) with the
+    same answer. Civil case confirmed, Gen not measured. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-26-9
+  endpoints:
+  - /db/TDMF
+  date: '2026-10-26'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    On the author's request to keep going on Civil (2026-10-26), on the machine holding this checkout, which is
+    also the NX host. The manual's /db/TDMF example (CREEP, CTYPE CC) answered Wrong Field on a tutorial PSC
+    model as on the base model. Adding the two properties GET /info/db/TDMF declares and the case never sent,
+    bisected on the base model: ELAST alone answered Wrong Field, RELAXATION alone an empty message with nothing
+    stored, both with ELAST 0 input data contain errors, both with ELAST 1 and RELAXATION 0 stored the record.
+    With them the case completed create/read/update (SCALE 1.0 to 1.2)/read/delete/read in
+    scripts/live_crud_check.py, and npm replayed the same emitted fixture on Civil on 2026-10-26 (live-crud.mjs
+    --endpoints /db/TDMF) with the same answer. Civil case confirmed, Gen not measured. The same probing left
+    /db/HPCE at Wrong Key (on the heat-of-hydration tutorial too, and with START_STAGE/END_STAGE named) and
+    /db/WVLD at Wrong Field (with NAME_THIS, TRAJ and USERGRID added). Evidence in
+    docs/live_verification_notes.md.

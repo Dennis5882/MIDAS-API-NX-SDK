@@ -6,6 +6,15 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Changed
+
+- `GeneralLinkPropertyPayload` (`/db/NLLP`) gains optional `SEIS_TYPE`,
+  `SEIS_PROP`, `LDP_EFF_STIFF_COUPLED_ITEMS`, `LDP_EFF_DAMPING_COUPLED_ITEMS`
+  and `ITEMS` (per-device detail such as `LRBI` and `FPSI`), from the
+  product's own schema. A Civil NX lead-rubber-bearing record carrying them
+  is stored and round-trips; the manual documents only the common fields.
+  Additive: no member was removed or made required.
+
 ## 2.10.2 - 2026-10-20
 
 > **One behaviour change that can break a working call:** `client.request()`

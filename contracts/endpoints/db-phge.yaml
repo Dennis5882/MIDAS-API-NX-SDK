@@ -30,7 +30,7 @@ verification:
   status: verified_both
   records:
     - product: civil
-      ref: db-read-sweep-2026-07-26
+      ref: tutorial-models-civil-2026-10-26
     - product: gen
       ref: db-read-sweep-2026-07-26
 

@@ -163,7 +163,10 @@ def test_unconfirmed_fixture_repairs_follow_the_vendored_manual_examples() -> No
     tdmf = by_endpoint["/db/TDMF"]["createPayload"]
     assert tdmf["FTYPE"] == "CREEP"
     assert tdmf["CTYPE"] == "CC"
-    assert "RELAXATION" not in tdmf
+    # The manual marks RELAXATION Relax-only; Civil NX stores a CREEP record
+    # only with it and a non-zero ELAST beside it (live notes, 2026-10-26).
+    assert tdmf["RELAXATION"] == 0
+    assert tdmf["ELAST"] != 0
 
     nlnk_m1 = by_endpoint["/db/NLNK-M1"]["createPayload"]
     assert nlnk_m1["REF_SYSTEM"] == 0

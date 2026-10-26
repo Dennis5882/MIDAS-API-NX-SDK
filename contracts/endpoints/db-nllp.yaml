@@ -31,7 +31,7 @@ verification:
   status: verified_both
   records:
     - product: civil
-      ref: db-read-sweep-2026-08-16
+      ref: tutorial-models-civil-2026-10-26
     - product: gen
       ref: db-read-sweep-2026-08-16
 
@@ -76,7 +76,12 @@ operations:
       itemSchema: fields
     response:
       wrapper: table
-      keyStability: stable
+      keyStability: unstable
+    notes: >-
+      The server renumbers a POSTed record to the next free id. On Civil NX
+      (2026-10-26, a copy of the LRB tutorial model holding ids 1-2) a record sent
+      under key 50 landed at id 3 while the response echoed key 50. Read the table
+      back and match on PROPERTY_NAME before updating or deleting by id.
   - method: PUT
     risk: write
     request:
@@ -205,6 +210,645 @@ fields:
     safeToOmit: unverified
     provenance: manual
 
+  - key: SEIS_TYPE
+    description: >-
+      Seismic Control Devices Type
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: SEIS_PROP
+    description: >-
+      Seismic Control Devices Properties
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: LDP_EFF_STIFF_COUPLED_ITEMS
+    description: >-
+      Effective Stiffness Coupled
+    type: array
+    items:
+      type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: LDP_EFF_DAMPING_COUPLED_ITEMS
+    description: >-
+      Effective Damping Coupled
+    type: array
+    items:
+      type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: ITEMS
+    description: >-
+      Selected Items Detail
+    type: array
+    items:
+      type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: DFPSI
+        description: >-
+          Double Friction Pendulum System Isolator
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: AREA_PRESSURE
+            description: >-
+              Area for Pressure
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: COEFF_UREF_ITEMS
+            description: >-
+              High-velocity coefficient of friction at reference axial pres. (uref)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: PARAM_COEFF_AP_ITEMS
+            description: >-
+              Parameter for pressure dependent coeff. (ap)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: PARAM_COEFF_HP_ITEMS
+            description: >-
+              Parameter for pressure dependent coeff. (hp)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: RADIUS_ITEMS
+            description: >-
+              Radius of Sliding Surface (R)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: RATE_PARAMETER_ITEMS
+            description: >-
+              Rate Param (a)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: RATIO_COEFF_UP_ITEMS
+            description: >-
+              Ratio of coefficient of friction at high pressure to uref (up)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: RATIO_COEFF_UV_ITEMS
+            description: >-
+              Ratio of coefficient of friction at small velocity to uref (uv)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: REF_AXIAL_PRESSURE
+            description: >-
+              Reference axial pressure(po)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STIFFNESS_ITEMS
+            description: >-
+              Stiffness(k)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STOP_DISTANCE_ITEMS
+            description: >-
+              Stop Distance (d)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: EFF_DAMPING
+        description: >-
+          Effective Damping
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EFF_STIFF
+        description: >-
+          Effective Stiffness
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FPSI
+        description: >-
+          Friction Pendulum System Isolator
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: FRIC_COEFF_FAST
+            description: >-
+              Frictional Coefficient, Fast (uf)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: FRIC_COEFF_SLOW
+            description: >-
+              Frictional Coefficient, Slow (us)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOOP_PARAM_A
+            description: >-
+              Hystertic Loop Parameter (a)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOOP_PARAM_B
+            description: >-
+              Hystertic Loop Parameter (b)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: RADIUS_OF_SLIDING_SURFACE
+            description: >-
+              Radius of Sliding Surface (R)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: RATE_PARAMETER
+            description: >-
+              Rate Parameter (r)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STIFFNESS
+            description: >-
+              Stiffness (k)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: GAP
+        description: >-
+          Gap
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: OPN
+            description: >-
+              Open (o)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STIFFNESS
+            description: >-
+              Stiffness (k)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: HOOK
+        description: >-
+          Hook
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: OPN
+            description: >-
+              Open (o)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STIFFNESS
+            description: >-
+              Stiffness (k)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: HS
+        description: >-
+          Hysteretic System
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: LOOP_PARAM_A
+            description: >-
+              Hystertic Loop Parameter (a)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOOP_PARAM_B
+            description: >-
+              Hystertic Loop Parameter (b)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: POST_YIELD_STIFF_RATIO
+            description: >-
+              Post Yield Stiffness Ratio (r)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STIFFNESS
+            description: >-
+              Stiffness (kd)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: YIELD_EXP
+            description: >-
+              Yield Exponent (s)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: YIELD_STRENGTH
+            description: >-
+              Yield Strength (Fy)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: INDEX
+        description: >-
+          Index
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LINEAR_PROP
+        description: >-
+          Linear Properties
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LRBI
+        description: >-
+          Lead Rubber Bearing Isolator
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: LOOP_PARAM_A
+            description: >-
+              Hystertic Loop Parameter (a)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOOP_PARAM_B
+            description: >-
+              Hystertic Loop Parameter (b)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: POST_YIELD_STIFF_RATIO
+            description: >-
+              Post Yield Stiffness Ratio (r)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STIFFNESS
+            description: >-
+              Stiffness (kd)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: YIELD_STRENGTH
+            description: >-
+              Yield Strength (Fy)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: NONLINEAR_PROP
+        description: >-
+          Nonlinear Properties
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TFPSI
+        description: >-
+          Triple Friction Pendulum System Isolator
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: FRIC_COEFF_FAST_ITEMS
+            description: >-
+              Frictional Coefficient, Fast (uf)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: FRIC_COEFF_SLOW_ITEMS
+            description: >-
+              Frictional Coefficient, Slow (us)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HEIGHT_IN
+            description: >-
+              Height In
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HEIGHT_OUT
+            description: >-
+              Height Out
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OPT_SYM_OUT
+            description: >-
+              Symmetric of Outer Surface
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: RADIUS_OF_SLIDING_SURFACE_ITEMS
+            description: >-
+              Radius of Sliding Surface (R)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: RATE_PARAMETER_ITEMS
+            description: >-
+              Rate Parameter (r)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STIFFNESS_ITEMS
+            description: >-
+              Stiffness (k)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STOP_DISTANCE_ITEMS
+            description: >-
+              Stop Distance (d)
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: VD
+        description: >-
+          Visco-elastic Damper
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: BRACING_STIFFNESS
+            description: >-
+              Bracing Stiffness (kb)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: DAMPER_STIFFNESS
+            description: >-
+              Damper Stiffness (kd)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: DAMPER_TYPE
+            description: >-
+              Damper Type
+            type: integer
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: DAMPING
+            description: >-
+              Reference Damping Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: DAMPING_EXP
+            description: >-
+              Damping Exponent (s)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: REF_VELOCITY
+            description: >-
+              Reference Velocity (V0)
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
 sdkRules:
   - id: db-nllp-delete-per-id
     kind: per_id_request
@@ -227,6 +871,26 @@ sdkRules:
       product-side dialog.
     riskRef: db-delete-body-empties-table
     alternative: Use the per_id DELETE operation to remove selected records.
+
+manualDefects:
+  - describes: field_name
+    manualSays: >-
+      The common-parameter table lists the envelope fields only, and the
+      section's own note says the per-device parameter sets (LRBI, FPSI, GAP,
+      HOOK and the rest) are deliberately not transcribed from MIDASIT's
+      article, which runs past 6000 lines.
+    actual: >-
+      The product stores them. SEIS_TYPE, SEIS_PROP, LDP_EFF_STIFF_COUPLED_ITEMS,
+      LDP_EFF_DAMPING_COUPLED_ITEMS and ITEMS (per-component detail keyed by
+      device) are declared identically by GET /info/db/NLLP on both products, and
+      a FORCE/LRBI record carrying them is stored and round-trips on Civil NX,
+      where the manual's ELEMENT/SPG example is refused. Not a transcription
+      error in the vendored chapter so much as a stated omission; recorded here
+      so the contract can hold the fields the extractor cannot see.
+    evidence: >-
+      schema/info-baseline.json (/db/NLLP, Civil NX and Gen NX); Civil NX
+      2026-10-26, the LRB tutorial model's record through
+      scripts/live_crud_check.py and live-crud.mjs (ledger-write-2026-10-26-5).
 
 knownDefects:
   - ref: db-delete-body-empties-table

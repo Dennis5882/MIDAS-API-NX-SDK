@@ -1573,3 +1573,53 @@ case per product: Civil confirmed, Gen unconfirmed.
 **Count:** 1 new endpoint; 177 distinct `/db` endpoints, 59 distinct
 `/DESIGN` endpoints and 4 distinct result-table operations; 240 distinct npm
 public-API operations overall.
+
+### 2026-10-26 - the general-link family and `/db/RPSC` on Civil NX
+
+`node scripts/live-crud.mjs --product civil --endpoints /db/NLLP,/db/NLNK,/db/NLNK-M1,/db/CGLP --save-dir C:/temp`
+and `--endpoints /db/RPSC`, after the fixture's NLLP seed and case took the LRB
+record Civil's own tutorial model returned, and RPSC's case `PART` and a PSC
+section seed. The NLLP seeds first asked for ids 90/91 and npm blocked them
+(`id 90 missing after setup POST` - NLLP renumbers); they ask for 1 and 2 now.
+CGLP was then blocked for the node seed its link needs, missing from its
+`needs` (Python runs the whole tier and never saw it). Final run: `PASS` for
+all five. Civil had been restarted 2026-10-25; build not re-read.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/NLLP` | 2026-10-26 | Civil |
+| `/db/NLNK` | 2026-10-26 | Civil |
+| `/db/NLNK-M1` | 2026-10-26 | Civil |
+| `/db/CGLP` | 2026-10-26 | Civil |
+| `/db/RPSC` | 2026-10-26 | Civil |
+
+**Count:** 5 new endpoints; 182 distinct `/db` endpoints, 59 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 245 distinct npm
+public-API operations overall.
+
+### 2026-10-26 - `/db/MVLDeu` on Civil NX
+
+`node scripts/live-crud.mjs --product civil --endpoints /db/MVLDeu --save-dir C:/temp`,
+after the Eurocode tier gained the tutorial's Load Model 1 vehicle seed and its
+case took the tutorial's LM1 shape. `PASS /db/MVLDeu`.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/MVLDeu` | 2026-10-26 | Civil |
+
+**Count:** 1 new endpoint; 183 distinct `/db` endpoints, 59 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 246 distinct npm
+public-API operations overall.
+
+### 2026-10-26 - `/db/TDMF` on Civil NX
+
+`node scripts/live-crud.mjs --product civil --endpoints /db/TDMF --save-dir C:/temp`,
+after the case gained `ELAST: 1` and `RELAXATION: 0`. `PASS /db/TDMF`.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/TDMF` | 2026-10-26 | Civil |
+
+**Count:** 1 new endpoint; 184 distinct `/db` endpoints, 59 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 247 distinct npm
+public-API operations overall.

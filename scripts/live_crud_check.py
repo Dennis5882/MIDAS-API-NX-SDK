@@ -1526,16 +1526,15 @@ def _extras1_seeds() -> List[SeedStep]:
                  "ITEM": [{"LCNAME": "LC_SCRATCH", "FLOOR_LOAD": -5.0,
                            "OPT_SUB_BEAM_WEIGHT": False}]}},
             client=c)),
-        # NLLP's current manual SPG example includes DESC, TOTAL_WEIGHT, and
-        # OPT_USE_MASS. Keep the seed complete so downstream general-link
-        # cases are not blocked by an old abbreviated prerequisite.
+        # The manual's SPG example answers `Unknown Error` on every build so
+        # far, and blocked NLNK, NLNK-M1 and CGLP behind it. The LRB record
+        # Civil's own tutorial model returned is stored, and the links take
+        # it (2026-10-26). NLLP renumbers a POST to the next free id, so
+        # the seeds ask for the ids they get on an empty table, 1 and 2:
+        # npm's harness checks a seed is at the id it asked for.
         SeedStep("nllp_seed", lambda c: GeneralLinkProperty.create(
-            {90: {"PROPERTY_NAME": "NLLP_SEED", "DESC": "Foundation Spring",
-                  "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG",
-                  "TOTAL_WEIGHT": 0, "OPT_USE_MASS": False},
-             91: {"PROPERTY_NAME": "NLLP_SEED_2", "DESC": "Foundation Spring",
-                  "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG",
-                  "TOTAL_WEIGHT": 0, "OPT_USE_MASS": False}},
+            {1: _tutorial_record("lrb_link_property", PROPERTY_NAME="NLLP_SEED"),
+             2: _tutorial_record("lrb_link_property", PROPERTY_NAME="NLLP_SEED_2")},
             client=c)),
         SeedStep("glink_seed", lambda c: GeneralLink.create(
             {90: {"NODE1": 25, "NODE2": 26, "PROP_NAME": "NLLP_SEED",
@@ -1641,22 +1640,35 @@ def _extras1_cases() -> List[Case]:
             lambda p: p.get("NAME"), "SPAN_CRUD", "SPAN_CRUD_2",
             products=civil, confirmed=True,
         ),
+        # Id 3: the record renumbers to the next free id, and the two seeds
+        # it now always follows take 1 and 2.
         Case(
             GeneralLinkProperty,
-            {"PROPERTY_NAME": "NLLP_CRUD", "DESC": "Foundation Spring",
-             "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG",
-             "TOTAL_WEIGHT": 0, "OPT_USE_MASS": False},
-            {"PROPERTY_NAME": "NLLP_CRUD_2", "DESC": "Foundation Spring",
-             "APPLICATION_TYPE": "ELEMENT", "APPLICATION_TYPE_D": "SPG",
-             "TOTAL_WEIGHT": 0, "OPT_USE_MASS": False},
+            _tutorial_record("lrb_link_property", PROPERTY_NAME="NLLP_CRUD"),
+            _tutorial_record("lrb_link_property", PROPERTY_NAME="NLLP_CRUD_2"),
             lambda p: p.get("PROPERTY_NAME"), "NLLP_CRUD", "NLLP_CRUD_2",
+            item_id=3, needs=("nllp_seed",), products=civil, confirmed=True,
+        ),
+        Case(
+            GeneralLinkProperty,
+            _tutorial_record("lrb_link_property", PROPERTY_NAME="NLLP_CRUD"),
+            _tutorial_record("lrb_link_property", PROPERTY_NAME="NLLP_CRUD_2"),
+            lambda p: p.get("PROPERTY_NAME"), "NLLP_CRUD", "NLLP_CRUD_2",
+            item_id=3, needs=("nllp_seed",), products=("gen",),
         ),
         Case(
             GeneralLink,
             {"NODE1": 23, "NODE2": 24, "PROP_NAME": "NLLP_SEED", "REF_SYSTEM": 0, "BETA_ANGLE": 0},
             {"NODE1": 23, "NODE2": 24, "PROP_NAME": "NLLP_SEED", "REF_SYSTEM": 0, "BETA_ANGLE": 15},
             lambda p: p.get("BETA_ANGLE"), 0, 15,
-            needs=("nllp_seed", "extras1_nodes"),
+            needs=("nllp_seed", "extras1_nodes"), products=civil, confirmed=True,
+        ),
+        Case(
+            GeneralLink,
+            {"NODE1": 23, "NODE2": 24, "PROP_NAME": "NLLP_SEED", "REF_SYSTEM": 0, "BETA_ANGLE": 0},
+            {"NODE1": 23, "NODE2": 24, "PROP_NAME": "NLLP_SEED", "REF_SYSTEM": 0, "BETA_ANGLE": 15},
+            lambda p: p.get("BETA_ANGLE"), 0, 15,
+            needs=("nllp_seed", "extras1_nodes"), products=("gen",),
         ),
         Case(
             GeneralLinkHyperS,
@@ -1665,14 +1677,21 @@ def _extras1_cases() -> List[Case]:
             {"PROP_NAME": "NLLP_SEED_2", "NODE1": 23, "NODE2": 24,
              "REF_SYSTEM": 0, "BETA_ANGLE": 15},
             lambda p: p.get("PROP_NAME"), "NLLP_SEED", "NLLP_SEED_2",
-            item_id=2, products=civil, needs=("nllp_seed", "extras1_nodes"),
+            item_id=2, products=civil, needs=("nllp_seed", "extras1_nodes"), confirmed=True,
         ),
         Case(
             ChangeGeneralLinkProperty,
             {"GLINK_KEY": 90, "CHANGE_PROPERTY_NAME": "NLLP_SEED"},
             {"GLINK_KEY": 90, "CHANGE_PROPERTY_NAME": "NLLP_SEED_2"},
             lambda p: p.get("CHANGE_PROPERTY_NAME"), "NLLP_SEED", "NLLP_SEED_2",
-            needs=("nllp_seed", "glink_seed"),
+            needs=("nllp_seed", "extras1_nodes", "glink_seed"), products=civil, confirmed=True,
+        ),
+        Case(
+            ChangeGeneralLinkProperty,
+            {"GLINK_KEY": 90, "CHANGE_PROPERTY_NAME": "NLLP_SEED"},
+            {"GLINK_KEY": 90, "CHANGE_PROPERTY_NAME": "NLLP_SEED_2"},
+            lambda p: p.get("CHANGE_PROPERTY_NAME"), "NLLP_SEED", "NLLP_SEED_2",
+            needs=("nllp_seed", "extras1_nodes", "glink_seed"), products=("gen",),
         ),
         # Element 4 is the base seed's plate.
         Case(
@@ -1903,7 +1922,20 @@ def _extras3_seeds() -> List[SeedStep]:
                   "CEN_PT_Z": 0, "NORMAL_X": 1, "NORMAL_Y": 0, "NORMAL_Z": 0,
                   "NODE_LIST": [5, 6, 7, 8], "ELEM_LIST": [4]}},
             client=c)),
+        # /db/RPSC refuses a section that is not PSC or composite. Section 2
+        # is the PSC record Civil's own tutorial model returned; no manual
+        # example gives a complete PSC section.
+        SeedStep("rpsc_psc_section", lambda c: Section.create(
+            {2: _tutorial_record("psc_section")}, client=c)),
     ]
+
+
+def _tutorial_record(name: str, **overrides: Any) -> Dict[str, Any]:
+    """A record a bundled Civil NX tutorial model returned, as read."""
+    path = Path(__file__).parent / "fixtures" / "civil_tutorial_records.json"
+    record = copy.deepcopy(json.loads(path.read_text(encoding="utf-8"))["records"][name]["record"])
+    record.update(overrides)
+    return record
 
 
 def _group_damping_payload(freq_mode_1: float) -> Dict[str, Any]:
@@ -1975,47 +2007,79 @@ def _extras3_cases() -> List[Case]:
             lambda p: p.get("H_VS"), 0.15, 0.20,
             item_id=1, confirmed=True,
         ),
+        # The manual's example answered `Wrong Field` on every build until
+        # 2026-10-26 (Civil NX): a CREEP record is stored only with two more
+        # fields - `RELAXATION`, which the manual marks "Relax only", and
+        # `ELAST`, which only /info declares (MD-41) and which must not be 0.
+        # Either alone fails (`ELAST` alone `Wrong Field`; `RELAXATION`
+        # alone answers an empty message and stores nothing). No source
+        # states an `ELAST` value; 1 is the value the product was seen to
+        # accept, not a modulus anyone chose.
         Case(
-            # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
-            # 08/14/2026) reproducing the manual's own Request Body example
-            # verbatim (its 4-point vDAY array, not the 2-point one first
-            # tried) -- same "Wrong Field". Same class of finding as
-            # /db/NLLP, /db/WVLD, /db/GRDP.
             TimeDependentMaterialFunction,
             {"NAME": "CreepFunc_1", "FTYPE": "CREEP", "CTYPE": "CC", "SCALE": 1.0,
-             "DESC": "", "vDAY": [{"DAY": 28, "VALUE": 0.5}, {"DAY": 90, "VALUE": 1.0},
-                                   {"DAY": 365, "VALUE": 1.5}, {"DAY": 3650, "VALUE": 2.0}]},
+             "DESC": "", "RELAXATION": 0, "ELAST": 1,
+             "vDAY": [{"DAY": 28, "VALUE": 0.5}, {"DAY": 90, "VALUE": 1.0},
+                      {"DAY": 365, "VALUE": 1.5}, {"DAY": 3650, "VALUE": 2.0}]},
             {"NAME": "CreepFunc_1", "FTYPE": "CREEP", "CTYPE": "CC", "SCALE": 1.2,
-             "DESC": "", "vDAY": [{"DAY": 28, "VALUE": 0.5}, {"DAY": 90, "VALUE": 1.0},
-                                   {"DAY": 365, "VALUE": 1.5}, {"DAY": 3650, "VALUE": 2.0}]},
+             "DESC": "", "RELAXATION": 0, "ELAST": 1,
+             "vDAY": [{"DAY": 28, "VALUE": 0.5}, {"DAY": 90, "VALUE": 1.0},
+                      {"DAY": 365, "VALUE": 1.5}, {"DAY": 3650, "VALUE": 2.0}]},
             lambda p: p.get("SCALE"), 1.0, 1.2,
+            products=("civil",), confirmed=True,
         ),
-        # ⚠️ Confirmed failing live 2026-08-16 (Civil NX v2.2, build
-        # 08/14/2026). Later /info evidence corrected RPSC to nested
-        # MBARS[].MBAR_ITEMS[] (MD-40) and STRPSSM points to Y/Z (MD-38),
-        # so these fixtures follow the live-corrected contracts rather than
-        # the stale manual examples. Their worked examples key at ids
-        # 401/9003 and describe "PSC/RC 단면" specifically -- our base
-        # seed's section is a plain DBUSER rectangular column, which may not
-        # carry a Section Manager reinforcement/stress-point slot at all.
-        # Genuinely unresolved either way; not swept under a workaround.
-        # Keyed by section id; section 1 is the base seed's column section.
+        Case(
+            TimeDependentMaterialFunction,
+            {"NAME": "CreepFunc_1", "FTYPE": "CREEP", "CTYPE": "CC", "SCALE": 1.0,
+             "DESC": "", "RELAXATION": 0, "ELAST": 1,
+             "vDAY": [{"DAY": 28, "VALUE": 0.5}, {"DAY": 90, "VALUE": 1.0},
+                      {"DAY": 365, "VALUE": 1.5}, {"DAY": 3650, "VALUE": 2.0}]},
+            {"NAME": "CreepFunc_1", "FTYPE": "CREEP", "CTYPE": "CC", "SCALE": 1.2,
+             "DESC": "", "RELAXATION": 0, "ELAST": 1,
+             "vDAY": [{"DAY": 28, "VALUE": 0.5}, {"DAY": 90, "VALUE": 1.0},
+                      {"DAY": 365, "VALUE": 1.5}, {"DAY": 3650, "VALUE": 2.0}]},
+            lambda p: p.get("SCALE"), 1.0, 1.2,
+            products=("gen",),
+        ),
+        # Refused until 2026-10-26 for two reasons. `MBAR_ITEMS[].PART`,
+        # which /info lists and the case never sent, answers `Wrong Field`
+        # when absent; a PSC tutorial record carries `PART: 0`. With it the
+        # base model's DBUSER section answers "The section is not a PSC or
+        # Composite Type", so the case targets the seeded PSC section 2.
+        # Civil passed through both harnesses; Gen not yet measured.
         Case(
             SectionReinforcement,
             {"OPT_MBAR_J": False, "OPT_SBAR_J": False, "OPT_CRACKED": False,
              "SBAR_ITEMS": [{"OPT_DR": False}, {"OPT_DR": False}],
              "MBARS": [{"MBAR_ITEMS": [
                  {"IJ": "I", "NAME": "D25", "REF_Y": 0, "Y": 0,
-                  "REF_Z": 1, "Z": 0.05, "NUM": 4, "SPACING": 0.15},
+                  "REF_Z": 1, "Z": 0.05, "NUM": 4, "SPACING": 0.15, "PART": 0},
              ]}]},
             {"OPT_MBAR_J": False, "OPT_SBAR_J": False, "OPT_CRACKED": True,
              "SBAR_ITEMS": [{"OPT_DR": False}, {"OPT_DR": False}],
              "MBARS": [{"MBAR_ITEMS": [
                  {"IJ": "I", "NAME": "D25", "REF_Y": 0, "Y": 0,
-                  "REF_Z": 1, "Z": 0.05, "NUM": 4, "SPACING": 0.15},
+                  "REF_Z": 1, "Z": 0.05, "NUM": 4, "SPACING": 0.15, "PART": 0},
              ]}]},
             lambda p: p.get("OPT_CRACKED"), False, True,
-            item_id=1,
+            item_id=2, needs=("rpsc_psc_section",), products=("civil",), confirmed=True,
+        ),
+        Case(
+            SectionReinforcement,
+            {"OPT_MBAR_J": False, "OPT_SBAR_J": False, "OPT_CRACKED": False,
+             "SBAR_ITEMS": [{"OPT_DR": False}, {"OPT_DR": False}],
+             "MBARS": [{"MBAR_ITEMS": [
+                 {"IJ": "I", "NAME": "D25", "REF_Y": 0, "Y": 0,
+                  "REF_Z": 1, "Z": 0.05, "NUM": 4, "SPACING": 0.15, "PART": 0},
+             ]}]},
+            {"OPT_MBAR_J": False, "OPT_SBAR_J": False, "OPT_CRACKED": True,
+             "SBAR_ITEMS": [{"OPT_DR": False}, {"OPT_DR": False}],
+             "MBARS": [{"MBAR_ITEMS": [
+                 {"IJ": "I", "NAME": "D25", "REF_Y": 0, "Y": 0,
+                  "REF_Z": 1, "Z": 0.05, "NUM": 4, "SPACING": 0.15, "PART": 0},
+             ]}]},
+            lambda p: p.get("OPT_CRACKED"), False, True,
+            item_id=2, needs=("rpsc_psc_section",), products=("gen",),
         ),
         Case(
             SectionStressPoints,
@@ -5099,6 +5163,38 @@ def _moving_country_case(resource, code: str, products=None) -> List[Case]:
     ) for product in products or ("gen", "civil")]
 
 
+def _eurocode_vehicle_seed() -> SeedStep:
+    """Load Model 1 as Civil's Eurocode tutorial model stores it."""
+    return SeedStep(
+        "moving_case_vehicle_EUROCODE",
+        lambda c: Vehicles.create({1: _tutorial_record("eurocode_vehicle_lm1")}, client=c),
+    )
+
+
+def _moving_case_eurocode() -> List[Case]:
+    """The manual's Load Model 1 case, on a vehicle that exists.
+
+    The manual names `EU_(R)_LoadModel1` and, through `VHLNAME2` and
+    `FLN_LIST`, a footway load on a footway lane; the base model has none
+    of them, and the case answered `Unknown Error` on every build. With
+    the tutorial's vehicle seeded and only `VHLNAME1` renamed it still
+    does; in the tutorial's own LM1 shape - no `VHLNAME2`, no
+    `FLN_LIST` - it is stored (Civil NX, 2026-10-26).
+    """
+    payload = _moving_case_manual_body(MovingLoadCaseEurocode.ENDPOINT)
+    payload["VHLNAME1"] = _tutorial_record("eurocode_vehicle_lm1")["VEHICLE_LOAD_NAME"]
+    for key in ("VHLNAME2", "FLN_LIST"):
+        payload.pop(key, None)
+    updated = copy.deepcopy(payload)
+    updated["DESC"] = "crud updated"
+    needs = ("lane_code_EUROCODE", "moving_case_lanes_EUROCODE", "moving_case_vehicle_EUROCODE")
+    return [Case(
+        MovingLoadCaseEurocode, copy.deepcopy(payload), updated,
+        lambda p: p.get("DESC"), payload["DESC"], "crud updated",
+        products=(product,), needs=needs, confirmed=product == "civil",
+    ) for product in ("gen", "civil")]
+
+
 def _moving_case_lane_seeds(
     code: str, resource, lane_names: Sequence[str], products=None, *, generic=False,
 ) -> List[SeedStep]:
@@ -5261,8 +5357,9 @@ TIERS: List[Tier] = [
     Tier("moving_case_eurocode", "manual Eurocode moving-load case",
          lambda: _moving_case_lane_seeds(
              "EUROCODE", TrafficLineLanes,
-             ("LL_01", "LL_02", "LL_03", "LL_04"), generic=True),
-         lambda: _moving_country_case(MovingLoadCaseEurocode, "EUROCODE")),
+             ("LL_01", "LL_02", "LL_03", "LL_04"), generic=True)
+         + [_eurocode_vehicle_seed()],
+         _moving_case_eurocode),
     Tier("moving_case_poland", "manual Poland moving-load case",
          lambda: _moving_case_lane_seeds(
              "POLAND", TrafficLineLanes, ("L1", "L2"), ("civil",), generic=True),
