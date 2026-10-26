@@ -1069,3 +1069,22 @@ records:
       answered Unknown Error.
     evidence:
       - docs/live_verification_notes.md
+  - id: ope-lcom-gen-2026-10-26
+    endpoints: ["/ope/LCOM-CONC", "/ope/LCOM-STEEL", "/ope/LCOM-SRC"]
+    date: "2026-10-26"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build 10/17/2026
+    level: write
+    outcome: success
+    method: >-
+      Each generator sent OPTION ADD and its DGNCODE alone on a /doc/NEW
+      document holding live_design_functions.py's model, with the matching
+      /db/LCOM-* table read before and after; then OPTION REPLACE on
+      LCOM-CONC on a second document.
+    finding: >-
+      LCOM-CONC, LCOM-STEEL and LCOM-SRC (KDS 41 SRC : 2022) each added a
+      STRENGTH 1.4(D) and a SERVICE combination (cLCB*, sLCB*, rLCB*);
+      REPLACE removed the existing LCOM_CRUD and left the generated pair.
+      LCOM-SRC with AIK-SRC2K answered Set_DefaultLoadComb failed even on
+      an empty table.
+    evidence:
+      - docs/live_verification_notes.md

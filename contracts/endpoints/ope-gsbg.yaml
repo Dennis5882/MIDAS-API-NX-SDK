@@ -26,7 +26,7 @@ verification:
   status: verified_civil
   records:
     - product: civil
-      ref: db-read-sweep-2026-08-13
+      ref: gsbg-precapture-civil-2026-10-26
 
 operations:
   - method: POST

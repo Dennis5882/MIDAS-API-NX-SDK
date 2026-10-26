@@ -26,7 +26,7 @@ verification:
   status: verified_gen
   records:
     - product: gen
-      ref: db-read-sweep-2026-07-31
+      ref: ope-lcom-gen-2026-10-26
 
 operations:
   - method: POST

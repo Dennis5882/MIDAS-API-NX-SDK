@@ -944,3 +944,39 @@ records:
       stored nothing, which also failed SBDO and DOEL.
     evidence:
       - docs/live_verification_notes.md
+  - id: psc-tutorial-civil-2026-10-26
+    endpoints: ["/db/TDNA", "/db/TDPL", "/db/TDCS", "/db/CSCS"]
+    date: "2026-10-26"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+    level: write
+    outcome: success
+    method: >-
+      A copy of Civil's tutorial 9 PSC Single Span.mcb opened from C:/temp;
+      each endpoint created, read, updated, read, deleted and read with
+      records the same model returned, one field moved per update (CSCS:
+      per-id DELETE of record 2, then POST of it as read, PUT, GET).
+    finding: >-
+      All four completed. TDNA and CSCS refuse on the CRUD base model
+      (Not Registered String; Section Type) because it has no PSC tendon
+      setting or composite section; this model has both.
+    evidence:
+      - docs/live_verification_notes.md
+  - id: gsbg-precapture-civil-2026-10-26
+    endpoints: ["/ope/GSBG", "/view/CAPTURE", "/view/PRECAPTURE"]
+    date: "2026-10-26"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+    level: write
+    outcome: success
+    method: >-
+      GSBG on the analysed PSC tutorial copy with a one-girder structure
+      group, after /view/CAPTURE SET_MODE post with STAGE_NAME; PRECAPTURE
+      FIBR on the CRUD base model with the confirmed fiber chain.
+    finding: >-
+      GSBG wrote moment and stress diagrams once: the model was analysed
+      with no DB write after it, a construction stage was selected through
+      CAPTURE's STAGE_NAME, LC_NAME named the CS result without "(CS)",
+      BRDG_GROUP held one girder line, and EXPORT_PATH named an existing
+      folder - a missing one answered FILES and wrote nothing. PRECAPTURE
+      wrote the section preview JPG.
+    evidence:
+      - docs/live_verification_notes.md

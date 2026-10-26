@@ -6066,3 +6066,120 @@ records:
     Steel Design Control Data. NLNK, NLNK-M1 and CGLP were blocked by the NLLP seed, TDPL by the TDNA seed, and
     STCT by the record id 1 that the first /db/STAG creates, so their own requests were not sent. Evidence in
     docs/live_verification_notes.md.
+- id: ledger-write-2026-10-26-1
+  endpoints:
+  - /ope/LCOM-CONC
+  - /ope/LCOM-STEEL
+  - /ope/LCOM-SRC
+  date: '2026-10-26'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 10/17/2026
+  outcome: success
+  method: >-
+    On the author's request to continue Gen and Civil write verification (2026-10-26), on the machine holding
+    this checkout, which is also the NX host. A /doc/NEW document after a checkpoint to C:/temp, holding
+    live_design_functions.py's model (the base model without its plate, steel column 11, RC and steel DCO, the
+    confirmed LCOM-CONC and LCOM-STEEL records LCOM_CRUD, member types). Each generator was sent its manual's
+    required fields alone, OPTION ADD and DGNCODE, with the matching /db/LCOM-* table read before and after.
+    LCOM-CONC (KDS 41 20 : 2022) added cLCB1 STRENGTH 1.4(D) and cLCB2 SERVICE beside LCOM_CRUD, LCOM-STEEL (KDS
+    41 30 : 2022) sLCB1 and sLCB2, LCOM-SRC (KDS 41 SRC : 2022) rLCB1 and rLCB2 into an empty table; each
+    answered with the table it left. On a second document OPTION REPLACE on LCOM-CONC left cLCB1 and cLCB2
+    alone, LCOM_CRUD removed. LCOM-SRC with DGNCODE AIK-SRC2K answered Set_DefaultLoadComb failed; check
+    CheckLcom history (e.g. duplicate LCOM names, name length, stage gate) on an empty table as well as after
+    the KDS run, so the message's duplicate-name guess is not the cause. The 2026-07-31 record of LCOM-CONC
+    generating two combinations was a read only because the table was not read back. Evidence in
+    docs/live_verification_notes.md.
+- id: ledger-read-2026-10-26-2
+  endpoints:
+  - /ope/LCOM-GEN
+  - /DESIGN/RC/KDS-41-20-2022/DCRE
+  - /DESIGN/RC/KDS-41-20-2022/DCRM-BEAM
+  - /DESIGN/RC/KDS-41-20-2022/DCRM-COLUMN
+  - /DESIGN/RC/KDS-41-20-2022/DCRM-BRACE
+  - /DESIGN/RC/KDS-41-20-2022/HCBM
+  - /DESIGN/STEEL/KDS-41-30-2022/HCBM
+  date: '2026-10-26'
+  level: read
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 10/17/2026
+  outcome: write_rejected
+  method: >-
+    On the author's request to continue Gen and Civil write verification (2026-10-26), on the machine holding
+    this checkout, which is also the NX host. Same document as ledger-write-2026-10-26-1. /ope/LCOM-GEN answered
+    Wrong Field to the AIK-SRC2K form (OPTION, DGNCODE, RS_SCALE_FACTOR []) and to the KDS CONCRETE form with
+    every option switched off, as on 2026-07-30 and 2026-08-01, and the empty /db/LCOM-GEN stayed empty. The
+    design tables Build 09/24/2026 refused were sent their manual example's first record
+    (scripts/fixtures/design_manual_examples.json), element keys moved to the model's column 1, beam 2 and brace
+    3, HCBM's parts to beam 2: DCRE Wrong Field; DCRM-BEAM, DCRM-COLUMN, DCRM-BRACE and both HCBM Unknown Error;
+    each GET stayed empty. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-24-7
+  endpoints:
+  - /post/TABLE (Pre-Process Table types)
+  - /post/TABLE (Analysis Result Table types)
+  date: '2026-10-24'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build 10/17/2026
+  outcome: success
+  method: >-
+    Measured 2026-10-24 by scripts/live_design_functions.py on Gen NX, on the NX host (see ledger-
+    write-2026-10-24-6): on the analysed model, /post/TABLE MATERIAL (a pre-process table) and REACTIONG (an
+    analysis result table, node 1, DL(ST)), each with EXPORT_PATH C:/temp/midas-nx-design/<name>.json, returned
+    the table and wrote the file, 948 and 363 bytes, listed on the host. Recorded 2026-10-26 when the two
+    inventory rows were found still at read. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-26-3
+  endpoints:
+  - /db/TDNA
+  - /db/TDPL
+  - /db/TDCS
+  - /db/CSCS
+  date: '2026-10-26'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    On the author's request (2026-10-26, "Civil은 필요한 재료나 모델이나 기능은 더미모델로 직접 만들어서 한번 구현해볼래?"), on the machine
+    holding this checkout, which is also the NX host. Civil's own tutorial model 9 PSC Single Span.mcb, copied
+    to C:/temp/midas-nx-tut and opened with /doc/OPEN, then saved as psc-work.mcbz; every payload is a record
+    GET returned from that model, with one field moved per update. /db/TDNA id 13 (a copy of TH1 named TH_CRUD):
+    POST, GET, PUT TDN_PROP 1 to 2, GET, per-id DELETE, GET Not Found Key. /db/TDPL id 13 (record 1's item on
+    TH_CRUD): POST, GET, PUT BEGIN 26481.6 to 20000, GET, DELETE, GET Not Found Key. /db/TDCS id 1, the manual
+    example on TDNA 13 and CSCS 1: POST, GET, PUT PART_NUM 1 to 2, GET, DELETE, GET empty. /db/CSCS id 2: per-id
+    DELETE, GET without it, POST of the record as read (read back identical), PUT part 2 AGE 10 to 14, GET. The
+    session answered throughout. On the CRUD base model TDNA answers Not Registered String and CSCS refuses a
+    non-composite section; this model carries PSC tendons and composite sections. Evidence in
+    docs/live_verification_notes.md.
+- id: ledger-write-2026-10-26-4
+  endpoints:
+  - /ope/GSBG
+  - /view/CAPTURE
+  - /view/PRECAPTURE
+  date: '2026-10-26'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read after a restart on 2026-10-25 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    On the author's request (2026-10-26, "Civil은 필요한 재료나 모델이나 기능은 더미모델로 직접 만들어서 한번 구현해볼래?"), on the machine
+    holding this checkout, which is also the NX host. /ope/GSBG on the same PSC model after a structure group
+    Girder_TH1 (TDNA TH1's elements 1-23 odd and their nodes) was added and the model saved to C:/temp and
+    analysed. /view/CAPTURE with SET_MODE post and STAGE_NAME Stage 3 wrote its JPG and moved the product off
+    the final stage; GSBG (BATCH false, BRDG_GROUP Girder_TH1, LC_NAME Summation, STAGE_LIST Stage 3, EXTENSION
+    jpg) then wrote a force diagram (DGRM_TYPE 1, My, 45,650 bytes, opened: Stage 3, CS: Summation / My) and a
+    stress diagram (DGRM_TYPE 0, 33,584 bytes) into an existing folder named by EXPORT_PATH. Against a folder
+    that did not exist it answered FILES naming the same paths and wrote nothing. /view/PRECAPTURE on a /doc/NEW
+    document holding the CRUD base model, the fiber_materials seed and the confirmed /db/FIBR case: VIEW_TYPE
+    FIBR, OPTION ID 1 answered command complete and wrote a 4,494-byte JPG of the section preview; ID 2, no such
+    division, answered second query is wrong. Evidence in docs/live_verification_notes.md.

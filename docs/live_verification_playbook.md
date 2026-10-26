@@ -13,7 +13,7 @@ versions are in git history (`a9da9a0` and before).
 which build, with verbatim errors. This file is the procedure and the
 scoreboard.
 
-## Where things stand (measured 2026-10-25)
+## Where things stand (measured 2026-10-26)
 
 - **Both products are installed at v2.2, Build 10/17/2026** - Gen NX 2026
   (v2.2) and Civil NX 2026 (v2.2), each read from its own About dialog by the
@@ -30,8 +30,13 @@ scoreboard.
   Civil, measured 2026-10-25, stores it too: MADO, DOEL and Civil's
   `/db/SBDO` pass there through both SDKs, and Civil's other unconfirmed
   cases answered as before apart from `/db/DSTL`, whose Civil case is now
-  confirmed. The
-  design-function harness ran end to end for the first time, and the TABLE
+  confirmed. On 2026-10-26 `/ope/LCOM-CONC`, `-STEEL` and `-SRC` generated
+  combinations on Gen that were read back from `/db/LCOM-*`, so they are
+  write-level; `/ope/LCOM-GEN` and the design tables refused on 09/24 still
+  refuse. Civil, the same day, on its own PSC tutorial model: `/db/TDNA`,
+  `TDPL`, `TDCS` and `CSCS` round-trip, and `/ope/GSBG` wrote girder diagrams
+  for the first time (recipe in the live notes); `/view/PRECAPTURE` wrote its
+  fiber-section preview. The design-function harness ran end to end for the first time, and the TABLE
   `EXPORT_PATH` and REPORT files were inspected on the host, so those eight
   design endpoints are write-level now (live notes, 2026-10-24).
 - **2.10.2 is published on PyPI and npm** (2026-10-20): `request()` refuses an
@@ -39,8 +44,8 @@ scoreboard.
   `COMPONENTS`, `getSteelCodeCheck()` warns of its dialog, and npm's table
   options accept `client`/`timeout`/`signal`. The npm changelog's `Unreleased`
   is empty.
-- **Coverage: 400/400 implemented, 292 write / 108 read.** Of the 225 `/db`
-  endpoints, 197 are write-level and 28 are not.
+- **Coverage: 400/400 implemented, 303 write / 97 read.** Of the 225 `/db`
+  endpoints, 201 are write-level and 24 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 338 cases over 259
   endpoints; 303 confirmed over 240 endpoints; 9 base-model steps; 81 named
   seeds; 0 unsupported.
@@ -75,7 +80,7 @@ python scripts/report_npm_replay_coverage.py --check   # 303 cases over 240
                                           # endpoints; every product: 303
 python scripts/check_verification_lag.py --check       # 40, ceiling 40
 python scripts/verification_ledger.py                  # 397 endpoints:
-                                          # 105 read, 292 write
+                                          # 94 read, 303 write
 python scripts/report_unmerged_tables.py --check       # exit 0
 python scripts/check_state_numbers.py --check          # OK; it checks this
                                           # block's own numbers too
@@ -287,7 +292,7 @@ DOEL and SBDO - all passed too, and every other unconfirmed Civil case was re-ru
 `/db/DSTL` passed (as it has on Civil since 2026-09-01; it is one case per
 product now, Civil confirmed) and the other 23 matched their rows.
 
-### 20 endpoints with a case that has never passed
+### 15 endpoints with a case that has never passed
 
 | endpoint | last answer / reason | blocker |
 | --- | --- | --- |
@@ -296,30 +301,27 @@ product now, Civil confirmed) and the other 23 matched their rows.
 | `/db/TDMF` | `Wrong Field` | sends no field with a value set to vary |
 | `/db/RPSC` | `Wrong Field` | `/info` lists `MBARS[].MBAR_ITEMS[].PART`, which the fixture never sends; no source states a value |
 | `/db/HPCE` | `Wrong Key` | product finding |
-| `/db/FBLA`, `/db/MVLDeu`, `/db/PHGE` | `Unknown Error` | product finding |
+| `/db/MVLDeu`, `/db/PHGE` | `Unknown Error` | product finding |
 | `/db/SINF`, `/db/MVLDpl` | POST accepted, record not stored | product finding |
 | `/db/ACTL` | Gen refuses every payload; Civil accepts and drops `TOL` | settled product behaviour |
-| `/db/STCT` | Gen: drops `iITER` (`wrote 30, read back None`). Civil: never measured - the first `POST /db/STAG` auto-creates `/db/STCT` id 1 with product defaults, so the case's own POST of id 1 is refused by both harnesses before it is sent (pinned 2026-09-27; Gen does not auto-create) | Gen settled; Civil needs a case that PUTs the auto-created record, not one that POSTs |
 | `/db/NLLP` | `nllp_seed` answers `Unknown Error` on both | — |
 | `/db/NLNK`, `/db/NLNK-M1`, `/db/CGLP` | blocked by `nllp_seed` | NLLP |
-| `/db/TDNA` | `Errors detected in Tendon Profile Data.(Item:IS_DB_TDNA_NOTENSIONCALC : Not Registered String)` | a model precondition; permuting fields is not the answer |
-| `/db/TDPL` | blocked by the TDNA seed | TDNA |
 
-### 17 endpoints with no case
+### 9 endpoints with no case
 
 | endpoint | what stands in the way |
 | --- | --- |
-| `/db/IMFM`, `/db/IMFM-M1` | every name field is a **FIMP** property name (`Fiber Model Property Name`); blocked by `/db/FIMP` |
-| `/db/FIBR` | a fiber division needs FIMP materials; blocked by `/db/FIMP` |
-| `/db/IEHG` | `FIBER_NAME` names a FIBR division (blocked), and `PROP_NAME` an inelastic hinge property that no endpoint creates |
+| `/db/IEHG` | `PROP_NAME` names an inelastic hinge property that no endpoint creates (`FIBER_NAME`'s FIBR division can be built since 2026-09-28) |
 | `/db/IEHG-BEAM-M1` | `INEL_PROP_NAME` names an inelastic hinge property that no endpoint creates |
 | `/db/EPMT-M1` | contract is `/info`-only: no value stated anywhere, so any payload would be hand-written |
-| `/db/CSCS` | needs a `COMPOSITE` section; the manual's only sample omits its dimensions and Gen refuses it (live notes, 2026-09-01) |
-| `/db/TDCS` | needs CSCS and the TDNA seed; both blocked |
-| `/db/DRLS` | Gen-only; `/info` carries a `DUMMY` placeholder the contract waives — needs a representation decision |
-| `/db/RCHK`, `/db/REBB`, `/db/REBR`, `/db/REBW` | ch24 design rebar; REBW's manual section is known wrong about its own field names, and each needs a designed RC member |
+| `/db/REBB`, `/db/REBR` | ch24 design rebar: the manual's long keys answer `Wrong Field`, `/info`'s short keys `Unknown Error`; each needs a designed RC member |
 | `/db/MVLDbs` | contract marks mutually exclusive `LCDATA_*` objects required together, and `ALL_MODE`'s two-value condition needs a shape decision |
 | `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1`, `/db/IEHG-TRUSS-M1` | no manual schema and `/info` 404s — **never** build a fixture |
+
+Write-level without a fixture case, each from a probe the base model cannot
+reproduce: `/db/CSCS`, `/db/TDCS` (Civil's PSC tutorial model, 2026-10-26),
+`/db/DRLS` and `/db/REBW` (manual probes). `/db/IMFM`, `/db/IMFM-M1`, `/db/FIBR`
+and `/db/RCHK` have confirmed cases since 2026-09-28.
 
 ### Unconfirmed cases on endpoints already at write level
 
@@ -334,6 +336,9 @@ They move no count. None is actionable unless its cause changes.
 | `/db/DSTL` | gen | `Errors detected in Steel Design Control Data.` |
 | `/db/SBDO` | gen | `Unknown Error` with the domain it names present (Build 10/17/2026); Civil's own case passes |
 | `/db/POGD` | gen | `Wrong Field` for the payload Civil accepts |
+| `/db/FBLA` | both | `Unknown Error` on the fixture payload; write-level from a downstream app's floor-load model (Gen, 2026-10-20) |
+| `/db/STCT` | both | Gen: drops `iITER` (`wrote 30, read back None`). Civil: never measured - the first `POST /db/STAG` auto-creates `/db/STCT` id 1 with product defaults, so the case's own POST of id 1 is refused by both harnesses before it is sent (pinned 2026-09-27; Gen does not auto-create) |
+| `/db/TDNA`, `/db/TDPL` | both | `Not Registered String` for `IS_DB_TDNA_NOTENSIONCALC` on the base model (TDPL behind it); both round-trip on Civil's PSC tutorial model (2026-10-26), so the base model lacks a precondition |
 
 `check_fixture_contract.py`'s one lead, `/db/ACTL` sending `CLATS` on Gen, is
 covered above.

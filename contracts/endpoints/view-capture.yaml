@@ -26,7 +26,7 @@ verification:
   status: verified_both
   records:
     - product: civil
-      ref: db-read-sweep-2026-08-10
+      ref: gsbg-precapture-civil-2026-10-26
     - product: gen
       ref: steel-rules-gen-2026-10-20
 

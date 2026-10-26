@@ -12602,3 +12602,131 @@ answered after every one. 24 cases:
 
 Fixture 338 cases, 303 confirmed. Civil left on an empty document. Ledger
 `ledger-write-2026-10-25-2` (DSTL) and `ledger-read-2026-10-25-3` (the 23).
+
+## 2026-10-26 - `/ope/LCOM-*` generators on Gen: three write, `LCOM-GEN` still refuses; the 09/24 design-table refusals stand
+
+On the author's request to continue write verification on both products. Gen
+NX 2026 (v2.2) Build 10/17/2026, the process running since 2026-10-23, on the
+machine holding this checkout. Two `/doc/NEW` documents after checkpoints to
+`C:/temp`, each holding `live_design_functions.py`'s model (base model without
+its plate, steel column 11, RC and steel `DCO`, the confirmed LCOM-CONC and
+LCOM-STEEL record `LCOM_CRUD`, member types), restored empty afterwards.
+
+**Generators**, each sent its manual's required fields only (`OPTION`,
+`DGNCODE`), the matching `/db/LCOM-*` read before and after:
+
+| call | answer | `/db/LCOM-*` after |
+| --- | --- | --- |
+| `/ope/LCOM-CONC` ADD, `KDS 41 20 : 2022` | the table | `LCOM_CRUD`, `cLCB1` STRENGTH `1.4(D)`, `cLCB2` SERVICE |
+| `/ope/LCOM-STEEL` ADD, `KDS 41 30 : 2022` | the table | `LCOM_CRUD`, `sLCB1`, `sLCB2` |
+| `/ope/LCOM-SRC` ADD, `KDS 41 SRC : 2022` | the table | `rLCB1`, `rLCB2` (was empty) |
+| `/ope/LCOM-SRC` ADD, `AIK-SRC2K` | `Set_DefaultLoadComb failed; check CheckLcom history (e.g. duplicate LCOM names, name length, stage gate).` | unchanged - and the same on an empty table, so not a duplicate name |
+| `/ope/LCOM-GEN` AIK-SRC2K form; KDS CONCRETE form, every option off | `Wrong Field`, both | empty |
+| `/ope/LCOM-CONC` REPLACE (second document) | the table | `cLCB1`, `cLCB2` only - `LCOM_CRUD` removed |
+
+The 2026-07-31 LCOM-CONC run had generated two combinations too and stayed a
+read because nothing read the table back. `LCOM-GEN` answers as on 2026-07-30
+and 2026-08-01. The AIK-SRC2K refusal has no visible cause. A third document
+with SRC `DCO` set first (`DGNCODE` `AIK-SRC2K`, `SEISMIC` true - the confirmed
+case; answered with the record) gave the same answer, and `LCOM-GEN`'s
+AIK-SRC2K form still answered `Wrong Field`.
+
+**Design tables refused on Build 09/24/2026**, each sent its manual example's
+first record from `scripts/fixtures/design_manual_examples.json` with the
+element key moved to the model's column 1, beam 2 or brace 3 (HCBM's parts to
+beam 2): `DCRE` `Wrong Field`; `DCRM-BEAM`, `DCRM-COLUMN`, `DCRM-BRACE`, RC and
+steel `HCBM` `Unknown Error`; every GET stayed empty. Unchanged.
+
+**`/post/TABLE`**: the 2026-10-24 design run's `MATERIAL` and `REACTIONG`
+exports (948 and 363 bytes, listed on the host) were the first files any
+`/post/TABLE` call was seen to write, so the inventory's pre-process and
+analysis-result rows are write-level from that evidence.
+
+Ledger `ledger-write-2026-10-26-1` (the three generators),
+`ledger-read-2026-10-26-2` (LCOM-GEN and the six tables),
+`ledger-write-2026-10-24-7` (the two `/post/TABLE` rows); Gen session record
+`ope-lcom-gen-2026-10-26`.
+
+## 2026-10-26 (Civil) - TDNA, TDPL, TDCS and CSCS on a PSC tutorial model, `/ope/GSBG` works, `/view/PRECAPTURE` writes
+
+On the author's request ("Civil은 필요한 재료나 모델이나 기능은 더미모델로 직접
+만들어서 한번 구현해볼래?"). Civil NX 2026 (v2.2), the process restarted
+2026-10-25 and its build not re-read (last author-confirmed 10/17/2026), on the
+machine holding this checkout.
+
+**Where the records came from.** The base model cannot reach these endpoints:
+TDNA answers `Not Registered String` and CSCS refuses a non-composite section.
+Rather than invent section geometry, Civil's own tutorial models were copied
+from `E:\MIDAS PROGRAM\MIDAS CIVIL NX\...\Tutorial\` to
+`C:/temp/midas-nx-tut/` (nothing opened from Program Files) and read with
+`/doc/OPEN` + GET. `15 Composite.mcb` holds one `COMPOSITE-GEN` section and
+nothing else; `7 Steel I-Girder Composite Bridge.mcb` 4 stages and 3 CSCS
+records; `9 PSC Single Span.mcb` 3 stages, 2 CSCS, 12 TDNA, 12 TDPL, 2 TDNT.
+Both `/doc/OPEN` calls answered with a `[Warning]` message about the
+composite section rather than `command complete`, and opened the model.
+
+**Round trips on the PSC copy** (saved as `psc-work.mcbz`), every payload a
+record the model returned, one field moved per update:
+
+| endpoint | create | update | delete |
+| --- | --- | --- | --- |
+| `/db/TDNA` id 13 (TH1 copied as `TH_CRUD`) | stored, read back | `TDN_PROP` 1 -> 2, read back | per-id, then `Not Found Key` |
+| `/db/TDPL` id 13 (record 1's item on `TH_CRUD`) | stored | `BEGIN` 26481.6 -> 20000 | per-id, then `Not Found Key` |
+| `/db/TDCS` id 1, the manual example on TDNA 13 / CSCS 1 | stored | `PART_NUM` 1 -> 2 | per-id, then empty |
+| `/db/CSCS` id 2 | POST of the record as read after a per-id DELETE: read back identical | part 2 `AGE` 10 -> 14 | (the DELETE above) |
+
+So the base-model refusals are model preconditions: TDNA's `Not Registered
+String` goes away on a model with PSC tendons (which property of the model
+matters is not isolated), and CSCS needs a real composite section.
+
+**`/ope/GSBG`, open since 2026-07-31, works.** On the same model, after a
+structure group `Girder_TH1` (TH1's elements 1, 3, ..., 23 and their nodes),
+`analyze_saved` and then:
+
+1. `/view/CAPTURE` `{SET_MODE: "post", STAGE_NAME: "Stage 3", EXPORT_PATH}` -
+   wrote its JPG and moved the product to Stage 3. Without it GSBG answered
+   `Final/PostCS stage is not supported` straight after `/doc/ANAL`; the
+   `post mode is required` gate of 2026-07-31 did not appear after an API
+   analysis.
+2. GSBG `{LC_NAME: "Summation", DGRM_TYPE: 1, BATCH: false, BRDG_GROUP:
+   "Girder_TH1", COMPONENTS: 4, STAGE_LIST: ["Stage 3"], EXPORT_PATH: <folder>,
+   EXTENSION: "jpg"}` answered `{"FILES": [...]}` and wrote
+   `<folder>\<model>,Stage_3__CS__Summation-mom.jpg`, 45,650 bytes - opened:
+   "Stage 3, CS: Summation / My", a single-span moment diagram. `DGRM_TYPE` 0
+   wrote the `-str.jpg` stress diagram, 33,584 bytes.
+
+What each refusal on the way meant:
+
+- `load case was not found: 'Deck'` (a static case), and likewise
+  `Summation(CS)`, `Dead Load(CS)`, `Tendon Primary(CS)`: `LC_NAME` takes the
+  CS result name **without** the `(CS)` suffix - `Summation`, `Dead Load`.
+- `failed to generate graph data for bridge girder element group: 'All'`: the
+  group must be one girder line; `All` (every element) is not.
+- Adding the group after the analysis dropped the results: CAPTURE then
+  answered `It's failed, Post Mode is not available` and GSBG `post mode is
+  required`. Re-analysing fixed both - the 2026-10-20 rule that a DB write
+  after analysis discards results.
+- **`EXPORT_PATH` names a folder, and a missing folder fails silently**: the
+  first runs answered `{"FILES": ["C:\temp\midas-nx-gsbg\psc_Summation_1\..."]}`
+  and no file exists anywhere on the drive. With the folder created first, the
+  same call wrote the file. With or without a trailing backslash, the same.
+
+**`/view/PRECAPTURE`** on a `/doc/NEW` document holding the base model, the
+`fiber_materials` seed and the confirmed `/db/FIBR` case (section 1): `VIEW_TYPE
+"FIBR"`, `OPTION.ID` 1, `EXPORT_PATH C:/temp/midas-nx-precap/fibr_0_1.jpg`
+answered `command complete` and wrote a 4,494-byte JPG - the 0.6 x 0.6 section
+outline with its axes; no fiber cells are drawn in it. `OPTION.ID` 2 (no such
+division) answered `second query is wrong`, the message the 2026-08-10 probe
+got on a model with no fiber section.
+
+**Field names against the contracts.** Every key of the tutorial's twelve
+TDNA records (`INPUT` 3D, `CURVE` SPLINE, `SHAPE` STRAIGHT) is one
+`contracts/endpoints/db-tdna.yaml` records, the 3D ones under its `INPUT=3D`
+variants; TDPL's and CSCS's match theirs too. (A first comparison read only the
+contract's top-level `fields`, missed the variants, and reported twelve 3D keys
+as missing; that was the check's defect, and it was caught before anything was
+changed.)
+
+Civil left on an empty document. Ledger `ledger-write-2026-10-26-3` (the four
+`/db` endpoints) and `-4` (GSBG, CAPTURE, PRECAPTURE); Civil session records
+`psc-tutorial-civil-2026-10-26` and `gsbg-precapture-civil-2026-10-26`.

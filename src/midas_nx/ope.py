@@ -858,6 +858,10 @@ def generate_load_combination_concrete(
     family's routes aren't registered on Civil at all, not just failing at
     execution. This upgrades the "possibly Gen-only" guess above to a
     routing-level confirmation.
+
+    Re-measured 2026-10-26 on Gen NX (Build 10/17/2026): ADD appends the
+    generated combinations (cLCB1, cLCB2, ...) to /db/LCOM-CONC; REPLACE
+    removes every existing combination first.
     """
     return _post("/ope/LCOM-CONC", argument, client)
 
@@ -921,6 +925,13 @@ def generate_load_combination_src(
     ONLY the fields documented for the DGNCODE you set; a hybrid dict mixing
     both schemas is sent to the API as-is and will surface as a server-side
     error, not a client-side one.
+
+    ⚠️ Live-tested 2026-10-26 on Gen NX (Build 10/17/2026): the KDS 41 SRC
+    variant generated rLCB1/rLCB2; ``DGNCODE: "AIK-SRC2K"`` answered
+    "Set_DefaultLoadComb failed; check CheckLcom history (e.g. duplicate
+    LCOM names...)" even on an empty /db/LCOM-SRC, so the duplicate-name
+    hint is not the cause, and so did a model with SRC DCO set to
+    AIK-SRC2K. Not root-caused.
     """
     return _post("/ope/LCOM-SRC", argument, client)
 
@@ -1031,6 +1042,22 @@ def generate_bridge_girder_diagram(
     are solved, "Final/PostCS stage is not supported" looks more
     structural than session-state-dependent now, and remains
     unexplained.
+
+    ✅ Working since 2026-10-26 on Civil NX (v2.2, build 10/17/2026 last
+    read), on the PSC tutorial model with BATCH=False. What it takes:
+
+    - Analysis results, with no DB write after ``/doc/ANAL`` - a write
+      discards them and brings back "post mode is required".
+    - A construction stage selected, not the final one: ``view.capture()``
+      with ``SET_MODE="post"`` and ``STAGE_NAME`` does it. That is what
+      "Final/PostCS stage is not supported" was about.
+    - ``LC_NAME`` as the CS result name without "(CS)": ``"Summation"``,
+      ``"Dead Load"``.
+    - ``BRDG_GROUP`` a structure group of one girder line; a group of
+      every element answers "failed to generate graph data".
+    - ``EXPORT_PATH`` an existing folder. For a missing one the call still
+      answers ``{"FILES": [...]}`` naming the paths and writes nothing,
+      so check the files, not the response.
     """
     batch = argument.get("BATCH", True)
     if batch:
