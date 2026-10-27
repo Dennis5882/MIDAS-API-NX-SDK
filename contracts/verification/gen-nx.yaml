@@ -1108,3 +1108,24 @@ records:
       (section type not supported), so that case stays unmeasured there.
     evidence:
       - docs/live_verification_notes.md
+  - id: steel-app-findings-gen-2026-10-27
+    endpoints: ["/db/CNLD", "/db/BMLD", "/db/SECT", "/db/MATL", "/db/ELEM", "/db/MVCD", "/db/NMAS"]
+    date: "2026-10-27"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-27 (last author-confirmed 10/17/2026)
+    level: write
+    outcome: success
+    method: >-
+      Raw request() probes on an empty /doc/NEW document after a checkpoint
+      to C:/temp, on live_crud_check.py's base model, re-measuring what
+      smart-midas-steel recorded between 2026-10-21 and 2026-10-27; then the
+      confirmed /db/CNLD, /db/BMLD and /db/NMAS cases through both SDKs.
+    finding: >-
+      A PUT onto an ITEMS record merges by ID and fills each omitted entry
+      field from the record's first entry; both SDKs now send the documented
+      defaults (db-cnld-item-component-defaults,
+      db-bmld-item-option-defaults). Per-id DELETE of a section or material
+      in use leaves elements pointing at a missing id. A warping-effect
+      section is refused for TRUSS elements. MVCD TAIWAN is refused.
+    riskRef: db-items-put-inherits-first-entry
+    evidence:
+      - docs/live_verification_notes.md

@@ -766,7 +766,26 @@ sdkRules:
     riskRef: db-delete-body-empties-table
     alternative: Use the per_id DELETE operation to remove selected records.
 
+  - id: db-sect-warping-section-beam-only
+    kind: warn
+    appliesTo: [POST, PUT]
+    reason: >-
+      A section with SECT_BEFORE.USE_WARPING_EFFECT true can be held only by
+      BEAM elements. Gen NX refuses, with "[Error] Section property
+      considering 7th DOF(ID:n) can be assigned only to the beam elements.",
+      a TRUSS element created on such a section, an element PUT moving a TRUSS
+      onto one, and a section PUT turning warping on while a TRUSS still uses
+      it. Each refusal leaves the record as it was (2026-10-27). A downstream
+      app met the third one when renumbered sections landed a warping section
+      on an id its braces still held.
+    alternative: >-
+      Give TRUSS sections USE_WARPING_EFFECT false. When a section change and
+      an element change together would pass through a refused state, send them
+      in the order that never has a TRUSS on a warping section: move the
+      elements off first, then change the section.
+
 knownDefects:
+  - ref: db-delete-referenced-record-orphans
   - ref: db-delete-body-empties-table
 
 extraction:

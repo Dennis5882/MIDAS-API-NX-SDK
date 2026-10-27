@@ -113,3 +113,79 @@ describe("nodalMass payload normalization", () => {
     expect(sentBody(fetch)).toEqual({ Assign: { "1": { A: 1 } } });
   });
 });
+
+/**
+ * `/db/CNLD` and `/db/BMLD`: defaults inside every `ITEMS` entry.
+ *
+ * A PUT that adds or rewrites an entry on a record that already has entries
+ * stores each field the entry leaves out with the value of the record's first
+ * entry, not its documented default (Gen NX, 2026-10-27): an entry sent with
+ * `FY` only took the first entry's `FZ` of -20, and a plain beam load added
+ * beside an eccentric one was stored eccentric. No error is returned.
+ */
+describe("ITEMS entry normalization", () => {
+  it("fills every force and moment component of every nodalLoad entry", async () => {
+    const fetch = ok();
+    const client = new MidasClient({ fetch });
+
+    await resources.db.staticLoads.nodalLoad.update(
+      { 4: { ITEMS: [{ ID: 2, LCNAME: "DL", FY: 1.5 }, { ID: 3, LCNAME: "L", MZ: 2 }] } },
+      client,
+    );
+
+    expect(sentBody(fetch)).toEqual({
+      Assign: {
+        "4": {
+          ITEMS: [
+            { ID: 2, LCNAME: "DL", GROUP_NAME: "", FX: 0, FY: 1.5, FZ: 0, MX: 0, MY: 0, MZ: 0 },
+            { ID: 3, LCNAME: "L", GROUP_NAME: "", FX: 0, FY: 0, FZ: 0, MX: 0, MY: 0, MZ: 2 },
+          ],
+        },
+      },
+    });
+  });
+
+  it("sends beamLoad's option flags as false unless the caller set them", async () => {
+    const fetch = ok();
+    const client = new MidasClient({ fetch });
+
+    await resources.db.staticLoads.beamLoad.create(
+      {
+        1: {
+          ITEMS: [
+            { ID: 2, LCNAME: "DL", CMD: "BEAM", TYPE: "UNILOAD", DIRECTION: "GZ", USE_PROJECTION: true, ECCEN_DIR: "GZ", D: [0, 1, 0, 0], P: [-2, -2, 0, 0] },
+          ],
+        },
+      },
+      client,
+    );
+
+    const entry = (sentBody(fetch).Assign as Record<string, { ITEMS: Record<string, unknown>[] }>)["1"]!.ITEMS[0]!;
+    expect([entry.USE_PROJECTION, entry.USE_ECCEN, entry.USE_ADDITIONAL]).toEqual([true, false, false]);
+    expect([entry.GROUP_NAME, entry.ECCEN_TYPE, entry.USE_J_END, entry.J_END]).toEqual(["", 0, false, 0]);
+    expect(entry.P).toEqual([-2, -2, 0, 0]);
+  });
+
+  it("publishes the defaults as paths into ITEMS", () => {
+    expect(resources.db.staticLoads.nodalLoad.metadata.payloadDefaults).toEqual({
+      "ITEMS[].GROUP_NAME": "",
+      "ITEMS[].FX": 0,
+      "ITEMS[].FY": 0,
+      "ITEMS[].FZ": 0,
+      "ITEMS[].MX": 0,
+      "ITEMS[].MY": 0,
+      "ITEMS[].MZ": 0,
+    });
+  });
+
+  it("does not mutate the caller's entries, and leaves a record without ITEMS alone", async () => {
+    const fetch = ok();
+    const client = new MidasClient({ fetch });
+    const items = { 4: { ITEMS: [{ ID: 1, LCNAME: "DL", FZ: -1 }] }, 5: {} };
+
+    await resources.db.staticLoads.nodalLoad.create(items as never, client);
+
+    expect(items).toEqual({ 4: { ITEMS: [{ ID: 1, LCNAME: "DL", FZ: -1 }] }, 5: {} });
+    expect((sentBody(fetch).Assign as Record<string, unknown>)["5"]).toEqual({});
+  });
+});

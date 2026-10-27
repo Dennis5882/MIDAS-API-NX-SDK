@@ -6316,3 +6316,72 @@ records:
     Each Civil/Gen case pair is merged into one case confirmed on both. /db/RPSC's PSC section seed is refused
     on Gen ("section type ... not supported"), so its Gen case stays unmeasured; the other unconfirmed Gen cases
     failed as before. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-27-2
+  endpoints:
+  - /db/CNLD
+  - /db/BMLD
+  - /db/SECT
+  - /db/MATL
+  - /db/ELEM
+  - /db/MVCD
+  - /db/NMAS
+  date: '2026-10-27'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-27 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    On the author's go-ahead to re-measure smart-midas-steel's recent Gen findings (2026-10-27, evening), on the
+    machine holding this checkout, which is also the NX host. Document confirmed empty with Gen's own key, checkpoint
+    to C:/temp, /doc/NEW, the base model from scripts/live_crud_check.py, empty document restored after each run;
+    raw request() throughout, every response printed. A PUT onto an ITEMS record merges by ID and fills each field an
+    entry omits from the record's first entry (/db/CNLD components, /db/BMLD USE_PROJECTION, USE_ECCEN and
+    DIRECTION); per-id DELETE of /db/SECT and /db/MATL removes records elements still use; a USE_WARPING_EFFECT
+    section is refused for TRUSS elements in three request shapes; /db/MVCD TAIWAN is refused on Gen. After the
+    nested normalize_defaults rules went into both SDKs, BeamLoad.update and NodalLoad.update stored the documented
+    defaults in the same situation, and the confirmed /db/CNLD, /db/BMLD and /db/NMAS cases passed through
+    scripts/live_crud_check.py and live-crud.mjs. Civil NX was not connected. Evidence in
+    docs/live_verification_notes.md.
+- id: ledger-read-2026-10-27-3
+  endpoints:
+  - /post/TABLE (Analysis Result Table types)
+  date: '2026-10-27'
+  level: read
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-27 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    After the author reconnected Gen's Open API (2026-10-27, late evening), on an empty document, checkpoint to
+    C:/temp: examples/python/simple_beam_load_combination.py's beam rebuilt on Gen with a third load case and a
+    second combination, saved and analysed through harness_save_path.analyze_saved, then BEAMFORCE read for the
+    three cases (300 rows) and the two combinations (200 rows). Both combinations rebuilt from the case rows by
+    their factors, by the Python and the JavaScript snippets now in docs/recipes/get-results.md, matched Gen's
+    combination table within 0.015 on every value - the two-decimal rounding bound. HEAD was Index, Elem, Load,
+    Part, Axial, Shear-y, Shear-z, Torsion, Moment-y, Moment-z; Load carries the case name without its (ST)
+    suffix. Empty document restored. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-28-1
+  endpoints:
+  - /db/CNLD
+  - /db/BMLD
+  - /db/LDGR
+  - /db/NMAS
+  date: '2026-10-28'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-28 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    After code review of the 2026-10-27 normalization, on the author's go-ahead to measure what it needed, on the
+    machine holding this checkout (the NX host), empty document confirmed, checkpoint to C:/temp, base model from
+    scripts/live_crud_check.py, load group LG_A. Raw request(): a new ITEMS entry PUT without GROUP_NAME joined the
+    first entry's load group on /db/CNLD and /db/BMLD, and a new eccentric /db/BMLD entry took the first entry's
+    ECCEN_TYPE, USE_J_END and J_END; every optional /db/BMLD member sent at its default was accepted on plain and
+    eccentric entries. After widening both normalize_defaults rules, NodalLoad.update and BeamLoad.update stored the
+    defaults in the same situations, and the confirmed /db/CNLD, /db/BMLD and /db/NMAS cases passed through
+    scripts/live_crud_check.py and live-crud.mjs. Evidence in docs/live_verification_notes.md.

@@ -5748,6 +5748,19 @@
         "db",
         "staticLoads"
       ],
+      "payloadDefaults": {
+        "ITEMS[].GROUP_NAME": "",
+        "ITEMS[].USE_PROJECTION": false,
+        "ITEMS[].USE_ECCEN": false,
+        "ITEMS[].ECCEN_TYPE": 0,
+        "ITEMS[].I_END": 0,
+        "ITEMS[].USE_J_END": false,
+        "ITEMS[].J_END": 0,
+        "ITEMS[].USE_ADDITIONAL": false,
+        "ITEMS[].ADDITIONAL_I_END": 0,
+        "ITEMS[].USE_ADDITIONAL_J_END": false,
+        "ITEMS[].ADDITIONAL_J_END": 0
+      },
       "manual": [
         {
           "name": "Beam Loads",
@@ -5928,6 +5941,15 @@
         "db",
         "staticLoads"
       ],
+      "payloadDefaults": {
+        "ITEMS[].GROUP_NAME": "",
+        "ITEMS[].FX": 0.0,
+        "ITEMS[].FY": 0.0,
+        "ITEMS[].FZ": 0.0,
+        "ITEMS[].MX": 0.0,
+        "ITEMS[].MY": 0.0,
+        "ITEMS[].MZ": 0.0
+      },
       "manual": [
         {
           "name": "Nodal Loads",

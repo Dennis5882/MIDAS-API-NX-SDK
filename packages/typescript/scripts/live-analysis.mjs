@@ -4,7 +4,9 @@
  * package's public API. This is intentionally separate from live-crud.mjs:
  * result tables require a solved model, not a pre-process CRUD fixture.
  */
+import * as fs from "node:fs";
 import { doc, MidasClient, post, resources } from "../dist/index.js";
+import { concurrentApps, concurrentAppsMessage } from "./live-harness-support.mjs";
 
 const endpointNames = {
   unit: "/db/UNIT", material: "/db/MATL", section: "/db/SECT",
@@ -14,7 +16,7 @@ const endpointNames = {
 
 function usage(message) {
   if (message) console.error(message);
-  console.error("Usage: npm run live:analysis -- -- --product gen|civil --save-dir C:/temp [--mapi-key key] [--timeout ms]");
+  console.error("Usage: npm run live:analysis -- -- --product gen|civil --save-dir C:/temp [--allow-concurrent-apps] [--mapi-key key] [--timeout ms]");
   process.exit(2);
 }
 
@@ -23,7 +25,9 @@ function parseArgs(argv) {
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
     const value = argv[index + 1];
-    if (flag === "--product" || flag === "--save-dir" || flag === "--mapi-key" || flag === "--timeout") {
+    if (flag === "--allow-concurrent-apps") {
+      args.allowConcurrentApps = true;
+    } else if (flag === "--product" || flag === "--save-dir" || flag === "--mapi-key" || flag === "--timeout") {
       if (!value || value.startsWith("--")) usage(`${flag} needs a value.`);
       args[flag.slice(2).replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())] = value;
       index += 1;
@@ -35,6 +39,10 @@ function parseArgs(argv) {
   }
   if (args.product !== "gen" && args.product !== "civil") usage("--product must be gen or civil.");
   if (!args.saveDir) usage("Set --save-dir (or MIDAS_NX_SAVE_DIR) to a known writable directory on the NX machine.");
+  if (args.product === "gen" && !args.allowConcurrentApps) {
+    const [busy] = concurrentApps(args.saveDir, { fs });
+    if (busy) usage(concurrentAppsMessage(...busy));
+  }
   args.timeout = Number(args.timeout);
   if (!Number.isFinite(args.timeout) || args.timeout <= 0) usage("--timeout must be a positive number of milliseconds.");
   return args;

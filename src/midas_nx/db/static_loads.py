@@ -59,10 +59,58 @@ class NodalLoadPayload(TypedDict):
     ITEMS: List[NodalLoadItem]
 
 
+def _with_item_defaults(items: dict, defaults: dict) -> dict:
+    """Copy ``items`` with ``defaults`` filled into every ``ITEMS`` entry that omits them.
+
+    Only the records and entries are copied; the caller's dicts are not touched.
+    An entry that is not a dict, or a record without an ``ITEMS`` list, is sent
+    as given.
+    """
+    out = {}
+    for key, record in items.items():
+        entries = record.get("ITEMS") if isinstance(record, dict) else None
+        if isinstance(entries, list):
+            record = {
+                **record,
+                "ITEMS": [
+                    {**defaults, **entry} if isinstance(entry, dict) else entry
+                    for entry in entries
+                ],
+            }
+        out[key] = record
+    return out
+
+
 class NodalLoad(DbResource):
+    """/db/CNLD. :meth:`create`/:meth:`update` send ``GROUP_NAME`` and every
+    force and moment component of each ``ITEMS`` entry, filling an omitted one
+    with its documented default (``""``, ``0.0``).
+
+    A PUT onto a node that already carries loads stores each component an
+    entry leaves out with the value of that node's *first* entry, not 0, and
+    answers as if nothing were wrong (Gen NX, 2026-10-27: an entry sent with
+    ``FY`` only was stored with the first entry's ``FZ`` of -20). On a node
+    with no loads the omission is harmless. ``GROUP_NAME`` is inherited the
+    same way: a new entry joined the first entry's load group. Sending the
+    fields explicitly gives the documented result either way. Contract rule
+    ``db-cnld-item-component-defaults``.
+    """
+
     ENDPOINT = "/db/CNLD"
     NAME = "Nodal Loads"
     PRODUCTS = frozenset({"gen", "civil"})
+
+    _ITEM_DEFAULTS = {
+        "GROUP_NAME": "", "FX": 0.0, "FY": 0.0, "FZ": 0.0, "MX": 0.0, "MY": 0.0, "MZ": 0.0,
+    }
+
+    @classmethod
+    def create(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        return super().create(_with_item_defaults(items, cls._ITEM_DEFAULTS), client=client)
+
+    @classmethod
+    def update(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        return super().update(_with_item_defaults(items, cls._ITEM_DEFAULTS), client=client)
 
 
 class BeamLoadItem(ItemGroupFields, total=False):
@@ -94,9 +142,37 @@ class BeamLoadPayload(TypedDict):
 
 
 class BeamLoad(DbResource):
+    """/db/BMLD. :meth:`create`/:meth:`update` send every documented-optional
+    member of each ``ITEMS`` entry except ``D`` and ``P`` (which carry the load
+    itself), filling an omitted one with its documented default.
+
+    Same defect as :class:`NodalLoad`: a PUT onto an element that already
+    carries beam loads stores an omitted field with the value of that
+    element's first entry (Gen NX, 2026-10-27: a new entry without
+    ``USE_PROJECTION`` was stored projected because the first one was, and one
+    without ``GROUP_NAME``, ``ECCEN_TYPE``, ``USE_J_END`` or ``J_END`` took the
+    first entry's load group, offset type and J-end).
+    Contract rule ``db-bmld-item-option-defaults``.
+    """
+
     ENDPOINT = "/db/BMLD"
     NAME = "Beam Loads"
     PRODUCTS = frozenset({"gen", "civil"})
+
+    _ITEM_DEFAULTS = {
+        "GROUP_NAME": "", "USE_PROJECTION": False,
+        "USE_ECCEN": False, "ECCEN_TYPE": 0, "I_END": 0.0, "USE_J_END": False, "J_END": 0.0,
+        "USE_ADDITIONAL": False, "ADDITIONAL_I_END": 0.0,
+        "USE_ADDITIONAL_J_END": False, "ADDITIONAL_J_END": 0.0,
+    }
+
+    @classmethod
+    def create(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        return super().create(_with_item_defaults(items, cls._ITEM_DEFAULTS), client=client)
+
+    @classmethod
+    def update(cls, items: dict, client: Optional[MidasClient] = None) -> dict:
+        return super().update(_with_item_defaults(items, cls._ITEM_DEFAULTS), client=client)
 
 
 class PressureLoadItem(ItemGroupFields, total=False):

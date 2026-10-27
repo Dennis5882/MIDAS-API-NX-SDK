@@ -130,8 +130,14 @@ fields:
         requirement: optional
         documentedDefault: ""
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT that adds an entry to a record already carrying loads,
+          the entry joins the first entry's load group, silently.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding
+          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not by
         # naming a path
       - key: CMD
@@ -174,8 +180,18 @@ fields:
         requirement: optional
         documentedDefault: false
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT that adds an entry to an element already carrying beam
+          loads, the value is the element's first entry's, silently - with an
+          eccentric first entry the new uniform load was stored eccentric, with
+          that entry's ECCEN_DIR and I_END. On an element with no loads it is false.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding.
+          A PUT that adds an entry to an element that already carries beam loads
+          stores an omitted value with the first entry's (Gen NX 2026-10-27). See
+          risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(7)', not by
         # naming a path
       - key: D
@@ -215,8 +231,18 @@ fields:
         requirement: optional
         documentedDefault: false
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT that adds an entry to an element already carrying beam
+          loads, the value is the element's first entry's, silently - with an
+          eccentric first entry the new uniform load was stored eccentric, with
+          that entry's ECCEN_DIR and I_END. On an element with no loads it is false.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding.
+          A PUT that adds an entry to an element that already carries beam loads
+          stores an omitted value with the first entry's (Gen NX 2026-10-27). See
+          risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(10)', not by
         # naming a path
       - key: ECCEN_TYPE
@@ -226,8 +252,15 @@ fields:
         requirement: optional
         documentedDefault: 0
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT that adds an eccentric entry to an element already
+          carrying an eccentric beam load, the value is the first entry's,
+          silently: ECCEN_TYPE 1, USE_J_END true and J_END 0.3 were inherited.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding
+          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(11)', not by
         # naming a path
       - key: ECCEN_DIR
@@ -259,8 +292,15 @@ fields:
         requirement: optional
         documentedDefault: false
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT that adds an eccentric entry to an element already
+          carrying an eccentric beam load, the value is the first entry's,
+          silently: ECCEN_TYPE 1, USE_J_END true and J_END 0.3 were inherited.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding
+          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(14)', not by
         # naming a path
       - key: J_END
@@ -270,8 +310,15 @@ fields:
         requirement: optional
         documentedDefault: 0
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT that adds an eccentric entry to an element already
+          carrying an eccentric beam load, the value is the first entry's,
+          silently: ECCEN_TYPE 1, USE_J_END true and J_END 0.3 were inherited.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding
+          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(15)', not by
         # naming a path
       - key: USE_ADDITIONAL
@@ -398,7 +445,39 @@ sdkRules:
     riskRef: db-delete-body-empties-table
     alternative: Use the per_id DELETE operation to remove selected records.
 
+  - id: db-bmld-item-option-defaults
+    kind: normalize_defaults
+    appliesTo: [POST, PUT]
+    fields: [GROUP_NAME, USE_PROJECTION, USE_ECCEN, ECCEN_TYPE, I_END, USE_J_END, J_END, USE_ADDITIONAL, ADDITIONAL_I_END, USE_ADDITIONAL_J_END, ADDITIONAL_J_END]
+    values:
+      GROUP_NAME: ""
+      USE_PROJECTION: false
+      USE_ECCEN: false
+      ECCEN_TYPE: 0
+      I_END: 0
+      USE_J_END: false
+      J_END: 0
+      USE_ADDITIONAL: false
+      ADDITIONAL_I_END: 0
+      USE_ADDITIONAL_J_END: false
+      ADDITIONAL_J_END: 0
+    reason: >-
+      A PUT that adds an ITEMS entry to an element that already carries beam
+      loads stores each omitted value with the element's first entry's.
+      Measured on Gen NX 2026-10-27 for GROUP_NAME, USE_PROJECTION, USE_ECCEN,
+      ECCEN_TYPE, USE_J_END and J_END - a plain uniform load added beside an
+      eccentric one was stored eccentric with that entry's ECCEN_DIR and I_END,
+      and an eccentric one took the first entry's offset type and J-end - and
+      for DIRECTION, which is required and so the caller's to send. I_END and
+      the ADDITIONAL group are included on the same mechanism without their
+      own measurement. Every member here sent at its default was accepted and
+      stored, on a plain entry with no ECCEN_DIR and on an eccentric one. D
+      and P are left out: they carry the load itself. The values are the
+      manual's own defaults.
+    riskRef: db-items-put-inherits-first-entry
+
 knownDefects:
+  - ref: db-items-put-inherits-first-entry
   - ref: db-delete-body-empties-table
 
 extraction:

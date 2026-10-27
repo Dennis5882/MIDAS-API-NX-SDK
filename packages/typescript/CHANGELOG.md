@@ -6,6 +6,32 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+> **A behaviour change in what `nodalLoad` and `beamLoad` send.** Both now
+> fill documented defaults into every `ITEMS` entry that omits them, on
+> `create()` and `update()`. A caller that relied on a PUT keeping a
+> component it left out will now see that component set to its default.
+> The server never kept it: it copied the record's first entry's value.
+
+### Changed
+
+- `nodalLoad` (`/db/CNLD`) sends `GROUP_NAME` and `FX`, `FY`, `FZ`, `MX`,
+  `MY`, `MZ` on every `ITEMS` entry - `""` and `0` where the caller left one
+  out. `beamLoad` (`/db/BMLD`) sends every documented-optional member except
+  `D` and `P` - `GROUP_NAME`, `USE_PROJECTION`, the eccentricity group
+  (`USE_ECCEN`, `ECCEN_TYPE`, `I_END`, `USE_J_END`, `J_END`) and the
+  `ADDITIONAL` group - at its documented default where left out. On Gen NX,
+  a PUT onto a record that already has entries stores each omitted field
+  with the value of the record's first entry, silently: a nodal load sent
+  with `FY` only took the first entry's `FZ` of -20, a uniform beam load
+  added beside an eccentric one was stored eccentric, and a new entry on
+  either joined the first entry's load group. A raw `client.request()` is
+  not changed.
+- `DbResourceMetadata.payloadDefaults` keys may now be paths into the
+  record: `nodalLoad`'s read `ITEMS[].FX` through `ITEMS[].MZ`.
+  `nodalMass`'s are unchanged (`rmX`, `rmY`, `rmZ`). A top-level default is
+  now also filled when the caller passes the field as `undefined`, which
+  used to send it absent.
+
 ## 2.10.3 - 2026-10-27
 
 Additive only: one payload type gains optional members. No export is added or

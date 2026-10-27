@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor,
-  replacedBaseModelRecord, seedSteps, setupCleanupMode, supportedCaseWrites,
+  caseCleanupMode, classifyResult, concurrentApps, containsExpectedValue, exitCodeFor,
+  otherAppActivity, payloadDefaultsProblem, replacedBaseModelRecord, seedSteps, setupCleanupMode, supportedCaseWrites,
   verifyRenumberedSeed,
 } from "../scripts/live-harness-support.mjs";
 
@@ -209,3 +209,65 @@ describe("restoring a base-model record a setup step replaced", () => {
     expect(replacedBaseModelRecord([], "/db/MATL", 1)).toBeNull();
   });
 });
+
+describe("another app driving the same Gen", () => {
+  const now = Date.parse("2026-10-27T02:05:00Z");
+  const files = {
+    "sms_guard_scratch_1.mgbx": now - 60_000,
+    "sf_old.mgbx": now - 11 * 60_000,
+    "midas-nx-crud-gen-x.mgbx": now - 1_000,
+    "gen_rc_temp_a.mgbx": now - 9 * 60_000,
+  };
+  const read = [];
+  const fs = {
+    readdirSync: (directory) => {
+      read.push(directory);
+      return directory === "C:/temp" ? Object.keys(files) : [];
+    },
+    statSync: (path) => ({ isFile: () => true, mtimeMs: files[path.split("/").at(-1)] }),
+  };
+
+  it("names only other apps' files changed in the last ten minutes", () => {
+    read.length = 0;
+    expect(otherAppActivity("C:\\temp\\", { fs, now })).toEqual(["gen_rc_temp_a.mgbx", "sms_guard_scratch_1.mgbx"]);
+    expect(read).toEqual(["C:/temp"]);
+  });
+
+  it("looks in C:/temp even when the run saves elsewhere, or names no directory", () => {
+    expect(concurrentApps("E:/NX-Scratch", { fs, now }).map(([directory]) => directory)).toEqual(["C:/temp"]);
+    expect(concurrentApps(undefined, { fs, now }).map(([directory]) => directory)).toEqual(["C:/temp"]);
+  });
+
+  it("sees nothing when the directory is not on this machine", () => {
+    const missing = { readdirSync: () => { throw new Error("ENOENT"); }, statSync: () => { throw new Error("no"); } };
+    expect(otherAppActivity("C:/temp", { fs: missing, now })).toEqual([]);
+  });
+});
+
+describe("payload defaults read back", () => {
+  const defaults = { "ITEMS[].FZ": 0, "ITEMS[].FX": 0 };
+
+  it("matches entries by ID, not by position, after a PUT merged into older entries", () => {
+    const stored = { ITEMS: [{ ID: 1, FX: 0, FZ: -20 }, { ID: 2, FX: 0, FZ: 0 }] };
+    expect(payloadDefaultsProblem(defaults, stored, { ITEMS: [{ ID: 2, FX: 0 }] })).toBeNull();
+    const inherited = { ITEMS: [{ ID: 1, FX: 0, FZ: -20 }, { ID: 2, FX: 0, FZ: -20 }] };
+    expect(payloadDefaultsProblem(defaults, inherited, { ITEMS: [{ ID: 2 }] })).toMatch(/FZ was read back as -20/);
+  });
+
+  it("fails, never passes, when nothing comes back for what was sent", () => {
+    expect(payloadDefaultsProblem(defaults, {}, { ITEMS: [{ ID: 1 }] })).toMatch(/no entry with ID 1/);
+    expect(payloadDefaultsProblem(defaults, { ITEMS: [] }, { ITEMS: [{ ID: 1 }] })).toMatch(/no entry with ID 1/);
+  });
+
+  it("expects a value the case sent itself, and checks top-level keys as before", () => {
+    expect(payloadDefaultsProblem(defaults, { ITEMS: [{ ID: 1, FX: 0, FZ: -5 }] }, { ITEMS: [{ ID: 1, FZ: -5 }] })).toBeNull();
+    expect(payloadDefaultsProblem({ rmX: 0 }, { mX: 1, rmX: 0 }, { mX: 1 })).toBeNull();
+    expect(payloadDefaultsProblem({ rmX: 0 }, { mX: 1, rmX: 5 }, { mX: 1 })).toMatch(/rmX was read back as 5/);
+  });
+
+  it("skips a field the server leaves out of the read-back", () => {
+    // Gen reads back no ECCEN_TYPE on a beam load that is not eccentric.
+    expect(payloadDefaultsProblem({ "ITEMS[].ECCEN_TYPE": 0 }, { ITEMS: [{ ID: 1, USE_ECCEN: false }] }, { ITEMS: [{ ID: 1 }] })).toBeNull();
+  });
+});
+

@@ -48,6 +48,7 @@ from pathlib import Path
 from typing import Any
 
 from function_endpoints import function_endpoints
+from generate_typescript_sdk import _field_path
 
 ROOT = Path(__file__).resolve().parent.parent
 CONTRACTS = ROOT / "contracts"
@@ -333,7 +334,7 @@ def check_safety(contracts: list[tuple[Path, dict]], failures: Failures) -> None
                         f"sdkRule {rule['id']!r} defaults undeclared field {key!r}",
                     )
                 elif "documentedDefault" in declared_field and declared_field["documentedDefault"] is not None:
-                    if float(value) != float(declared_field["documentedDefault"]):
+                    if not _same_default(value, declared_field["documentedDefault"]):
                         failures.add(
                             path.name,
                             f"sdkRule {rule['id']!r} sets {key}={value!r}, which is "
@@ -840,12 +841,60 @@ def check_tables(
                 )
 
 
+def _same_default(a: Any, b: Any) -> bool:
+    """Equal as defaults: numbers and booleans by value (0, 0.0 and False are
+    one default), strings exactly - /db/CNLD's GROUP_NAME defaults to ""."""
+    if isinstance(a, str) or isinstance(b, str):
+        return a == b
+    return float(a) == float(b)
+
+
 def _normalization_values(contract: dict) -> dict[str, Any]:
+    """The contract's normalize_defaults values, keyed by declared path."""
     merged: dict[str, Any] = {}
     for rule in contract.get("sdkRules", []):
         if rule["kind"] == "normalize_defaults":
-            merged.update(rule["values"])
+            for key, value in rule["values"].items():
+                # The generator's own path spelling, so the validator checks
+                # the key npm actually publishes. A key the contract does not
+                # declare stays bare here; check_safety reports it, where the
+                # generator raises.
+                merged[_field_path(contract.get("fields", []), key) or key] = value
     return merged
+
+
+_MISSING = object()
+
+
+def _probe_record(paths: list[str]) -> dict[str, Any]:
+    """The emptiest record with a place for every path: an array step gets
+    one empty entry, an object step an empty object."""
+    record: dict[str, Any] = {}
+    for path in paths:
+        holder = record
+        for step in path.split(".")[:-1]:
+            if step.endswith("[]"):
+                holder = holder.setdefault(step[:-2], [{}])[0]
+            else:
+                holder = holder.setdefault(step, {})
+    return record
+
+
+def _read_path(record: Any, path: str) -> list[Any]:
+    """Every value ``path`` reaches in ``record``; an absent leaf reads as _MISSING."""
+    holders = [record]
+    for step in path.split(".")[:-1]:
+        reached: list[Any] = []
+        for holder in holders:
+            if not isinstance(holder, dict):
+                continue
+            if step.endswith("[]"):
+                reached.extend(holder.get(step[:-2]) or [])
+            elif step in holder:
+                reached.append(holder[step])
+        holders = reached
+    leaf = path.split(".")[-1]
+    return [h.get(leaf, _MISSING) if isinstance(h, dict) else _MISSING for h in holders] or [_MISSING]
 
 
 def _check_python_normalization(
@@ -867,23 +916,24 @@ def _check_python_normalization(
     for verb in ("create", "update"):
         sent.clear()
         try:
-            getattr(resource, verb)({1: {}}, client=_Recorder())
+            getattr(resource, verb)({1: _probe_record(list(expected))}, client=_Recorder())
         except Exception as exc:  # pragma: no cover - reported, not raised
             failures.add(path.name, f"Python {resource.__name__}.{verb}() raised: {exc}")
             continue
         for key, value in expected.items():
-            if key not in sent:
-                failures.add(
-                    path.name,
-                    f"Python {resource.__name__}.{verb}() sent a payload without "
-                    f"{key!r}; the contract requires it be normalized to {value!r}",
-                )
-            elif float(sent[key]) != float(value):
-                failures.add(
-                    path.name,
-                    f"Python {resource.__name__}.{verb}() sent {key}={sent[key]!r}, "
-                    f"contract requires {value!r}",
-                )
+            for got in _read_path(sent, key):
+                if got is _MISSING:
+                    failures.add(
+                        path.name,
+                        f"Python {resource.__name__}.{verb}() sent a payload without "
+                        f"{key!r}; the contract requires it be normalized to {value!r}",
+                    )
+                elif not _same_default(got, value):
+                    failures.add(
+                        path.name,
+                        f"Python {resource.__name__}.{verb}() sent {key}={got!r}, "
+                        f"contract requires {value!r}",
+                    )
 
 
 def _check_typescript_normalization(
@@ -906,7 +956,7 @@ def _check_typescript_normalization(
                 f"npm {ts_resource['exportName']} does not normalize {key!r}; the "
                 f"contract requires it be sent as {value!r}",
             )
-        elif float(declared[key]) != float(value):
+        elif not _same_default(declared[key], value):
             failures.add(
                 path.name,
                 f"npm {ts_resource['exportName']} normalizes {key} to "

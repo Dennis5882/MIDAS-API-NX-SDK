@@ -408,6 +408,7 @@ sdkRules:
     alternative: Use the per_id DELETE operation to remove selected records.
 
 knownDefects:
+  - ref: db-delete-referenced-record-orphans
   - ref: db-delete-body-empties-table
 
 extraction:

@@ -404,3 +404,61 @@ risks:
     lastChecked: "2026-10-20"
     evidence:
       - docs/live_verification_notes.md
+
+  - id: db-items-put-inherits-first-entry
+    title: A PUT onto an ITEMS record fills omitted entry fields from the first entry
+    severity: write
+    endpoints: ["/db/CNLD", "/db/BMLD"]
+    products: [gen]
+    symptom: >-
+      The load is stored with values nobody sent, and nothing says so: the
+      response echoes the request and carries no error. On /db/CNLD a new entry
+      sent with FY only took the node's first entry's FZ; on /db/BMLD a plain
+      uniform load added beside an eccentric one was stored eccentric, with
+      the first entry's ECCEN_DIR and I_END, and a new entry on either
+      endpoint joined the first entry's load group. Where the new entry shares a load
+      case with an existing one, the inherited components are summed into it.
+    rootCause: >-
+      A PUT merges ITEMS by ID - entries not named are kept, a named one is
+      replaced, a new one is added - and builds each entry it writes from the
+      record's first entry, so an omitted field keeps that entry's value
+      instead of the documented default. On a record with no entries, and on
+      the first entry itself, the omission gives the documented default.
+      Measured on Gen NX only, on Build 10/17/2026; Civil NX not measured.
+    mitigation: normalized
+    sdkRule: db-cnld-item-component-defaults
+    status: >-
+      Open. Both SDKs fill the documented defaults into every ITEMS entry on
+      create() and update(): GROUP_NAME and the six force and moment
+      components on /db/CNLD, and every documented-optional member except D
+      and P on /db/BMLD (db-bmld-item-option-defaults). A raw request that omits them still
+      inherits. Other ITEMS endpoints were not measured.
+    firstObserved: "2026-10-27"
+    lastChecked: "2026-10-27"
+    evidence:
+      - docs/live_verification_notes.md
+
+  - id: db-delete-referenced-record-orphans
+    title: DELETE /db/SECT/{id} and /db/MATL/{id} remove a record elements still use
+    severity: destructive
+    endpoints: ["/db/SECT", "/db/MATL"]
+    products: [gen]
+    symptom: >-
+      The per-id DELETE answers with the deleted record and no warning while
+      elements still reference it. Afterwards those elements read back
+      pointing at an id the table no longer holds. Creating a record under the
+      same id again makes them point at the new one.
+    rootCause: >-
+      Neither route checks references before deleting. Measured on Gen NX
+      2026-10-27 with two beams on section 2 and material 2: both deletes
+      succeeded and both beams still read SECT 2, MATL 2.
+    mitigation: none
+    status: >-
+      Open, and left to the caller: whether a section or material is still in
+      use is a question about the model, which an SDK should not answer by
+      refusing a valid request. Read /db/ELEM and delete only ids no element
+      uses. What analysing a model in that state does was not measured.
+    firstObserved: "2026-10-27"
+    lastChecked: "2026-10-27"
+    evidence:
+      - docs/live_verification_notes.md

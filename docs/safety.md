@@ -46,6 +46,29 @@ This is the single most important thing on the page.
     for anything file-related — not with `os.path.exists()` either (see
     [paths](#paths-resolve-on-the-nx-machine-not-yours)).
 
+## A write can store something you did not send
+
+Reading back catches these; the response never does.
+
+**Updating a load record with `ITEMS` (nodal loads, beam loads).** A
+`PUT` does not replace the record's `ITEMS` list. It merges by `ID`: entries
+you don't name stay, a named one is rewritten, a new one is added. And every
+field an entry leaves out is copied from the record's **first** entry, not set
+to its documented default. On Gen NX (2026-10-27):
+
+- a nodal load sent with `FY` only, onto a node whose first entry had
+  `FZ: -20`, was stored with `FZ: -20`;
+- a uniform beam load added beside an eccentric one was stored eccentric;
+- a new load on either joined the first entry's load group (`GROUP_NAME`).
+
+`NodalLoad` / `nodalLoad` and `BeamLoad` / `beamLoad` fill the documented
+defaults into every entry for you on `create()` and `update()`. With the raw
+`request()`, send every component of every entry yourself.
+
+**A new entry for a load case the node already has is added into the
+existing entry.** Two nodal loads for the same case on one node become one,
+summed. Send one entry per load case per node.
+
 ## Deleting
 
 `delete()` is safe and precise. `delete_all()` is neither, and says so:
@@ -88,6 +111,12 @@ await client.request("DELETE", "/db/MATL", { Assign: {} }, { confirm: true });
 Two apps built on the raw request learned why the hard way: a call meant to
 remove one test material removed every material, and one meant to remove the
 braces of a frame removed all 324 of its elements.
+
+**Deleting one record does not check what uses it.** `delete([2])` on
+sections or materials removes section 2 even while elements use it, with no
+warning. Those elements keep pointing at an id that no longer exists (Gen NX,
+2026-10-27). Before deleting a section or material, read the elements
+(`Element.items()` / `element.items()`) and delete only ids nothing uses.
 
 ## Paths resolve on the NX machine, not yours
 

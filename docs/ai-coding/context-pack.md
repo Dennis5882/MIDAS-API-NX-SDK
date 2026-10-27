@@ -92,6 +92,19 @@ a DELETE with no id - on the same terms).
 - Every path (`EXPORT_PATH`, `/doc/SAVEAS`, `/doc/OPEN`, report/image paths)
   resolves on the machine running MIDAS NX, not the machine running your
   script — those are frequently different computers.
+- Updating a record that holds an `ITEMS` list merges by `ID`; it does not
+  replace the list (measured on nodal and beam loads - assume the same of
+  any other `ITEMS` record). On a PUT, every
+  field an entry leaves out - load group, eccentricity, components - is
+  copied from the record's FIRST entry, not set to its default. `NodalLoad` and `BeamLoad` fill the defaults in for you; with
+  `client.request()`, send every field of every entry. Two entries for the
+  same load case on one node are summed into one.
+- Deleting a section or material with `.delete([id])` does not check whether
+  an element uses it; the elements are left pointing at a missing id. Read
+  `Element.items()` first and delete only unused ids.
+- A section with `USE_WARPING_EFFECT: true` can only be used by BEAM
+  elements. Give TRUSS sections `USE_WARPING_EFFECT: false`; when changing both
+  an element's type and its section, change the element first.
 - The MAPI-Key is a secret. Never print it, log it, put it in a commit, or
   echo it back in your output.
 
@@ -209,6 +222,20 @@ a 200 status is not proof of success), `MidasServerError`,
 - Every path (export paths, `/doc/SAVEAS`, `/doc/OPEN`, report/image paths)
   resolves on the machine running MIDAS NX, not the machine running your
   script - those are frequently different computers.
+- Updating a record that holds an `ITEMS` list merges by `ID`; it does not
+  replace the list (measured on nodal and beam loads - assume the same of
+  any other `ITEMS` record). On a PUT, every
+  field an entry leaves out - load group, eccentricity, components - is
+  copied from the record's FIRST entry, not set to its default. `nodalLoad` and `beamLoad` fill the defaults in for you; with
+  `client.request()`, send every field of every entry. Two entries for the
+  same load case on one node are summed into one.
+- Deleting a section or material with `.delete([id], client)` does not check
+  whether an element uses it; the elements are left pointing at a missing id.
+  Read `resources.db.nodeElement.element.items(client)` first and delete only
+  unused ids.
+- A section with `USE_WARPING_EFFECT: true` can only be used by BEAM
+  elements. Give TRUSS sections `USE_WARPING_EFFECT: false`; when changing both
+  an element's type and its section, change the element first.
 - The MAPI-Key is a secret. Never print it, log it, put it in a commit, or
   echo it back in your output.
 

@@ -12879,3 +12879,136 @@ after each tier; the session answered throughout.
 
 Write coverage stays 312/400 - all five were already write-level from Civil -
 and the fixture is 310 of 338 cases confirmed after the five merges.
+
+## 2026-10-27 (evening) - smart-midas-steel's Gen findings: PUT fills omitted ITEMS fields from the first entry
+
+smart-midas-steel (`E:\AI Study\smart-midas-steel`, npm `midas-nx` 2.10.2)
+recorded three Gen behaviours between 2026-10-21 and 2026-10-27 that this
+repository had nowhere. Re-measured on the author's go-ahead ("라이브 검증
+직접 해보고 업데이트 하자"), on Gen NX on this checkout's machine (the NX
+host, the author's home PC), document confirmed empty with Gen's own key
+first, checkpoint to `C:/temp` before each `/doc/NEW`, the base model from
+`live_crud_check.py`'s `BASE_MODEL_STEPS` plus its `ltsr_section` H300x150
+(warping on) and `ltsr_material` S450, empty document restored after each run.
+That app's last `C:/temp` file was 11:01; these runs were after 22:45. Build
+not re-read; last author-confirmed 10/17/2026. Every response was printed.
+
+**A PUT onto a record with `ITEMS` merges by ID, and fills what an entry omits
+from the record's first entry.** Their app avoided the question ("PUT 의 항목
+병합 방식 라이브 미확인"); measured here:
+
+| Step (`/db/CNLD`) | Sent | Read back |
+| --- | --- | --- |
+| node 3 POST | ID 1 `LC_SCRATCH` FZ -10, ID 2 `DL` FZ -5 | both, as sent |
+| PUT ID 1 only | ID 1 FZ -20 | ID 1 FZ -20, **ID 2 kept** - merge by ID, not replace |
+| PUT a new ID 3 | `DL` FX 2 only | no ID 3; ID 2 `DL` **FX 2, FZ -25**: summed into the same-case entry (the 2026-10-20 rule), carrying an FZ of -20 nobody sent for it |
+| PUT `ITEMS: []` | nothing | unchanged |
+| node 4, new ID 4 `LC3` | FY 1.5 only | ID 4 FY 1.5 **FZ -20** - the first entry's FZ |
+| node 4, PUT ID 2 | FX 6 only | ID 2 FX 6 **FZ -20** (was -25) - its own FZ replaced by the first entry's |
+| node 3, new ID 3 `DL` | all six components explicit | ID 2 FX 2 FZ -5: correct |
+| fresh nodes 31-34, POST or PUT | one component, or two entries with the second omitting FZ | omitted components 0 |
+
+`/db/BMLD` behaves the same: a new entry added by PUT beside a first entry
+with `USE_PROJECTION: true` was stored projected; beside a first entry in
+`GX` and sent without `DIRECTION`, stored in `GX`; beside an eccentric first
+entry (`USE_ECCEN` true, `ECCEN_DIR` `GY`, `I_END` 0.1) and sent without
+`USE_ECCEN`, stored eccentric with that `ECCEN_DIR` and `I_END`. On an element
+with no beam loads the same omission stores the documented defaults. A first
+entry with `USE_ADDITIONAL: true` and a `GZ` load was refused ("Load should be
+entered to the local-y direction when Additional H from Top option is
+considered."), so its inheritance was not set up. No response carried an
+error. The PUT echo shows only what was sent.
+
+**Both SDKs now send the documented defaults inside every `ITEMS` entry**:
+contract rules `db-cnld-item-component-defaults` (FX-MZ 0) and
+`db-bmld-item-option-defaults` (`USE_PROJECTION`, `USE_ECCEN`,
+`USE_ADDITIONAL` false; `DIRECTION` is required and stays the caller's).
+`normalize_defaults` gained nested paths for it - npm `payloadDefaults` keys
+read `ITEMS[].FX`. Re-run live after the change, same session: through
+`BeamLoad.update` a new entry beside an eccentric, projected first entry was
+stored unprojected and not eccentric, and through `NodalLoad.update` a new
+`DL` entry with FY 1.5 beside an FZ -20 entry was stored FZ 0. The confirmed
+`/db/CNLD`, `/db/BMLD` and `/db/NMAS` cases passed in both SDKs
+(`live_crud_check.py --tier core/static`, `live-crud.mjs --endpoints`).
+Civil NX was not connected; nothing here was measured there.
+
+**`DELETE /db/SECT/{id}` and `DELETE /db/MATL/{id}` remove a record elements
+still use.** Two beams on section 2 and material 2: each per-id DELETE
+answered with the deleted record, no warning; both beams then read back
+`SECT: 2, MATL: 2` against tables that no longer held either. Re-creating
+section 2 and material 2 under the same ids made them resolve again. What an
+analysis does in that state was not tried (a dialog would block the session).
+Risk `db-delete-referenced-record-orphans`; no SDK rule, because whether a
+record is in use is a question about the model.
+
+**A warping-effect section is BEAM-only.** `USE_WARPING_EFFECT: true` on
+section 2 and false on section 3, both KS21 H300x150x6.5/9:
+
+| Request | Answer |
+| --- | --- |
+| POST a TRUSS on section 2 | `[Error] Section property considering 7th DOF(ID:2) can be assigned only to the beam elements.`; element not created |
+| POST a TRUSS on section 3 | stored |
+| PUT section 3 with warping on while that TRUSS uses it | same error naming ID 3; section unchanged |
+| PUT section 3 renamed, warping still off | stored |
+| PUT the TRUSS onto section 2 | same error naming ID 2; element unchanged |
+| PUT the element to BEAM first, then section 3 with warping on | both stored |
+
+This is the failure smart-midas-steel hit when renumbered sections put a
+warping section on an id its braces still held, and its workaround (element
+first, section after) is the order that passes. Recorded as a `warn` rule on
+`/db/SECT` (`db-sect-warping-section-beam-only`).
+
+**`/db/MVCD` `TAIWAN` is refused on Gen** with the same `Unavailable moving
+load code` as KOREA, CHINA and KSCE-LSD15 (2026-07-29); `AASHTO STANDARD` is
+stored, as then.
+
+**This repository's harness broke one of theirs.** Their log: their
+first `live-results-speed.ts` attempt at 08:40 on 2026-10-27 overlapped a
+`midas-nx-crud-gen-*` run from here on the shared NX host, failed, and its
+restore of the original document did not match; they
+widened their guard to `midas-nx-*gen*`. Nothing here looked the other way
+until now: `harness_save_path.require` and both npm harnesses refuse a Gen run
+while an `sms_*`, `sf_*` or `gen_rc_temp_*` file in `--save-dir` is under ten
+minutes old (`--allow-concurrent-apps` overrides).
+
+Ledger `ledger-write-2026-10-27-2`. Gen left on an empty document.
+
+**Later the same evening: rebuilding combinations from case tables.** The
+MIDASIT relay answered 502 for a while and Gen's Open API then needed
+reconnecting; after the author reconnected it, on an empty document with a
+checkpoint to `C:/temp`: the simple-beam example's model (20 elements) with a
+third load case `LL` and a second combination `Comb2` = DL + SIDL - 0.7 LL,
+saved and analysed through `analyze_saved`. `BEAMFORCE` for `DL(ST)`,
+`SIDL(ST)`, `LL(ST)` gave 300 rows, for `Comb1(CB)`, `Comb2(CB)` 200 rows;
+`HEAD` = `Index, Elem, Load, Part, Axial, Shear-y, Shear-z, Torsion,
+Moment-y, Moment-z`, with `Load` holding the bare case name. Summing the case
+rows by each combination's factors, keyed by `Elem` and `Part`, matched Gen's
+combination rows within 0.015 everywhere (Comb1 0.015, Comb2 0.013), which
+is the rounding of two-decimal values times the factors. The Python and JS
+code in `docs/recipes/get-results.md` is the code that was run. This
+confirms smart-midas-steel's "순정 모드" on a small model; the speed figures
+in that recipe are still theirs. Ledger `ledger-read-2026-10-27-3`.
+
+**Next morning, after code review: the rest of the entry fields.** A review
+pointed out that the rules named only the fields measured so far, while the
+mechanism is "every omitted field". Measured on Gen, same setup, load group
+`LG_A` created first:
+
+| Probe | Result |
+| --- | --- |
+| `/db/CNLD` new entry PUT without `GROUP_NAME` beside a first entry in `LG_A` (all six components sent) | stored in `LG_A` - inherited |
+| `/db/BMLD` the same | stored in `LG_A` - inherited |
+| `/db/BMLD` new eccentric entry (`USE_ECCEN`, `ECCEN_DIR` `GZ`, `I_END` 0.2) without `ECCEN_TYPE`, `USE_J_END`, `J_END`, beside a first entry with `ECCEN_TYPE` 1, `USE_J_END` true, `J_END` 0.3 | stored with `ECCEN_TYPE` 1, `USE_J_END` true, `J_END` 0.3 - all inherited |
+| a plain beam load with every optional member at its default and no `ECCEN_DIR` | accepted; `ECCEN_TYPE`, `I_END` and the J-end pair are not read back on a load that is not eccentric |
+| an eccentric one with `ECCEN_TYPE` 0, `USE_J_END` false, `J_END` 0 sent | accepted; `J_END` reads back equal to `I_END` while J-end is off |
+| `/db/CNLD` with `GROUP_NAME: ""` sent | accepted |
+
+Both rules now cover every documented-optional member with a default:
+`/db/CNLD` adds `GROUP_NAME`, `/db/BMLD` covers everything except `D` and `P`,
+which carry the load itself. Replayed through `NodalLoad.update` and
+`BeamLoad.update` in the same two situations, the new entries were stored
+with `GROUP_NAME` `""`, `ECCEN_TYPE` 0 and `USE_J_END` false. The confirmed
+`/db/CNLD`, `/db/BMLD` and `/db/NMAS` cases passed again through
+`live_crud_check.py` and `live-crud.mjs`. The npm harness's read-back check
+now matches ITEMS entries by `ID` and skips a field the server does not read
+back. Ledger `ledger-write-2026-10-28-1`.

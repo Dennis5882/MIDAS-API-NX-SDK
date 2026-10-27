@@ -208,14 +208,25 @@ def test_unsafe_optional_fields_are_covered_by_a_rule():
 def test_normalized_defaults_match_the_documented_default():
     """A normalization rule may make a default explicit, never invent one."""
     for name, contract in _contracts().items():
-        declared = {field["key"]: field for field in contract.get("fields", [])}
+        # A rule names a bare key; /db/CNLD's FX sits under ITEMS, so look at
+        # every depth.
+        declared: dict = {}
+        pending = list(contract.get("fields", []))
+        while pending:
+            field = pending.pop()
+            declared.setdefault(field["key"], field)
+            pending.extend(field.get("properties") or [])
         for key, value in _normalization_values(contract).items():
             field = declared[key]
             assert field["documentedDefault"] is not None, (
                 f"{name}: {key} is normalized to {value!r} but the manual documents "
                 f"no default for it"
             )
-            assert float(value) == float(field["documentedDefault"])
+            default = field["documentedDefault"]
+            if isinstance(value, str) or isinstance(default, str):
+                assert value == default
+            else:
+                assert float(value) == float(default)
 
 
 def test_applies_when_paths_are_declared_contract_fields():

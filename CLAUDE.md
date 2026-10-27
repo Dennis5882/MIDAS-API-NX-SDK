@@ -407,6 +407,12 @@ Two things that have already caused rework:
   extension and this repo got it wrong twice by assuming it was. The Export menus differ by
   product too: Civil NX offers MCT and an "MCBZ File"; Gen NX offers MGTX/MGT variants and no
   MGBX. Both offer a product-named JSON export, which is `/doc/EXPORT`.
+- **A PUT onto an `ITEMS` record merges by ID and fills each omitted entry field
+  from the record's first entry**, not the documented default, silently (Gen NX
+  2026-10-27, `/db/CNLD` and `/db/BMLD`). Both SDKs send the defaults inside every
+  entry since then - `normalize_defaults` takes nested fields, published as
+  `ITEMS[].FX` in npm `payloadDefaults`. A per-id `DELETE` of a section or
+  material does not check whether elements still use it.
 - **`DELETE {endpoint}` with an ID-keyed `"Assign"` body empties the whole table**, ignoring the
   ids — for `/db/NODE` that takes the attached elements with it. This is what the manual documents,
   and it cost a model before it was caught. The undocumented `DELETE {endpoint}/{id}` is the one
@@ -497,6 +503,13 @@ Two things that have already caused rework:
   `live_design_functions.py` have no waiver - the first because its per-probe saves are the
   evidence the run produces rather than a safety net, the second because it saves the model
   before its analysis regardless.
+  **The NX host is shared with other apps' live scripts** (smart-midas-steel,
+  Steel-Frame, a Gen RC app), which leave `sms_*`, `sf_*` and `gen_rc_temp_*`
+  files in `C:/temp`. On 2026-10-27 a run from here overlapped one of theirs and
+  broke its document restore. Since then `harness_save_path.require` and both npm
+  harnesses refuse a Gen run while such a file in `--save-dir` is under ten
+  minutes old; `--allow-concurrent-apps` overrides it once that run is confirmed
+  finished. Those apps apply the same rule to `midas-nx-*gen*` files from here.
 - **`/info/{endpoint}` introspection is served for `/db/*` only.** Swept from both SDKs
   2026-09-01: it answered for 399 of 402 `/db/*` resource-product pairs and for **none of the
   147 `/DESIGN/*` pairs**, even though those design endpoints answer a plain GET

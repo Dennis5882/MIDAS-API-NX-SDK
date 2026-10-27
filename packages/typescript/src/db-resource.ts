@@ -41,6 +41,12 @@ export interface DbResourceMetadata {
    * Civil NX, while sending them as `0.0` - their own documented default - did
    * not. A caller should not have to know that to use the endpoint safely.
    *
+   * A key may be a path into the record - `ITEMS[].FX` fills every entry of
+   * `ITEMS`. `/db/CNLD` and `/db/BMLD` need that: a PUT that adds or rewrites
+   * an entry on a record that already has entries stores each field the entry
+   * leaves out with the value of the record's first entry, not its documented
+   * default, and answers as if nothing were wrong (Gen NX, 2026-10-27).
+   *
    * Generated from `contracts/endpoints/*.yaml`; see `contracts/README.md`.
    */
   payloadDefaults?: Readonly<Record<string, unknown>>;
@@ -210,7 +216,13 @@ export class DbResource<TPayload extends object = JsonObject> {
     const defaults = this.metadata.payloadDefaults;
     if (!defaults) return items;
     return Object.fromEntries(
-      Object.entries(items).map(([id, payload]) => [id, { ...defaults, ...payload }]),
+      Object.entries(items).map(([id, payload]) => {
+        let record = payload as Record<string, unknown>;
+        for (const [path, value] of Object.entries(defaults)) {
+          record = fillDefault(record, path.split("."), value);
+        }
+        return [id, record];
+      }),
     ) as ItemMap<TPayload>;
   }
 
@@ -272,6 +284,40 @@ export class DbResource<TPayload extends object = JsonObject> {
     this.check(client, "DELETE");
     return client.request("DELETE", this.metadata.endpoint, { Assign: {} }, { confirm: true });
   }
+}
+
+/**
+ * A copy of `holder` with `value` filled in at `steps` wherever the caller left
+ * it out. `ITEMS[]` addresses every entry of an array; a missing or wrongly
+ * typed step is left as sent, because there is nothing there to default. Only
+ * the objects on the path are copied, so the caller's payload is never mutated.
+ */
+function fillDefault(
+  holder: Record<string, unknown>,
+  steps: readonly string[],
+  value: unknown,
+): Record<string, unknown> {
+  const [step, ...rest] = steps;
+  if (step === undefined) return holder;
+  if (rest.length === 0) {
+    return holder[step] === undefined ? { ...holder, [step]: value } : holder;
+  }
+  const array = step.endsWith("[]");
+  const key = array ? step.slice(0, -2) : step;
+  const child = holder[key];
+  if (array) {
+    if (!Array.isArray(child)) return holder;
+    return {
+      ...holder,
+      [key]: child.map((entry) =>
+        entry && typeof entry === "object" && !Array.isArray(entry)
+          ? fillDefault(entry as Record<string, unknown>, rest, value)
+          : entry,
+      ),
+    };
+  }
+  if (!child || typeof child !== "object" || Array.isArray(child)) return holder;
+  return { ...holder, [key]: fillDefault(child as Record<string, unknown>, rest, value) };
 }
 
 function stringifyKeys<T extends object>(items: ItemMap<T>): JsonObject {

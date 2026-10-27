@@ -33,6 +33,9 @@ def _module():
     assert spec.loader is not None
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
+    # The real C:/temp is shared with other apps' live scripts; a test must not
+    # depend on whether one of them ran in the last ten minutes.
+    module.OTHER_APP_DIRECTORIES = ()
     return module
 
 
@@ -196,3 +199,93 @@ def test_analyze_saved_saves_first_and_refuses_without_a_directory(monkeypatch) 
     with pytest.raises(RuntimeError, match="Save As dialog"):
         module.analyze_saved(object(), None, "model", "civil")
     assert calls == []
+
+
+def test_a_gen_run_waits_for_another_app_driving_the_same_gen(tmp_path) -> None:
+    """On 2026-10-27 a run here overlapped smart-midas-steel's live script on
+    the shared NX host and broke its restore. A recent sms_/sf_/gen_rc_temp_
+    file refuses a Gen run before any call; Civil, an old file, our own files
+    and the explicit override all pass."""
+    import os
+    import time
+
+    module = _module()
+    save_dir = str(tmp_path).replace("\\", "/")
+    (tmp_path / "midas-nx-crud-gen-x.mgbx").write_text("")
+    old = tmp_path / "sf_old.mgbx"
+    old.write_text("")
+    stale = time.time() - 11 * 60
+    os.utime(old, (stale, stale))
+
+    parser, args = _parsed(module, ["--save-dir", save_dir])
+    module.require(parser, args)  # nothing recent from another app
+
+    (tmp_path / "sms_guard_scratch_1.mgbx").write_text("")
+    assert module.other_app_activity(save_dir) == ["sms_guard_scratch_1.mgbx"]
+    parser, args = _parsed(module, ["--save-dir", save_dir])
+    with pytest.raises(SystemExit):
+        module.require(parser, args)
+
+    parser, args = _parsed(module, ["--save-dir", save_dir, "--allow-concurrent-apps"])
+    module.require(parser, args)
+    parser, args = _parsed(module, ["--save-dir", save_dir])
+    args.product = "civil"
+    module.require(parser, args)
+
+
+def test_the_guard_also_covers_runs_that_name_no_save_directory(tmp_path) -> None:
+    """--save-as and --no-save-before still send /doc/NEW, so they are checked
+    too: against the apps' own directory, and --save-as's directory."""
+    module = _module()
+    (tmp_path / "gen_rc_temp_1.mgbx").write_text("")
+    watched = str(tmp_path).replace("\\", "/")
+
+    module.OTHER_APP_DIRECTORIES = (watched,)
+    parser, args = _parsed(module, ["--no-save-before"])
+    with pytest.raises(SystemExit):
+        module.require(parser, args)
+
+    module.OTHER_APP_DIRECTORIES = ()
+    parser, args = _parsed(module, [])
+    with pytest.raises(SystemExit):
+        module.require(parser, args, exact_path=f"{watched}/x.mgbx")
+
+
+def test_a_file_that_vanishes_mid_scan_is_skipped_not_raised(tmp_path, monkeypatch) -> None:
+    """The other app creates and deletes its scratch files while this looks."""
+    module = _module()
+
+    class Gone:
+        name = "sms_gone.mgbx"
+
+        def is_file(self) -> bool:
+            return True
+
+        def stat(self):
+            raise FileNotFoundError(self.name)
+
+    monkeypatch.setattr(module.os, "scandir", lambda path: iter([Gone()]))
+    assert module.other_app_activity(str(tmp_path)) == []
+
+    def locked(path):
+        raise PermissionError(path)
+
+    monkeypatch.setattr(module.os, "scandir", locked)
+    assert module.other_app_activity(str(tmp_path)) == []
+
+
+def test_both_languages_watch_the_same_apps_for_the_same_window() -> None:
+    """The prefixes, window and directories exist once per language; a new
+    consumer app added to one side only would leave the other running over it."""
+    import re
+
+    source = (ROOT / "scripts" / "harness_save_path.py").read_text(encoding="utf-8")
+    js = (ROOT / "packages" / "typescript" / "scripts" / "live-harness-support.mjs").read_text(encoding="utf-8")
+    py_prefixes = re.search(r"OTHER_APP_PREFIXES = \(([^)]*)\)", source).group(1)
+    js_prefixes = re.search(r"OTHER_APP_PREFIXES = \[([^\]]*)\]", js).group(1)
+    assert re.findall(r'"([^"]+)"', py_prefixes) == re.findall(r'"([^"]+)"', js_prefixes)
+    py_dirs = re.search(r"OTHER_APP_DIRECTORIES = \(([^)]*)\)", source).group(1)
+    js_dirs = re.search(r"OTHER_APP_DIRECTORIES = \[([^\]]*)\]", js).group(1)
+    assert re.findall(r'"([^"]+)"', py_dirs) == re.findall(r'"([^"]+)"', js_dirs)
+    assert "OTHER_APP_WINDOW_SECONDS = 10 * 60" in source
+    assert "OTHER_APP_WINDOW_MS = 10 * 60 * 1000" in js

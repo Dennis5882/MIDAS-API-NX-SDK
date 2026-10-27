@@ -102,6 +102,95 @@ Column names and row count depend on your model's supports and load cases.
 **`0` rows is the normal result if the model hasn't been analyzed yet** —
 see the precondition above — not a sign something is broken.
 
+## Many combinations on a large model
+
+Asking for a table under every load combination (`"...(CB)"` names) is the
+slow way to get results from a big model. Asking for the load cases
+(`"...(ST)"` names) once and adding the rows up yourself, with each
+combination's factors, gives the same numbers and can be an order of
+magnitude faster - but only under all of these conditions:
+
+- the analysis is linear static;
+- every combination you rebuild is a plain factored sum (`iTYPE` 0 in
+  `/db/LCOM-GEN`) and every term in it is a static load case (`ANAL: "ST"`);
+- you add up values per element and part first, and take any maximum or
+  minimum afterwards. A combination that is itself an envelope, SRSS or
+  absolute sum cannot be rebuilt this way.
+
+Anything else - response spectrum or time history terms, nonlinear
+analysis, construction stages, combinations of combinations - read the
+combination table as above.
+
+=== "Python"
+
+    ```python
+    from midas_nx.post.base import unwrap_table
+    from midas_nx.post.result_1 import get_beam_force_table
+
+    def combine(table, factors):
+        """Sum load-case rows into one combination: {(elem, part): [values]}."""
+        head = table["HEAD"]
+        elem, load, part = head.index("Elem"), head.index("Load"), head.index("Part")
+        skip = {head.index("Index"), elem, load, part}
+        value_cols = [i for i in range(len(head)) if i not in skip]
+        out = {}
+        for row in table["DATA"]:
+            factor = factors.get(row[load])
+            if factor is None:
+                continue
+            acc = out.setdefault((row[elem], row[part]), [0.0] * len(value_cols))
+            for k, i in enumerate(value_cols):
+                acc[k] += factor * float(row[i])
+        return out
+
+    cases = unwrap_table(get_beam_force_table(
+        load_case_names=["DL(ST)", "SIDL(ST)", "LL(ST)"], client=client))
+    comb2 = combine(cases, {"DL": 1.0, "SIDL": 1.0, "LL": -0.7})
+    ```
+
+=== "JavaScript / TypeScript"
+
+    ```js
+    import { tables, unwrapTable } from "midas-nx";
+
+    function combine(table, factors) {
+      const head = table.HEAD;
+      const [elem, load, part] = ["Elem", "Load", "Part"].map((name) => head.indexOf(name));
+      const skip = [head.indexOf("Index"), elem, load, part];
+      const valueCols = head.map((_, i) => i).filter((i) => !skip.includes(i));
+      const out = new Map();
+      for (const row of table.DATA) {
+        const factor = factors[row[load]];
+        if (factor === undefined) continue;
+        const key = `${row[elem]}|${row[part]}`;
+        const acc = out.get(key) ?? valueCols.map(() => 0);
+        valueCols.forEach((i, k) => { acc[k] += factor * Number(row[i]); });
+        out.set(key, acc);
+      }
+      return out;
+    }
+
+    const cases = unwrapTable(await tables.result1.getBeamForceTable({
+      loadCaseNames: ["DL(ST)", "SIDL(ST)", "LL(ST)"],
+      client,
+    }));
+    const comb2 = combine(cases, { DL: 1.0, SIDL: 1.0, LL: -0.7 });
+    ```
+
+The `Load` column carries the load case name **without** the `(ST)` suffix,
+so the factor keys are plain names. The table rows are rounded to two
+decimals by default, so a rebuilt value can differ from Gen's own
+combination table in the last digit - by at most the rounding of each term
+times its factor.
+
+Measured on Gen NX on 2026-10-27, with both snippets above: a 20-element
+beam with three load cases, two combinations rebuilt from the `BEAMFORCE`
+case table (300 rows) and compared with Gen's own combination table (200
+rows). Every value matched within 0.015, the rounding bound. On larger
+models a downstream app on this SDK measured the speed: 102.7 s down to
+9.4 s for 410 elements, 21 load cases and 155 combinations, and 136.6 s
+down to 13.7 s with 31 cases and 204 combinations.
+
 ## Verify the result
 
 Compare a row or two against the same load case's reaction table in the

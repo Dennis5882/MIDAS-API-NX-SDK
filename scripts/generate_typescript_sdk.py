@@ -961,7 +961,17 @@ def _contract_payload_defaults() -> dict[str, dict[str, Any]]:
         merged: dict[str, Any] = {}
         for rule in contract.get("sdkRules", []):
             if rule.get("kind") == "normalize_defaults":
-                merged.update(rule.get("values", {}))
+                # A rule names bare field keys; the published key is where the
+                # contract declares each one, so /db/CNLD's FX becomes
+                # ITEMS[].FX while /db/NMAS's top-level rmX stays rmX.
+                for key, value in rule.get("values", {}).items():
+                    where = _field_path(contract.get("fields") or [], key)
+                    if where is None:
+                        raise ValueError(
+                            f"{path.name}: sdkRule {rule.get('id')!r} defaults "
+                            f"{key!r}, which the contract does not declare"
+                        )
+                    merged[where] = value
         if merged:
             defaults[contract["endpoint"]] = merged
     return defaults

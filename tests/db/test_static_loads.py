@@ -53,7 +53,44 @@ def test_nodal_load_create_keyed_by_node_id(gen_client):
         client=gen_client,
     )
     sent = responses.calls[0].request
-    assert json.loads(sent.body) == {"Assign": {"8": {"ITEMS": [{"ID": 1, "LCNAME": "LL", "FZ": -50.0}]}}}
+    assert json.loads(sent.body) == {"Assign": {"8": {"ITEMS": [{
+        "GROUP_NAME": "", "FX": 0.0, "FY": 0.0, "FZ": -50.0, "MX": 0.0, "MY": 0.0, "MZ": 0.0,
+        "ID": 1, "LCNAME": "LL",
+    }]}}}
+
+
+@responses.activate
+def test_nodal_load_update_sends_every_component_of_every_entry(gen_client):
+    """A PUT onto a node that already carries loads stores an omitted
+    component with the node's first entry's value, not 0 (Gen NX 2026-10-27,
+    docs/live_verification_notes.md). update() sends all six on every entry
+    and keeps what the caller gave."""
+    responses.add(responses.PUT, "https://x.test:443/gen/db/CNLD", json={}, status=200)
+    items = {4: {"ITEMS": [{"ID": 2, "LCNAME": "DL", "FY": 1.5}, {"ID": 3, "LCNAME": "L", "MZ": 2.0}]}}
+    NodalLoad.update(items, client=gen_client)
+    entries = json.loads(responses.calls[0].request.body)["Assign"]["4"]["ITEMS"]
+    assert entries == [
+        {"ID": 2, "LCNAME": "DL", "GROUP_NAME": "", "FX": 0.0, "FY": 1.5, "FZ": 0.0, "MX": 0.0, "MY": 0.0, "MZ": 0.0},
+        {"ID": 3, "LCNAME": "L", "GROUP_NAME": "", "FX": 0.0, "FY": 0.0, "FZ": 0.0, "MX": 0.0, "MY": 0.0, "MZ": 2.0},
+    ]
+    assert items == {4: {"ITEMS": [{"ID": 2, "LCNAME": "DL", "FY": 1.5}, {"ID": 3, "LCNAME": "L", "MZ": 2.0}]}}
+
+
+@responses.activate
+def test_beam_load_update_sends_the_option_flags(gen_client):
+    """Same defect on /db/BMLD: a new entry beside an eccentric one was stored
+    eccentric. update() sends USE_PROJECTION/USE_ECCEN/USE_ADDITIONAL as False
+    unless the caller set them."""
+    responses.add(responses.PUT, "https://x.test:443/gen/db/BMLD", json={}, status=200)
+    BeamLoad.update(
+        {1: {"ITEMS": [{"ID": 2, "LCNAME": "DL", "CMD": "BEAM", "TYPE": "UNILOAD",
+                        "DIRECTION": "GZ", "USE_ECCEN": True, "D": [0, 1, 0, 0], "P": [-2, -2, 0, 0]}]}},
+        client=gen_client,
+    )
+    entry = json.loads(responses.calls[0].request.body)["Assign"]["1"]["ITEMS"][0]
+    assert (entry["USE_PROJECTION"], entry["USE_ECCEN"], entry["USE_ADDITIONAL"]) == (False, True, False)
+    assert (entry["GROUP_NAME"], entry["ECCEN_TYPE"], entry["USE_J_END"], entry["J_END"]) == ("", 0, False, 0.0)
+    assert "D" in entry and "P" in entry and len(entry) == 18  # D and P are the caller's, never defaulted
 
 
 @responses.activate

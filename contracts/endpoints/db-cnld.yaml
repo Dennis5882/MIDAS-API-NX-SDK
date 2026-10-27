@@ -130,8 +130,14 @@ fields:
         requirement: optional
         documentedDefault: ""
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT that adds an entry to a record already carrying loads,
+          the entry joins the first entry's load group, silently.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding
+          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not by
         # naming a path
       - key: FX
@@ -141,8 +147,19 @@ fields:
         requirement: optional
         documentedDefault: 0
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT to a node that already carries loads, the component is
+          stored as the node's first entry's value, silently - an entry sent with
+          FY only took the first entry's FZ of -20. On a node with no loads it is
+          stored as 0.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding.
+          On a node that has no loads an omitted component is stored as 0. A PUT
+          that adds or rewrites an entry on a node that already carries loads
+          stores an omitted component with the value of that node's first entry
+          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(4)', not by
         # naming a path
       - key: FY
@@ -152,8 +169,19 @@ fields:
         requirement: optional
         documentedDefault: 0
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT to a node that already carries loads, the component is
+          stored as the node's first entry's value, silently - an entry sent with
+          FY only took the first entry's FZ of -20. On a node with no loads it is
+          stored as 0.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding.
+          On a node that has no loads an omitted component is stored as 0. A PUT
+          that adds or rewrites an entry on a node that already carries loads
+          stores an omitted component with the value of that node's first entry
+          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(5)', not by
         # naming a path
       - key: FZ
@@ -163,8 +191,19 @@ fields:
         requirement: optional
         documentedDefault: 0
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT to a node that already carries loads, the component is
+          stored as the node's first entry's value, silently - an entry sent with
+          FY only took the first entry's FZ of -20. On a node with no loads it is
+          stored as 0.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding.
+          On a node that has no loads an omitted component is stored as 0. A PUT
+          that adds or rewrites an entry on a node that already carries loads
+          stores an omitted component with the value of that node's first entry
+          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(6)', not by
         # naming a path
       - key: MX
@@ -174,8 +213,19 @@ fields:
         requirement: optional
         documentedDefault: 0
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT to a node that already carries loads, the component is
+          stored as the node's first entry's value, silently - an entry sent with
+          FY only took the first entry's FZ of -20. On a node with no loads it is
+          stored as 0.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding.
+          On a node that has no loads an omitted component is stored as 0. A PUT
+          that adds or rewrites an entry on a node that already carries loads
+          stores an omitted component with the value of that node's first entry
+          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(7)', not by
         # naming a path
       - key: MY
@@ -185,8 +235,19 @@ fields:
         requirement: optional
         documentedDefault: 0
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT to a node that already carries loads, the component is
+          stored as the node's first entry's value, silently - an entry sent with
+          FY only took the first entry's FZ of -20. On a node with no loads it is
+          stored as 0.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding.
+          On a node that has no loads an omitted component is stored as 0. A PUT
+          that adds or rewrites an entry on a node that already carries loads
+          stores an omitted component with the value of that node's first entry
+          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(8)', not by
         # naming a path
       - key: MZ
@@ -196,8 +257,19 @@ fields:
         requirement: optional
         documentedDefault: 0
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT to a node that already carries loads, the component is
+          stored as the node's first entry's value, silently - an entry sent with
+          FY only took the first entry's FZ of -20. On a node with no loads it is
+          stored as 0.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding.
+          On a node that has no loads an omitted component is stored as 0. A PUT
+          that adds or rewrites an entry on a node that already carries loads
+          stores an omitted component with the value of that node's first entry
+          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(9)', not by
         # naming a path
 
@@ -224,7 +296,33 @@ sdkRules:
     riskRef: db-delete-body-empties-table
     alternative: Use the per_id DELETE operation to remove selected records.
 
+  - id: db-cnld-item-component-defaults
+    kind: normalize_defaults
+    appliesTo: [POST, PUT]
+    fields: [GROUP_NAME, FX, FY, FZ, MX, MY, MZ]
+    values:
+      GROUP_NAME: ""
+      FX: 0.0
+      FY: 0.0
+      FZ: 0.0
+      MX: 0.0
+      MY: 0.0
+      MZ: 0.0
+    reason: >-
+      A PUT onto a node that already carries loads stores every component an
+      ITEMS entry leaves out with the value of the node's first entry, not
+      the documented 0, and answers as if nothing were wrong. Measured on Gen
+      NX 2026-10-27: an entry for a third load case sent with FY 1.5 only was
+      stored with FZ -20, the first entry's; an entry rewritten with FX only
+      lost its own FZ to the first entry's. The same omission on a node with
+      no loads is harmless, and sending all six components gives the
+      documented result either way. GROUP_NAME is inherited the same way - a
+      new entry joined the first entry's load group (measured the same day).
+      The values are the manual's own defaults.
+    riskRef: db-items-put-inherits-first-entry
+
 knownDefects:
+  - ref: db-items-put-inherits-first-entry
   - ref: db-delete-body-empties-table
 
 extraction:

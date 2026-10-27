@@ -25,10 +25,11 @@
  * accidental run is not a useful substitute for reviewing fixtures in small
  * batches against an empty scratch document.
  */
-import { readFileSync } from "node:fs";
+import * as fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
-  caseCleanupMode, classifyResult, containsExpectedValue, exitCodeFor,
+  caseCleanupMode, classifyResult, concurrentApps, concurrentAppsMessage, containsExpectedValue,
+  exitCodeFor, payloadDefaultsProblem,
   replacedBaseModelRecord, seedSteps, setupCleanupMode, supportedCaseWrites,
   verifyRenumberedSeed,
 } from "./live-harness-support.mjs";
@@ -39,7 +40,7 @@ import {
 let doc, MidasClient, post, resources;
 
 const fixturePath = fileURLToPath(new URL("../../../schema/live-cases.json", import.meta.url));
-const fixture = JSON.parse(readFileSync(fixturePath, "utf8"));
+const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
 
 // Pinned so a stale checkout fails loudly instead of silently building an
 // older model. tests/test_live_cases.py fails if this drifts from
@@ -48,7 +49,7 @@ const EXPECTED_FIXTURE_VERSION = 6;
 
 function usage(message) {
   if (message) console.error(message);
-  console.error("Usage: npm run live:crud -- -- --product gen|civil --endpoints /db/NODE,/db/NMAS [--table-type MASS_SUMMARY_X] [--save-dir E:/NX-Scratch] [--no-save-before] [--mapi-key key] [--timeout ms]");
+  console.error("Usage: npm run live:crud -- -- --product gen|civil --endpoints /db/NODE,/db/NMAS [--table-type MASS_SUMMARY_X] [--save-dir E:/NX-Scratch] [--no-save-before] [--allow-concurrent-apps] [--mapi-key key] [--timeout ms]");
   console.error("DESTRUCTIVE: this calls /doc/NEW and discards the open document. --no-save-before removes the checkpoint, not the /doc/NEW.");
   process.exit(2);
 }
@@ -67,6 +68,8 @@ function parseArgs(argv) {
     const value = argv[index + 1];
     if (flag === "--no-save-before") {
       args.saveBefore = false;
+    } else if (flag === "--allow-concurrent-apps") {
+      args.allowConcurrentApps = true;
     } else if (flag === "--endpoints") {
       if (!value || value.startsWith("--")) usage("--endpoints needs a value.");
       const endpoints = [value];
@@ -100,6 +103,11 @@ function parseArgs(argv) {
   // saying so. Nothing about the shape needs a product to judge it.
   if (args.saveBefore && !isAbsoluteHostDirectory(args.saveDir)) {
     usage(`--save-dir must be an absolute Windows directory on the NX machine, got ${JSON.stringify(args.saveDir)}.`);
+  }
+  // Whatever was named or waived: --no-save-before still sends /doc/NEW.
+  if (args.product === "gen" && !args.allowConcurrentApps) {
+    const [busy] = concurrentApps(args.saveDir, { fs });
+    if (busy) usage(concurrentAppsMessage(...busy));
   }
   return args;
 }
@@ -199,12 +207,9 @@ function requireExpectedValue(value, expected, endpoint, step, unordered) {
   }
 }
 
-function assertPayloadDefaults(resource, stored, endpoint, step) {
-  for (const [key, expected] of Object.entries(resource.metadata.payloadDefaults ?? {})) {
-    if (!Object.is(stored[key], expected)) {
-      throw new Error(`${endpoint}: payloadDefaults.${key} was not read back as ${JSON.stringify(expected)} after ${step}.`);
-    }
-  }
+function assertPayloadDefaults(resource, stored, endpoint, step, sent) {
+  const problem = payloadDefaultsProblem(resource.metadata.payloadDefaults, stored, sent);
+  if (problem) throw new Error(`${endpoint}: ${problem} after ${step}.`);
 }
 
 async function deleteAndVerify(resource, id, client, endpoint) {
@@ -342,7 +347,7 @@ async function runCase(liveCase, client, cleanupContext) {
         created, liveCase.expected.created, liveCase.endpoint, "POST",
         liveCase.expected.unordered === true,
       );
-      assertPayloadDefaults(resource, created, liveCase.endpoint, "POST");
+      assertPayloadDefaults(resource, created, liveCase.endpoint, "POST", liveCase.createPayload);
     }
 
     if (supportsPut) {
@@ -355,7 +360,7 @@ async function runCase(liveCase, client, cleanupContext) {
         updated, liveCase.expected.updated, liveCase.endpoint, "PUT",
         liveCase.expected.unordered === true,
       );
-      assertPayloadDefaults(resource, updated, liveCase.endpoint, "PUT");
+      assertPayloadDefaults(resource, updated, liveCase.endpoint, "PUT", liveCase.updatePayload);
     }
 
     if (cleanupMode === "per-id" && Object.hasOwn(liveCase.expected, "afterDelete")) {
@@ -457,7 +462,7 @@ async function runPopulatedTable(tableType, client) {
     await mass.create({ [id]: massCase.createPayload }, client);
     massCreated = true;
     const storedMass = requireStored(await mass.items(client), id, massCase.endpoint, "table seed POST");
-    assertPayloadDefaults(mass, storedMass, massCase.endpoint, "table seed POST");
+    assertPayloadDefaults(mass, storedMass, massCase.endpoint, "table seed POST", massCase.createPayload);
 
     const raw = await post.getTable(tableType, {
       client,
