@@ -6291,3 +6291,28 @@ records:
     /db/HPCE at Wrong Key (on the heat-of-hydration tutorial too, and with START_STAGE/END_STAGE named) and
     /db/WVLD at Wrong Field (with NAME_THIS, TRAJ and USERGRID added). Evidence in
     docs/live_verification_notes.md.
+- id: ledger-write-2026-10-27-1
+  endpoints:
+  - /db/NLLP
+  - /db/NLNK
+  - /db/CGLP
+  - /db/TDMF
+  - /db/MVLDeu
+  date: '2026-10-27'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-27 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    On the author's word that Gen was available for the live checks not yet run (2026-10-27), on the machine
+    holding this checkout, which is also the NX host. Every tier holding an unconfirmed Gen case was run whole by
+    scripts/live_crud_check.py on an empty document, checkpoints to C:/temp. With the payloads Civil's tutorial
+    models supplied on 2026-10-26 - the LRB link property for NLLP (which seeds NLNK and CGLP), the CREEP record
+    with ELAST 1 and RELAXATION 0 for TDMF, Load Model 1 in its tutorial shape for MVLDeu - all five completed
+    create/read/update/read/delete/read on Gen as on Civil, and npm replayed the same emitted fixture on Gen on
+    2026-10-27 (live-crud.mjs --endpoints /db/NLLP,/db/NLNK,/db/CGLP,/db/TDMF,/db/MVLDeu) with the same answer.
+    Each Civil/Gen case pair is merged into one case confirmed on both. /db/RPSC's PSC section seed is refused
+    on Gen ("section type ... not supported"), so its Gen case stays unmeasured; the other unconfirmed Gen cases
+    failed as before. Evidence in docs/live_verification_notes.md.

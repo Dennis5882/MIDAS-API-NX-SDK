@@ -49,7 +49,7 @@ scoreboard.
   is empty.
 - **Coverage: 400/400 implemented, 312 write / 88 read.** Of the 225 `/db`
   endpoints, 210 are write-level and 15 are not.
-- **Fixture (`schema/live-cases.json`, version 6):** 343 cases over 259
+- **Fixture (`schema/live-cases.json`, version 6):** 338 cases over 259
   endpoints; 310 confirmed over 247 endpoints; 9 base-model steps; 83 named
   seeds; 0 unsupported.
 - **npm has replayed all 310 confirmed cases** on every product each declares.
@@ -335,10 +335,7 @@ They move no count. None is actionable unless its cause changes.
 | `/db/POGD` | gen | `Wrong Field` for the payload Civil accepts |
 | `/db/FBLA` | both | `Unknown Error` on the fixture payload; write-level from a downstream app's floor-load model (Gen, 2026-10-20) |
 | `/db/STCT` | both | Gen: drops `iITER` (`wrote 30, read back None`). Civil: never measured - the first `POST /db/STAG` auto-creates `/db/STCT` id 1 with product defaults, so the case's own POST of id 1 is refused by both harnesses before it is sent (pinned 2026-09-27; Gen does not auto-create) |
-| `/db/NLLP`, `/db/NLNK`, `/db/CGLP` | gen | the Civil cases pass with the tutorial LRB record (2026-10-26); Gen not measured with it |
-| `/db/RPSC` | gen | the Civil case passes on a seeded PSC section (2026-10-26); Gen not measured |
-| `/db/TDMF` | gen | the Civil case passes since 2026-10-26 with `ELAST` (non-zero) and `RELAXATION`; Gen not measured |
-| `/db/MVLDeu` | gen | the Civil case passes since 2026-10-26 (tutorial vehicle seed, LM1 shape); Gen not measured |
+| `/db/RPSC` | gen | the Civil case passes on a seeded PSC section (2026-10-26); on Gen that section seed is refused - `The section type ... is either not supported by the program or incorrect` (2026-10-27) |
 | `/db/PHGE` | both | `Unknown Error`: `HINGE_TYPE` names a pushover hinge property the base model lacks and no endpoint creates; round-trips on Civil's MNL-01 model |
 | `/db/TDNA`, `/db/TDPL` | both | `Not Registered String` for `IS_DB_TDNA_NOTENSIONCALC` on the base model (TDPL behind it); both round-trip on Civil's PSC tutorial model (2026-10-26), so the base model lacks a precondition |
 

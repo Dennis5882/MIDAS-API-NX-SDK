@@ -12849,3 +12849,33 @@ the same table lists, answered the same. No source gives a name the product
 takes, so names were not permuted. The MVLDpl case itself still answers an
 empty message and stores nothing. A lead for the manual register (the official
 article has not been read yet), not a finding.
+
+## 2026-10-27 (Gen) - the Civil tutorial-record cases pass on Gen too; `/db/RPSC`'s PSC section does not exist there
+
+Gen NX 2026 (v2.2), build not re-read (last author-confirmed 10/17/2026), on
+an empty document. Every tier holding an unconfirmed Gen case was run whole by
+`scripts/live_crud_check.py`, checkpoints to `C:/temp`, with a `GET /db/NODE`
+after each tier; the session answered throughout.
+
+- **Pass, both SDKs:** `/db/NLLP`, `/db/NLNK`, `/db/CGLP` (extras1, the
+  tutorial LRB link property), `/db/TDMF` (`ELAST: 1`, `RELAXATION: 0`) and
+  `/db/MVLDeu` (tutorial Load Model 1 vehicle, LM1 shape). npm's
+  `live-crud.mjs --endpoints /db/NLLP,/db/NLNK,/db/CGLP,/db/TDMF,/db/MVLDeu`
+  passed all five. The fixes found on Civil on 2026-10-26 hold on Gen
+  unchanged, so each Civil/Gen case pair is now one case confirmed on both.
+- **`/db/RPSC` blocked:** the `rpsc_psc_section` seed (`/db/SECT` with the
+  tutorial's PSC record) answers `The section type of the section number 2 is
+  either not supported by the program or incorrect.` Gen's case stays
+  unmeasured; nothing here says Gen's `/db/RPSC` is broken.
+- **`moving_aux`:** its first run failed the base seed with `Key Already
+  Exist` on `/db/NODE` straight after the harness's own `/doc/NEW`, and left
+  the nodes behind; an immediate rerun on an empty document seeded normally.
+  Not reproduced, so recorded rather than explained. `/db/SINF` then failed
+  read-back as before.
+- **Unchanged failures:** `/db/LLANch`, `/db/SLANch`, `/db/LLANid`, `/db/IMPF`
+  (blocked by the moving-load code), `/db/LLANop`, `/db/SLANop`, `/db/FBLA`,
+  `/db/EPST`, `/db/EPSE`, `/db/ACTL`, `/db/SBDO`, `/db/HPCE`, `/db/STCT`,
+  `/db/DSTL`, `/db/PHGE`, `/db/POGD`, `/db/TDNA` (`/db/TDPL` behind it).
+
+Write coverage stays 312/400 - all five were already write-level from Civil -
+and the fixture is 310 of 338 cases confirmed after the five merges.

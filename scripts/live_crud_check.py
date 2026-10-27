@@ -1647,28 +1647,14 @@ def _extras1_cases() -> List[Case]:
             _tutorial_record("lrb_link_property", PROPERTY_NAME="NLLP_CRUD"),
             _tutorial_record("lrb_link_property", PROPERTY_NAME="NLLP_CRUD_2"),
             lambda p: p.get("PROPERTY_NAME"), "NLLP_CRUD", "NLLP_CRUD_2",
-            item_id=3, needs=("nllp_seed",), products=civil, confirmed=True,
-        ),
-        Case(
-            GeneralLinkProperty,
-            _tutorial_record("lrb_link_property", PROPERTY_NAME="NLLP_CRUD"),
-            _tutorial_record("lrb_link_property", PROPERTY_NAME="NLLP_CRUD_2"),
-            lambda p: p.get("PROPERTY_NAME"), "NLLP_CRUD", "NLLP_CRUD_2",
-            item_id=3, needs=("nllp_seed",), products=("gen",),
+            item_id=3, needs=("nllp_seed",), confirmed=True,
         ),
         Case(
             GeneralLink,
             {"NODE1": 23, "NODE2": 24, "PROP_NAME": "NLLP_SEED", "REF_SYSTEM": 0, "BETA_ANGLE": 0},
             {"NODE1": 23, "NODE2": 24, "PROP_NAME": "NLLP_SEED", "REF_SYSTEM": 0, "BETA_ANGLE": 15},
             lambda p: p.get("BETA_ANGLE"), 0, 15,
-            needs=("nllp_seed", "extras1_nodes"), products=civil, confirmed=True,
-        ),
-        Case(
-            GeneralLink,
-            {"NODE1": 23, "NODE2": 24, "PROP_NAME": "NLLP_SEED", "REF_SYSTEM": 0, "BETA_ANGLE": 0},
-            {"NODE1": 23, "NODE2": 24, "PROP_NAME": "NLLP_SEED", "REF_SYSTEM": 0, "BETA_ANGLE": 15},
-            lambda p: p.get("BETA_ANGLE"), 0, 15,
-            needs=("nllp_seed", "extras1_nodes"), products=("gen",),
+            needs=("nllp_seed", "extras1_nodes"), confirmed=True,
         ),
         Case(
             GeneralLinkHyperS,
@@ -1684,14 +1670,7 @@ def _extras1_cases() -> List[Case]:
             {"GLINK_KEY": 90, "CHANGE_PROPERTY_NAME": "NLLP_SEED"},
             {"GLINK_KEY": 90, "CHANGE_PROPERTY_NAME": "NLLP_SEED_2"},
             lambda p: p.get("CHANGE_PROPERTY_NAME"), "NLLP_SEED", "NLLP_SEED_2",
-            needs=("nllp_seed", "extras1_nodes", "glink_seed"), products=civil, confirmed=True,
-        ),
-        Case(
-            ChangeGeneralLinkProperty,
-            {"GLINK_KEY": 90, "CHANGE_PROPERTY_NAME": "NLLP_SEED"},
-            {"GLINK_KEY": 90, "CHANGE_PROPERTY_NAME": "NLLP_SEED_2"},
-            lambda p: p.get("CHANGE_PROPERTY_NAME"), "NLLP_SEED", "NLLP_SEED_2",
-            needs=("nllp_seed", "extras1_nodes", "glink_seed"), products=("gen",),
+            needs=("nllp_seed", "extras1_nodes", "glink_seed"), confirmed=True,
         ),
         # Element 4 is the base seed's plate.
         Case(
@@ -2008,9 +1987,10 @@ def _extras3_cases() -> List[Case]:
             item_id=1, confirmed=True,
         ),
         # The manual's example answered `Wrong Field` on every build until
-        # 2026-10-26 (Civil NX): a CREEP record is stored only with two more
-        # fields - `RELAXATION`, which the manual marks "Relax only", and
-        # `ELAST`, which only /info declares (MD-41) and which must not be 0.
+        # 2026-10-26 (Civil NX; Gen NX 2026-10-27): a CREEP record is stored
+        # only with two more fields - `RELAXATION`, which the manual marks
+        # "Relax only", and `ELAST`, which only /info declares (MD-41) and
+        # which must not be 0.
         # Either alone fails (`ELAST` alone `Wrong Field`; `RELAXATION`
         # alone answers an empty message and stores nothing). No source
         # states an `ELAST` value; 1 is the value the product was seen to
@@ -2026,20 +2006,7 @@ def _extras3_cases() -> List[Case]:
              "vDAY": [{"DAY": 28, "VALUE": 0.5}, {"DAY": 90, "VALUE": 1.0},
                       {"DAY": 365, "VALUE": 1.5}, {"DAY": 3650, "VALUE": 2.0}]},
             lambda p: p.get("SCALE"), 1.0, 1.2,
-            products=("civil",), confirmed=True,
-        ),
-        Case(
-            TimeDependentMaterialFunction,
-            {"NAME": "CreepFunc_1", "FTYPE": "CREEP", "CTYPE": "CC", "SCALE": 1.0,
-             "DESC": "", "RELAXATION": 0, "ELAST": 1,
-             "vDAY": [{"DAY": 28, "VALUE": 0.5}, {"DAY": 90, "VALUE": 1.0},
-                      {"DAY": 365, "VALUE": 1.5}, {"DAY": 3650, "VALUE": 2.0}]},
-            {"NAME": "CreepFunc_1", "FTYPE": "CREEP", "CTYPE": "CC", "SCALE": 1.2,
-             "DESC": "", "RELAXATION": 0, "ELAST": 1,
-             "vDAY": [{"DAY": 28, "VALUE": 0.5}, {"DAY": 90, "VALUE": 1.0},
-                      {"DAY": 365, "VALUE": 1.5}, {"DAY": 3650, "VALUE": 2.0}]},
-            lambda p: p.get("SCALE"), 1.0, 1.2,
-            products=("gen",),
+            confirmed=True,
         ),
         # Refused until 2026-10-26 for two reasons. `MBAR_ITEMS[].PART`,
         # which /info lists and the case never sent, answers `Wrong Field`
@@ -5179,7 +5146,7 @@ def _moving_case_eurocode() -> List[Case]:
     of them, and the case answered `Unknown Error` on every build. With
     the tutorial's vehicle seeded and only `VHLNAME1` renamed it still
     does; in the tutorial's own LM1 shape - no `VHLNAME2`, no
-    `FLN_LIST` - it is stored (Civil NX, 2026-10-26).
+    `FLN_LIST` - it is stored (Civil NX 2026-10-26, Gen NX 2026-10-27).
     """
     payload = _moving_case_manual_body(MovingLoadCaseEurocode.ENDPOINT)
     payload["VHLNAME1"] = _tutorial_record("eurocode_vehicle_lm1")["VEHICLE_LOAD_NAME"]
@@ -5191,8 +5158,8 @@ def _moving_case_eurocode() -> List[Case]:
     return [Case(
         MovingLoadCaseEurocode, copy.deepcopy(payload), updated,
         lambda p: p.get("DESC"), payload["DESC"], "crud updated",
-        products=(product,), needs=needs, confirmed=product == "civil",
-    ) for product in ("gen", "civil")]
+        needs=needs, confirmed=True,
+    )]
 
 
 def _moving_case_lane_seeds(

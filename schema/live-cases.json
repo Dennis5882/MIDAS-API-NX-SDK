@@ -4638,74 +4638,7 @@
       "name": "Moving Load Cases – Eurocode",
       "id": 1,
       "products": [
-        "gen"
-      ],
-      "methods": [
-        "DELETE",
-        "GET",
-        "POST",
-        "PUT"
-      ],
-      "confirmed": false,
-      "createPayload": {
-        "LCNAME": "MV_Case1",
-        "OPT_AUTO_OPTIMIZE": false,
-        "TYPE_LOADMODEL": 1,
-        "DESC": "",
-        "VHLNAME1": "Load Model 1",
-        "OPT_LEADING": false,
-        "SLN_LIST": [
-          "LL_01",
-          "LL_02"
-        ],
-        "SRA_LIST": [
-          "LL_04"
-        ]
-      },
-      "updatePayload": {
-        "LCNAME": "MV_Case1",
-        "OPT_AUTO_OPTIMIZE": false,
-        "TYPE_LOADMODEL": 1,
-        "DESC": "crud updated",
-        "VHLNAME1": "Load Model 1",
-        "OPT_LEADING": false,
-        "SLN_LIST": [
-          "LL_01",
-          "LL_02"
-        ],
-        "SRA_LIST": [
-          "LL_04"
-        ]
-      },
-      "expected": {
-        "created": "",
-        "updated": "crud updated"
-      },
-      "needs": [
-        "lane_code_EUROCODE",
-        "moving_case_lanes_EUROCODE",
-        "moving_case_vehicle_EUROCODE"
-      ],
-      "setup": [
-        {
-          "seed": "lane_code_EUROCODE"
-        },
-        {
-          "seed": "moving_case_lanes_EUROCODE"
-        },
-        {
-          "seed": "moving_case_vehicle_EUROCODE"
-        }
-      ],
-      "blockedSeeds": [],
-      "crashes": null
-    },
-    {
-      "tier": "moving_case_eurocode",
-      "endpoint": "/db/MVLDeu",
-      "name": "Moving Load Cases – Eurocode",
-      "id": 1,
-      "products": [
+        "gen",
         "civil"
       ],
       "methods": [
@@ -7699,6 +7632,7 @@
       "name": "General Link Properties",
       "id": 3,
       "products": [
+        "gen",
         "civil"
       ],
       "methods": [
@@ -7931,246 +7865,11 @@
     },
     {
       "tier": "extras1",
-      "endpoint": "/db/NLLP",
-      "name": "General Link Properties",
-      "id": 3,
-      "products": [
-        "gen"
-      ],
-      "methods": [
-        "DELETE",
-        "GET",
-        "POST",
-        "PUT"
-      ],
-      "confirmed": false,
-      "createPayload": {
-        "PROPERTY_NAME": "NLLP_CRUD",
-        "APPLICATION_TYPE": "FORCE",
-        "APPLICATION_TYPE_D": "LRBI",
-        "DESC": "",
-        "TOTAL_WEIGHT": 0,
-        "L_WEIGHT_RATIO": 0.5,
-        "OPT_USE_MASS": false,
-        "TOTAL_MASS": 0,
-        "L_MASS_RATIO": 0.5,
-        "OPT_SHEAR_SPR_LOC": false,
-        "COUPLED_INPUT_METHOD": 0,
-        "DIST_RATIO_DY": 0.5,
-        "DIST_RATIO_DZ": 0.5,
-        "SEIS_TYPE": "Viscous/Oil Damper",
-        "SEIS_PROP": "",
-        "LDP_EFF_STIFF_COUPLED_ITEMS": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        "LDP_EFF_DAMPING_COUPLED_ITEMS": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        "ITEMS": [
-          {
-            "LINEAR_PROP": true,
-            "EFF_STIFF": 479100,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": false
-          },
-          {
-            "LINEAR_PROP": true,
-            "EFF_STIFF": 336.1,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": true,
-            "LRBI": {
-              "STIFFNESS": 1099,
-              "YIELD_STRENGTH": 15.69,
-              "POST_YIELD_STIFF_RATIO": 0.08917,
-              "LOOP_PARAM_A": 0.5,
-              "LOOP_PARAM_B": 0.5
-            }
-          },
-          {
-            "LINEAR_PROP": true,
-            "EFF_STIFF": 336.1,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": true,
-            "LRBI": {
-              "STIFFNESS": 1099,
-              "YIELD_STRENGTH": 15.69,
-              "POST_YIELD_STIFF_RATIO": 0.08917,
-              "LOOP_PARAM_A": 0.5,
-              "LOOP_PARAM_B": 0.5
-            }
-          },
-          {
-            "LINEAR_PROP": false,
-            "EFF_STIFF": 0,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": false
-          },
-          {
-            "LINEAR_PROP": false,
-            "EFF_STIFF": 0,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": false
-          },
-          {
-            "LINEAR_PROP": false,
-            "EFF_STIFF": 0,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": false
-          }
-        ]
-      },
-      "updatePayload": {
-        "PROPERTY_NAME": "NLLP_CRUD_2",
-        "APPLICATION_TYPE": "FORCE",
-        "APPLICATION_TYPE_D": "LRBI",
-        "DESC": "",
-        "TOTAL_WEIGHT": 0,
-        "L_WEIGHT_RATIO": 0.5,
-        "OPT_USE_MASS": false,
-        "TOTAL_MASS": 0,
-        "L_MASS_RATIO": 0.5,
-        "OPT_SHEAR_SPR_LOC": false,
-        "COUPLED_INPUT_METHOD": 0,
-        "DIST_RATIO_DY": 0.5,
-        "DIST_RATIO_DZ": 0.5,
-        "SEIS_TYPE": "Viscous/Oil Damper",
-        "SEIS_PROP": "",
-        "LDP_EFF_STIFF_COUPLED_ITEMS": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        "LDP_EFF_DAMPING_COUPLED_ITEMS": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        "ITEMS": [
-          {
-            "LINEAR_PROP": true,
-            "EFF_STIFF": 479100,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": false
-          },
-          {
-            "LINEAR_PROP": true,
-            "EFF_STIFF": 336.1,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": true,
-            "LRBI": {
-              "STIFFNESS": 1099,
-              "YIELD_STRENGTH": 15.69,
-              "POST_YIELD_STIFF_RATIO": 0.08917,
-              "LOOP_PARAM_A": 0.5,
-              "LOOP_PARAM_B": 0.5
-            }
-          },
-          {
-            "LINEAR_PROP": true,
-            "EFF_STIFF": 336.1,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": true,
-            "LRBI": {
-              "STIFFNESS": 1099,
-              "YIELD_STRENGTH": 15.69,
-              "POST_YIELD_STIFF_RATIO": 0.08917,
-              "LOOP_PARAM_A": 0.5,
-              "LOOP_PARAM_B": 0.5
-            }
-          },
-          {
-            "LINEAR_PROP": false,
-            "EFF_STIFF": 0,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": false
-          },
-          {
-            "LINEAR_PROP": false,
-            "EFF_STIFF": 0,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": false
-          },
-          {
-            "LINEAR_PROP": false,
-            "EFF_STIFF": 0,
-            "EFF_DAMPING": 0,
-            "NONLINEAR_PROP": false
-          }
-        ]
-      },
-      "expected": {
-        "created": "NLLP_CRUD",
-        "updated": "NLLP_CRUD_2"
-      },
-      "needs": [
-        "nllp_seed"
-      ],
-      "setup": [
-        {
-          "seed": "nllp_seed"
-        }
-      ],
-      "blockedSeeds": [],
-      "crashes": null
-    },
-    {
-      "tier": "extras1",
       "endpoint": "/db/NLNK",
       "name": "General Link",
       "id": 1,
       "products": [
+        "gen",
         "civil"
       ],
       "methods": [
@@ -8180,54 +7879,6 @@
         "PUT"
       ],
       "confirmed": true,
-      "createPayload": {
-        "NODE1": 23,
-        "NODE2": 24,
-        "PROP_NAME": "NLLP_SEED",
-        "REF_SYSTEM": 0,
-        "BETA_ANGLE": 0
-      },
-      "updatePayload": {
-        "NODE1": 23,
-        "NODE2": 24,
-        "PROP_NAME": "NLLP_SEED",
-        "REF_SYSTEM": 0,
-        "BETA_ANGLE": 15
-      },
-      "expected": {
-        "created": 0,
-        "updated": 15
-      },
-      "needs": [
-        "nllp_seed",
-        "extras1_nodes"
-      ],
-      "setup": [
-        {
-          "seed": "nllp_seed"
-        },
-        {
-          "seed": "extras1_nodes"
-        }
-      ],
-      "blockedSeeds": [],
-      "crashes": null
-    },
-    {
-      "tier": "extras1",
-      "endpoint": "/db/NLNK",
-      "name": "General Link",
-      "id": 1,
-      "products": [
-        "gen"
-      ],
-      "methods": [
-        "DELETE",
-        "GET",
-        "POST",
-        "PUT"
-      ],
-      "confirmed": false,
       "createPayload": {
         "NODE1": 23,
         "NODE2": 24,
@@ -8315,6 +7966,7 @@
       "name": "Change General Link Property",
       "id": 1,
       "products": [
+        "gen",
         "civil"
       ],
       "methods": [
@@ -8324,52 +7976,6 @@
         "PUT"
       ],
       "confirmed": true,
-      "createPayload": {
-        "GLINK_KEY": 90,
-        "CHANGE_PROPERTY_NAME": "NLLP_SEED"
-      },
-      "updatePayload": {
-        "GLINK_KEY": 90,
-        "CHANGE_PROPERTY_NAME": "NLLP_SEED_2"
-      },
-      "expected": {
-        "created": "NLLP_SEED",
-        "updated": "NLLP_SEED_2"
-      },
-      "needs": [
-        "nllp_seed",
-        "extras1_nodes",
-        "glink_seed"
-      ],
-      "setup": [
-        {
-          "seed": "nllp_seed"
-        },
-        {
-          "seed": "extras1_nodes"
-        },
-        {
-          "seed": "glink_seed"
-        }
-      ],
-      "blockedSeeds": [],
-      "crashes": null
-    },
-    {
-      "tier": "extras1",
-      "endpoint": "/db/CGLP",
-      "name": "Change General Link Property",
-      "id": 1,
-      "products": [
-        "gen"
-      ],
-      "methods": [
-        "DELETE",
-        "GET",
-        "POST",
-        "PUT"
-      ],
-      "confirmed": false,
       "createPayload": {
         "GLINK_KEY": 90,
         "CHANGE_PROPERTY_NAME": "NLLP_SEED"
@@ -9465,6 +9071,7 @@
       "name": "Time Dependent Material – User Defined",
       "id": 1,
       "products": [
+        "gen",
         "civil"
       ],
       "methods": [
@@ -9474,84 +9081,6 @@
         "PUT"
       ],
       "confirmed": true,
-      "createPayload": {
-        "NAME": "CreepFunc_1",
-        "FTYPE": "CREEP",
-        "CTYPE": "CC",
-        "SCALE": 1.0,
-        "DESC": "",
-        "RELAXATION": 0,
-        "ELAST": 1,
-        "vDAY": [
-          {
-            "DAY": 28,
-            "VALUE": 0.5
-          },
-          {
-            "DAY": 90,
-            "VALUE": 1.0
-          },
-          {
-            "DAY": 365,
-            "VALUE": 1.5
-          },
-          {
-            "DAY": 3650,
-            "VALUE": 2.0
-          }
-        ]
-      },
-      "updatePayload": {
-        "NAME": "CreepFunc_1",
-        "FTYPE": "CREEP",
-        "CTYPE": "CC",
-        "SCALE": 1.2,
-        "DESC": "",
-        "RELAXATION": 0,
-        "ELAST": 1,
-        "vDAY": [
-          {
-            "DAY": 28,
-            "VALUE": 0.5
-          },
-          {
-            "DAY": 90,
-            "VALUE": 1.0
-          },
-          {
-            "DAY": 365,
-            "VALUE": 1.5
-          },
-          {
-            "DAY": 3650,
-            "VALUE": 2.0
-          }
-        ]
-      },
-      "expected": {
-        "created": 1.0,
-        "updated": 1.2
-      },
-      "needs": [],
-      "setup": [],
-      "blockedSeeds": [],
-      "crashes": null
-    },
-    {
-      "tier": "extras3",
-      "endpoint": "/db/TDMF",
-      "name": "Time Dependent Material – User Defined",
-      "id": 1,
-      "products": [
-        "gen"
-      ],
-      "methods": [
-        "DELETE",
-        "GET",
-        "POST",
-        "PUT"
-      ],
-      "confirmed": false,
       "createPayload": {
         "NAME": "CreepFunc_1",
         "FTYPE": "CREEP",

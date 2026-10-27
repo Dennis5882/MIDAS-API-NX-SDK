@@ -1623,3 +1623,21 @@ after the case gained `ELAST: 1` and `RELAXATION: 0`. `PASS /db/TDMF`.
 **Count:** 1 new endpoint; 184 distinct `/db` endpoints, 59 distinct
 `/DESIGN` endpoints and 4 distinct result-table operations; 247 distinct npm
 public-API operations overall.
+
+### 2026-10-27 - the Civil tutorial-record cases on Gen NX
+
+`node scripts/live-crud.mjs --product gen --endpoints /db/NLLP,/db/NLNK,/db/CGLP,/db/TDMF,/db/MVLDeu --save-dir C:/temp`,
+on an empty Gen document after the Python harness passed the same cases.
+`PASS` for all five.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/NLLP` | 2026-10-27 | Gen |
+| `/db/NLNK` | 2026-10-27 | Gen |
+| `/db/CGLP` | 2026-10-27 | Gen |
+| `/db/TDMF` | 2026-10-27 | Gen |
+| `/db/MVLDeu` | 2026-10-27 | Gen |
+
+**Count:** 0 new endpoints (all five were replayed on Civil on 2026-10-26);
+184 distinct `/db` endpoints, 59 distinct `/DESIGN` endpoints and 4 distinct
+result-table operations; 247 distinct npm public-API operations overall.

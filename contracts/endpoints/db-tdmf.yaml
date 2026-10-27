@@ -36,7 +36,7 @@ verification:
     - product: civil
       ref: tdmf-civil-2026-10-26
     - product: gen
-      ref: db-read-sweep-2026-08-16
+      ref: civil-tutorial-cases-gen-2026-10-27
 
 operations:
   - method: DELETE
