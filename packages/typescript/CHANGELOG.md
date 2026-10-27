@@ -6,6 +6,8 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.10.4 - 2026-10-28
+
 > **A behaviour change in what `nodalLoad` and `beamLoad` send.** Both now
 > fill documented defaults into every `ITEMS` entry that omits them, on
 > `create()` and `update()`. A caller that relied on a PUT keeping a
