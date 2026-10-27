@@ -210,7 +210,11 @@ def test_a_gen_run_waits_for_another_app_driving_the_same_gen(tmp_path) -> None:
     import time
 
     module = _module()
-    save_dir = str(tmp_path).replace("\\", "/")
+    # --save-dir must look like a directory on the Windows NX host, which a
+    # CI runner's tmp_path is not; the files are watched where the apps write.
+    watched = str(tmp_path).replace("\\", "/")
+    module.OTHER_APP_DIRECTORIES = (watched,)
+    save_dir = "C:/nx-scratch"
     (tmp_path / "midas-nx-crud-gen-x.mgbx").write_text("")
     old = tmp_path / "sf_old.mgbx"
     old.write_text("")
@@ -221,7 +225,7 @@ def test_a_gen_run_waits_for_another_app_driving_the_same_gen(tmp_path) -> None:
     module.require(parser, args)  # nothing recent from another app
 
     (tmp_path / "sms_guard_scratch_1.mgbx").write_text("")
-    assert module.other_app_activity(save_dir) == ["sms_guard_scratch_1.mgbx"]
+    assert module.other_app_activity(watched) == ["sms_guard_scratch_1.mgbx"]
     parser, args = _parsed(module, ["--save-dir", save_dir])
     with pytest.raises(SystemExit):
         module.require(parser, args)
