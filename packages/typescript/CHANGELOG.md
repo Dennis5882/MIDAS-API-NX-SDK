@@ -6,14 +6,22 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.10.3 - 2026-10-27
+
+Additive only: one payload type gains optional members. No export is added or
+removed, and no member is removed or made required.
+
 ### Changed
 
 - `GeneralLinkPropertyPayload` (`/db/NLLP`) gains optional `SEIS_TYPE`,
   `SEIS_PROP`, `LDP_EFF_STIFF_COUPLED_ITEMS`, `LDP_EFF_DAMPING_COUPLED_ITEMS`
   and `ITEMS` (per-device detail such as `LRBI` and `FPSI`), from the
-  product's own schema. A Civil NX lead-rubber-bearing record carrying them
-  is stored and round-trips; the manual documents only the common fields.
-  Additive: no member was removed or made required.
+  product's own schema - 66 optional members counting those nested under
+  `ITEMS`. A lead-rubber-bearing record carrying them is stored and
+  round-trips on Civil NX and Gen NX; the manual documents only the common
+  fields. Note that the server stores a POSTed record at the next free id and
+  echoes the key you sent, so read the table back before updating or deleting
+  by id.
 
 ## 2.10.2 - 2026-10-20
 
