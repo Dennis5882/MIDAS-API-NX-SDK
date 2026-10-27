@@ -52,8 +52,7 @@ More examples, including ones that build a model:
 [`examples/python/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/python/)
 (four, up to a load combination and a KDS wind load) and
 [`examples/javascript/`](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/examples/javascript/)
-(the read-only one and the model-building one, matching their Python
-namesakes payload for payload). For the npm API and safety notes, see the
+(the same four, matching their Python namesakes payload for payload). For the npm API and safety notes, see the
 [`packages/typescript` guide](https://github.com/Dennis5882/MIDAS-API-NX-SDK/tree/main/packages/typescript).
 Full guide, safety notes, and API reference: **[Documentation site](https://dennis5882.github.io/MIDAS-API-NX-SDK/)**.
 
