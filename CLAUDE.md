@@ -409,7 +409,7 @@ Two things that have already caused rework:
   MGBX. Both offer a product-named JSON export, which is `/doc/EXPORT`.
 - **A PUT onto an `ITEMS` record merges by ID and fills each omitted entry field
   from the record's first entry**, not the documented default, silently (Gen NX
-  2026-10-27, `/db/CNLD` and `/db/BMLD`). Both SDKs send the defaults inside every
+  2026-10-27, Civil NX 2026-10-28, `/db/CNLD` and `/db/BMLD`). Both SDKs send the defaults inside every
   entry since then - `normalize_defaults` takes nested fields, published as
   `ITEMS[].FX` in npm `payloadDefaults`. A per-id `DELETE` of a section or
   material does not check whether elements still use it.

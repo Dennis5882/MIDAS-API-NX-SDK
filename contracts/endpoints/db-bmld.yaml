@@ -34,8 +34,12 @@ verification:
   records:
     - product: civil
       ref: db-write-sweep-2026-07-29
+    - product: civil
+      ref: items-put-civil-2026-10-28
     - product: gen
       ref: db-write-sweep-2026-07-29
+    - product: gen
+      ref: steel-app-findings-gen-2026-10-27
 
 operations:
   - method: DELETE
@@ -137,7 +141,7 @@ fields:
         provenance: live_verified
         provenanceNote: >-
           Name, type and default are the manual's; safeToOmit is the live finding
-          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
+          (Gen NX 2026-10-27, Civil NX 2026-10-28). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not by
         # naming a path
       - key: CMD
@@ -190,8 +194,8 @@ fields:
         provenanceNote: >-
           Name, type and default are the manual's; safeToOmit is the live finding.
           A PUT that adds an entry to an element that already carries beam loads
-          stores an omitted value with the first entry's (Gen NX 2026-10-27). See
-          risk db-items-put-inherits-first-entry.
+          stores an omitted value with the first entry's (Gen NX 2026-10-27,
+          Civil NX 2026-10-28). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(7)', not by
         # naming a path
       - key: D
@@ -241,8 +245,8 @@ fields:
         provenanceNote: >-
           Name, type and default are the manual's; safeToOmit is the live finding.
           A PUT that adds an entry to an element that already carries beam loads
-          stores an omitted value with the first entry's (Gen NX 2026-10-27). See
-          risk db-items-put-inherits-first-entry.
+          stores an omitted value with the first entry's (Gen NX 2026-10-27,
+          Civil NX 2026-10-28). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(10)', not by
         # naming a path
       - key: ECCEN_TYPE
@@ -260,7 +264,7 @@ fields:
         provenance: live_verified
         provenanceNote: >-
           Name, type and default are the manual's; safeToOmit is the live finding
-          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
+          (Gen NX 2026-10-27, Civil NX 2026-10-28). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(11)', not by
         # naming a path
       - key: ECCEN_DIR
@@ -281,8 +285,15 @@ fields:
         requirement: optional
         documentedDefault: 0
         documentedOptional: true
-        safeToOmit: unverified
-        provenance: manual
+        safeToOmit: false
+        omissionEffect: >-
+          Omitted on a PUT that adds an entry to an element already carrying an
+          eccentric beam load, the value is the first entry's, silently: a plain
+          load sent without USE_ECCEN was stored eccentric with I_END 0.1.
+        provenance: live_verified
+        provenanceNote: >-
+          Name, type and default are the manual's; safeToOmit is the live finding
+          (Gen NX 2026-10-27, Civil NX 2026-10-28). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(13)', not by
         # naming a path
       - key: USE_J_END
@@ -300,7 +311,7 @@ fields:
         provenance: live_verified
         provenanceNote: >-
           Name, type and default are the manual's; safeToOmit is the live finding
-          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
+          (Gen NX 2026-10-27, Civil NX 2026-10-28). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(14)', not by
         # naming a path
       - key: J_END
@@ -318,7 +329,7 @@ fields:
         provenance: live_verified
         provenanceNote: >-
           Name, type and default are the manual's; safeToOmit is the live finding
-          (Gen NX 2026-10-27). See risk db-items-put-inherits-first-entry.
+          (Gen NX 2026-10-27, Civil NX 2026-10-28). See risk db-items-put-inherits-first-entry.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(15)', not by
         # naming a path
       - key: USE_ADDITIONAL
@@ -468,9 +479,11 @@ sdkRules:
       ECCEN_TYPE, USE_J_END and J_END - a plain uniform load added beside an
       eccentric one was stored eccentric with that entry's ECCEN_DIR and I_END,
       and an eccentric one took the first entry's offset type and J-end - and
-      for DIRECTION, which is required and so the caller's to send. I_END and
-      the ADDITIONAL group are included on the same mechanism without their
-      own measurement. Every member here sent at its default was accepted and
+      for DIRECTION, which is required and so the caller's to send. Civil NX
+      measured the same on 2026-10-28 for GROUP_NAME, USE_PROJECTION,
+      USE_ECCEN, ECCEN_TYPE, ECCEN_DIR, I_END, USE_J_END and J_END. Only the
+      ADDITIONAL group is included on the same mechanism without its own
+      measurement, on either product. Every member here sent at its default was accepted and
       stored, on a plain entry with no ECCEN_DIR and on an eccentric one. D
       and P are left out: they carry the load itself. The values are the
       manual's own defaults.

@@ -13012,3 +13012,29 @@ with `GROUP_NAME` `""`, `ECCEN_TYPE` 0 and `USE_J_END` false. The confirmed
 `live_crud_check.py` and `live-crud.mjs`. The npm harness's read-back check
 now matches ITEMS entries by `ID` and skips a field the server does not read
 back. Ledger `ledger-write-2026-10-28-1`.
+
+## 2026-10-28 (Civil) - the ITEMS PUT inheritance is the same on Civil NX; the 2.10.4 defaults stop it there too
+
+With Civil NX connected and Gen not, on the author's go-ahead, on the machine
+holding this checkout (the NX host): an empty document confirmed with the
+Civil key, checkpoint to `C:/temp`, base model from
+`scripts/live_crud_check.py`, load group `LG_A`. Raw `request()` first, then
+the same situation through the SDK classes as released in 2.10.4.
+
+| Step | Sent | Read back |
+| --- | --- | --- |
+| `/db/CNLD` empty node, PUT | `DL` FY 4 only | FY 4, `GROUP_NAME` `""`, rest 0 - documented defaults |
+| `/db/CNLD` raw, beside a first entry `LC_SCRATCH` FZ -20 in `LG_A` | new ID 2 `LC3` FY 1.5 only | ID 2 FY 1.5 **FZ -20**, **`LG_A`** - inherited |
+| `/db/CNLD` same, through `NodalLoad.update` | same entry | ID 2 FY 1.5, FZ 0, `GROUP_NAME` `""` |
+| `/db/BMLD` empty element, POST | plain `GZ` uniform load, options omitted | unprojected, not eccentric, `GROUP_NAME` `""` |
+| `/db/BMLD` raw, beside a first entry projected and eccentric (`ECCEN_TYPE` 1, `ECCEN_DIR` `GY`, `I_END` 0.1, `USE_J_END` true, `J_END` 0.3) in `LG_A` | new plain ID 2, options omitted | ID 2 **projected, eccentric with all five values, in `LG_A`** - inherited |
+| `/db/BMLD` same, through `BeamLoad.update` | same entry | ID 2 unprojected, not eccentric, `GROUP_NAME` `""` |
+
+No response carried an error, as on Gen. The confirmed `/db/CNLD`,
+`/db/BMLD` and `/db/NMAS` cases then passed through both
+`live_crud_check.py --product civil` and `live-crud.mjs --product civil`
+(3/3 each), the npm harness checking its `payloadDefaults` on the read-back.
+Empty document restored after each. So the risk
+`db-items-put-inherits-first-entry` holds on both products, and the
+normalization shipped in 2.10.4 covers both. Ledger
+`ledger-write-2026-10-28-2`.

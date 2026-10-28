@@ -409,7 +409,7 @@ risks:
     title: A PUT onto an ITEMS record fills omitted entry fields from the first entry
     severity: write
     endpoints: ["/db/CNLD", "/db/BMLD"]
-    products: [gen]
+    products: [gen, civil]
     symptom: >-
       The load is stored with values nobody sent, and nothing says so: the
       response echoes the request and carries no error. On /db/CNLD a new entry
@@ -424,7 +424,8 @@ risks:
       record's first entry, so an omitted field keeps that entry's value
       instead of the documented default. On a record with no entries, and on
       the first entry itself, the omission gives the documented default.
-      Measured on Gen NX only, on Build 10/17/2026; Civil NX not measured.
+      Measured on Gen NX on 2026-10-27 and on Civil NX on 2026-10-28, the
+      same on both.
     mitigation: normalized
     sdkRule: db-cnld-item-component-defaults
     status: >-
@@ -434,7 +435,7 @@ risks:
       and P on /db/BMLD (db-bmld-item-option-defaults). A raw request that omits them still
       inherits. Other ITEMS endpoints were not measured.
     firstObserved: "2026-10-27"
-    lastChecked: "2026-10-27"
+    lastChecked: "2026-10-28"
     evidence:
       - docs/live_verification_notes.md
 

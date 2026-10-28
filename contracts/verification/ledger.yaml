@@ -6379,9 +6379,33 @@ records:
   method: >-
     After code review of the 2026-10-27 normalization, on the author's go-ahead to measure what it needed, on the
     machine holding this checkout (the NX host), empty document confirmed, checkpoint to C:/temp, base model from
-    scripts/live_crud_check.py, load group LG_A. Raw request(): a new ITEMS entry PUT without GROUP_NAME joined the
+    scripts/live_crud_check.py, load group LG_A written by POST /db/LDGR (read back as the GROUP_NAME of /db/CNLD
+    and /db/BMLD entries). Raw request(): a new ITEMS entry PUT without GROUP_NAME joined the
     first entry's load group on /db/CNLD and /db/BMLD, and a new eccentric /db/BMLD entry took the first entry's
     ECCEN_TYPE, USE_J_END and J_END; every optional /db/BMLD member sent at its default was accepted on plain and
     eccentric entries. After widening both normalize_defaults rules, NodalLoad.update and BeamLoad.update stored the
     defaults in the same situations, and the confirmed /db/CNLD, /db/BMLD and /db/NMAS cases passed through
     scripts/live_crud_check.py and live-crud.mjs. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-28-2
+  endpoints:
+  - /db/CNLD
+  - /db/BMLD
+  - /db/LDGR
+  - /db/NMAS
+  date: '2026-10-28'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read on 2026-10-28 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    With Civil NX connected and Gen not, on the author's go-ahead, on the machine holding this checkout (the NX
+    host), empty document confirmed with the Civil key, checkpoint to C:/temp, base model from
+    scripts/live_crud_check.py, load group LG_A written by POST /db/LDGR (echoed as sent, and later read back as
+    the GROUP_NAME of /db/CNLD and /db/BMLD entries). Raw request(): a new ITEMS entry PUT beside a first entry took
+    that entry's FZ and load group on /db/CNLD, and its projection, eccentricity (ECCEN_TYPE, ECCEN_DIR, I_END,
+    USE_J_END, J_END) and load group on /db/BMLD - the same as Gen on 2026-10-27. Through NodalLoad.update and
+    BeamLoad.update (2.10.4) the same entries were stored with the documented defaults. The confirmed /db/CNLD,
+    /db/BMLD and /db/NMAS cases passed through scripts/live_crud_check.py and live-crud.mjs. Evidence in
+    docs/live_verification_notes.md.

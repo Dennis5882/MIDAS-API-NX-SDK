@@ -1013,3 +1013,25 @@ records:
       either alone, or ELAST 0, is refused.
     evidence:
       - docs/live_verification_notes.md
+  - id: items-put-civil-2026-10-28
+    endpoints: ["/db/CNLD", "/db/BMLD", "/db/LDGR", "/db/NMAS"]
+    date: "2026-10-28"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build not re-read on 2026-10-28 (last author-confirmed 10/17/2026)
+    level: write
+    outcome: success
+    method: >-
+      Raw request() probes on an empty /doc/NEW document after a checkpoint
+      to C:/temp, on live_crud_check.py's base model with load group LG_A
+      written by POST /db/LDGR; then NodalLoad.update and BeamLoad.update
+      (2.10.4) in the same situations, and the confirmed /db/CNLD, /db/BMLD
+      and /db/NMAS cases through both SDKs.
+    finding: >-
+      As on Gen: a new ITEMS entry PUT beside a first entry took that entry's
+      FZ and load group on /db/CNLD, and its projection, ECCEN_TYPE,
+      ECCEN_DIR, I_END, USE_J_END, J_END and load group on /db/BMLD, with no
+      error. Through the SDK classes the same entries were stored with the
+      documented defaults (db-cnld-item-component-defaults,
+      db-bmld-item-option-defaults).
+    riskRef: db-items-put-inherits-first-entry
+    evidence:
+      - docs/live_verification_notes.md
