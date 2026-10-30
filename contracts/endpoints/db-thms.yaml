@@ -36,6 +36,8 @@ verification:
       ref: db-read-sweep-2026-08-16
     - product: gen
       ref: db-read-sweep-2026-08-16
+    - product: gen
+      ref: time-history-gen-2026-10-30
 
 operations:
   - method: DELETE
@@ -73,6 +75,15 @@ operations:
       keyStability: stable
   - method: POST
     risk: write
+    notes: >-
+      Measured on Gen NX 2026-10-30 on a column with supports at nodes 1 and 3.
+      The record key is a supported node: keys 1 and 3 were stored, the free
+      node 2 and the absent node 9 refused - the key is not the /db/THIS id,
+      unlike /db/THGA. Refused with "[Error] Multiple Support Excitation input
+      data contain errors." when SCALEY and SCALEZ were 0 (accepted at 1.0 and
+      0.667). Refused with "Unknown Error" when FUNCX names a Normal-type
+      (iTYPE 5) function, and when LCNAME names a case that already has a
+      /db/THGA ground acceleration - give multi-support excitation its own case.
     request:
       wrapper: assign
       itemSchema: fields

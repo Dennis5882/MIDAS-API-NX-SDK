@@ -3953,6 +3953,10 @@ these two were deliberately skipped earlier against the real bridge
 model: additive/merge operations need a throwaway target, not production
 data.
 
+> Corrected 2026-10-29: `/doc/IMPORTMXT` is not additive. It replaces the
+> whole model, which an empty document could not show - see the 2026-10-29
+> and 2026-10-30 sections below.
+
 **`/ope/LCOM-GEN` retried with the simpler AIK-SRC2K schema** (`{OPTION,
 DGNCODE: "AIK-SRC2K", RS_SCALE_FACTOR: []}`, vs the KDS:2022/CONCRETE
 attempt that got "Wrong Field" on Gen 2026-07-30) — **404'd outright on
@@ -13038,3 +13042,70 @@ Empty document restored after each. So the risk
 `db-items-put-inherits-first-entry` holds on both products, and the
 normalization shipped in 2.10.4 covers both. Ledger
 `ledger-write-2026-10-28-2`.
+
+## 2026-10-29 / 2026-10-30 (Gen) - time-history findings from an import project, re-measured
+
+A separate project importing sensor records into Gen NX as time-history
+loads, built on this SDK, recorded a list of Gen findings on 2026-10-29.
+Each claim was re-measured here before being recorded. Both sessions used an
+empty `/doc/NEW` document after a checkpoint to `C:/temp`, with raw
+`request()` and the `doc` functions. Gen NX only; Civil NX was not measured.
+Ledger `ledger-write-2026-10-29`, `ledger-write-2026-10-30`.
+
+**Keys.**
+
+| Endpoint | Sent | Result |
+| --- | --- | --- |
+| `/db/THGA` | key = a `/db/THIS` id | stored |
+| `/db/THGA` | key 7, no `/db/THIS` with that id | `[Error] Ground Acceleration Load input data contain errors.` |
+| `/db/THGA` | key 1 (case `TH_A`), `NAME: "TH_C"` | response echoes `TH_C`; read back as `TH_A` - the key decides |
+| `/db/THGA` | two records, keys 1 and 3, each its own case | both stored and analysed - no one-per-model limit |
+| `/db/THMS` | keys 1 and 3 (supported nodes), case id 2 | stored |
+| `/db/THMS` | key 2 (free node), key 9 (no node) | refused |
+| `/db/THNL` | key 2 (node), case id 1 | stored |
+
+So the "key = case id" rule is `/db/THGA`'s alone; `/db/THMS` and `/db/THNL`
+are keyed by node.
+
+**`/db/THMS` refusals**, each against an otherwise accepted payload:
+`SCALEY: 0` and `SCALEZ: 0` (`input data contain errors`; accepted at 1.0 and
+0.667), a Normal-type (`iTYPE` 5) function in `FUNCX` (`Unknown Error`), and an
+`LCNAME` whose case already has a `/db/THGA` record (`Unknown Error`).
+
+**`/db/THFC`** stored a 101-point function on a document with no nodes, and a
+7,875-point function by POST and by PUT in about 0.2 s each, read back exactly.
+
+**`/doc/ANAL` saves first.** With node 99 added and not saved, the call
+answered `{"message": "MIDAS GEN NX Analysis is not allowed."}` - the model
+had no eigenvalue control or mass - and the file on disk then held node 99,
+with a `.bak` beside it. Neither SDK raised on that message, because both
+matched only "failed"; both now match "not allowed" too. A column with mass,
+eigenvalue control and a static load case analysed normally on 2026-10-30.
+
+**`/doc/IMPORTMXT` replaces the model.**
+
+- An MGT holding only `*TFUNCTION` left a model with no nodes, no `/db/THIS`
+  and only the imported function (2026-10-29).
+- The document kept its earlier path: a `/doc/SAVE` straight after wrote the
+  imported model over that file, which then reopened with 0 nodes.
+- On 2026-10-30 the export of the analysed column imported back with every
+  table present, but each `/db/THIS` `bKEEP` turned from false to true. The
+  exported line ends at `..., INIT, NO` (`bSUBSEQ`), so the rest of
+  `[SEQ LOAD]` is not written. The import project measured no difference in
+  results when subsequent loading is not used.
+- The same export with one `*GROUND-ACC` line naming a missing case answered
+  `"MIDAS GEN NX command complete"` and left the model empty - no nodes, no
+  material, no functions. A byte-exact copy and a CRLF copy of the unmodified
+  file both imported fully, so the bad line, not the file, caused it. The
+  import project saw a different outcome for a bad `*LC-COLOR` line - an
+  error message, with the model applied up to that line - so how much
+  survives depends on where the error is. Either way, read the model back.
+
+**`/doc/OPEN` over unsaved changes** opened the file in 4 s with no dialog,
+discarding the unsaved node.
+
+**Time-history results in `/post/TABLE`.** `LOAD_CASE_NAMES` must use the
+`TH:` form: `TH_GA(TH:max)`, `(TH:min)` and `(TH:all)` each return one row
+labelled `TH_GA(max)`, `TH_GA(min)`, `TH_GA(all)`; `TH:MAX` works as well.
+`TH_GA(max)`, `TH_GA(TH)` and `TH_GA` return no rows. Only these envelope
+rows are available, not values per time step.

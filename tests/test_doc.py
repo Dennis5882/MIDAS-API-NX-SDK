@@ -76,6 +76,18 @@ def test_analyze_raises_when_the_200_body_says_the_analysis_failed(gen_client):
 
 
 @responses.activate
+def test_analyze_raises_when_the_product_does_not_allow_the_analysis(gen_client):
+    """Gen NX 2026-10-29: a refused analysis is a plain 200 message too."""
+    body = {"message": "MIDAS GEN NX Analysis is not allowed."}
+    responses.add(responses.POST, "https://x.test:443/gen/doc/ANAL", json=body, status=200)
+    with pytest.raises(MidasResultError) as exc_info:
+        doc.analyze(client=gen_client)
+
+    assert "not allowed" in str(exc_info.value)
+    assert exc_info.value.response_body == body
+
+
+@responses.activate
 def test_analyze_respects_the_opt_out():
     client = MidasClient(
         mapi_key="k", base_url="https://x.test:443/gen", product=Product.GEN,

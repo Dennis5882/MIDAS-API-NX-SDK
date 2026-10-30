@@ -29,10 +29,19 @@ verification:
       ref: db-write-sweep-2026-07-22
     - product: gen
       ref: db-write-sweep-2026-07-22
+    - product: gen
+      ref: time-history-gen-2026-10-29
+    - product: gen
+      ref: time-history-gen-2026-10-30
 
 operations:
   - method: POST
     risk: write
+    notes: >-
+      Saves the open document before analysing, leaving the previous file as
+      .bak, and did so even when it answered "MIDAS GEN NX Analysis is not
+      allowed." (Gen NX 2026-10-29). That refusal arrives as a plain message
+      like "Analysis failed.", and both SDKs raise on either.
     request:
       wrapper: assign
       itemSchema: fields

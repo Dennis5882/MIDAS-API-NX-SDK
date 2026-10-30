@@ -45,11 +45,30 @@ export const doc = {
     return post("/doc/STAGAS", argument, options);
   },
   importJson: (path: string, options?: OperationOptions) => post("/doc/IMPORT", path, options),
+  /**
+   * Import an MCT/MGT file.
+   *
+   * @warning Replaces the whole open model with the file's content; it does
+   * not add to it. The document keeps its previous path, so a later `save()`,
+   * or the save `analyze()` makes first, overwrites the previous file - call
+   * `saveAs()` with a new name first. The response does not say whether the
+   * import worked: a file with one bad line answered "command complete" and
+   * left an empty model (Gen NX 2026-10-30), so read the model back.
+   */
   importMxt: (path: string, options?: OperationOptions) => post("/doc/IMPORTMXT", path, options),
   exportJson: (path: string, options?: OperationOptions) => post("/doc/EXPORT", path, options),
+  /**
+   * Export the model as an MCT/MGT file. A time-history load case with
+   * `bSUBSEQ` false is written without its `bKEEP`, so importing the file back
+   * sets `bKEEP` to true (Gen NX 2026-10-30).
+   */
   exportMxt: (path: string, options?: OperationOptions) => post("/doc/EXPORTMXT", path, options),
   /**
-   * Run analysis and reject the known HTTP-200 failure message.
+   * Run analysis and reject the known HTTP-200 failure messages, "Analysis
+   * failed." and "Analysis is not allowed.".
+   *
+   * @warning The product saves the open document before analysing, leaving
+   * the previous file as `.bak`, even when it then refuses the analysis.
    *
    * @warning A timeout is not a rollback. Large solves may continue in MIDAS
    * NX after this promise rejects, so confirm model state before retrying.
@@ -65,7 +84,7 @@ export const doc = {
     if (
       client.raiseOnResultError &&
       typeof message === "string" &&
-      message.toLowerCase().includes("failed")
+      ["failed", "not allowed"].some((marker) => message.toLowerCase().includes(marker))
     ) {
       throw new MidasResultError(
         `POST /doc/ANAL -> 200, but the analysis did not succeed: ${message}`,

@@ -1129,3 +1129,46 @@ records:
     riskRef: db-items-put-inherits-first-entry
     evidence:
       - docs/live_verification_notes.md
+  - id: time-history-gen-2026-10-29
+    endpoints: ["/db/THFC", "/db/THIS", "/db/THGA", "/doc/ANAL", "/doc/IMPORTMXT", "/doc/SAVE", "/doc/OPEN"]
+    date: "2026-10-29"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-29 (last author-confirmed 10/17/2026)
+    level: write
+    outcome: success
+    method: >-
+      Raw request() and doc functions on an empty /doc/NEW document after a
+      checkpoint to C:/temp, re-measuring what a time-history import project
+      on this SDK recorded the same day: a four-element beam, three /db/THIS
+      cases, /db/THGA under several keys, /doc/ANAL with an unsaved node, and
+      /doc/IMPORTMXT of a *TFUNCTION-only MGT followed by /doc/SAVE.
+    finding: >-
+      /db/THGA's key must be its /db/THIS case's id and a disagreeing NAME is
+      ignored while echoed. /doc/ANAL saved the open document (with .bak) even
+      when it answered "Analysis is not allowed.", which neither SDK raised on.
+      /doc/IMPORTMXT replaced the whole model and kept the document's path, so
+      the following /doc/SAVE overwrote the earlier file.
+    evidence:
+      - docs/live_verification_notes.md
+  - id: time-history-gen-2026-10-30
+    endpoints: ["/db/THFC", "/db/THIS", "/db/THGA", "/db/THMS", "/db/THNL", "/doc/ANAL", "/doc/EXPORTMXT", "/doc/IMPORTMXT", "/doc/OPEN", "/post/TABLE"]
+    date: "2026-10-30"
+    nxVersion: MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-30 (last author-confirmed 10/17/2026)
+    level: write
+    outcome: success
+    method: >-
+      Raw request() and doc functions on an empty /doc/NEW document after a
+      checkpoint to C:/temp: a 3.2 m column with nodal mass, eigenvalue
+      control, functions of three types, three /db/THIS cases, two ground
+      accelerations, multi-support excitation and a dynamic nodal load, then
+      analysis, displacement tables, an EXPORTMXT/IMPORTMXT round trip, an MGT
+      with one bad line, and /doc/OPEN over unsaved changes.
+    finding: >-
+      /db/THMS and /db/THNL are keyed by node, and /db/THMS refuses zero
+      scale factors, Normal-type functions and a case that has a ground
+      acceleration. Time-history rows come back only for "(TH:max)",
+      "(TH:min)" and "(TH:all)" names, labelled without "TH:". An MGT import
+      that failed answered "command complete" and left an empty model; a
+      round trip set every bKEEP to true. /doc/OPEN discarded unsaved changes
+      without a dialog.
+    evidence:
+      - docs/live_verification_notes.md

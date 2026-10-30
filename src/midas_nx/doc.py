@@ -24,10 +24,11 @@ from .client import post_argument as _post
 #: ``{"message": "MIDAS CIVIL NX Analysis failed."}`` — the *same* key it uses
 #: for success (``"... command complete"``), and without the ``"error"`` object
 #: that MidasClient checks for. Observed live 2026-07-26 on Civil NX 2026
-#: (v2.1). Matched case-insensitively on the one stable word rather than on the
-#: full string, since the sentence embeds the product name and has only been
-#: seen under Civil.
-_ANALYSIS_FAILURE_MARKER = "failed"
+#: (v2.1). A model the product will not analyse is reported the same way, as
+#: ``{"message": "MIDAS GEN NX Analysis is not allowed."}`` (Gen NX
+#: 2026-10-29). Matched case-insensitively on the stable words rather than on
+#: the full strings, since each sentence embeds the product name.
+_ANALYSIS_FAILURE_MARKERS = ("failed", "not allowed")
 
 
 def _check_analysis_message(response: dict, client: Optional[MidasClient]) -> dict:
@@ -44,7 +45,7 @@ def _check_analysis_message(response: dict, client: Optional[MidasClient]) -> di
     if not active.raise_on_result_error:
         return response
     message = response.get("message") if isinstance(response, dict) else None
-    if isinstance(message, str) and _ANALYSIS_FAILURE_MARKER in message.lower():
+    if isinstance(message, str) and any(m in message.lower() for m in _ANALYSIS_FAILURE_MARKERS):
         raise MidasResultError(
             f"POST /doc/ANAL -> 200, but the analysis did not succeed: {message}",
             status_code=200,
@@ -171,7 +172,20 @@ def import_json(path: str, client: Optional[MidasClient] = None) -> dict:
 
 
 def import_mxt(path: str, client: Optional[MidasClient] = None) -> dict:
-    """docs/manual/01_DOC.md #8 — /doc/IMPORTMXT — Import to mct/mgt."""
+    """docs/manual/01_DOC.md #8 — /doc/IMPORTMXT — Import to mct/mgt.
+
+    ⚠️ Replaces the whole open model with the file's content; it does not add
+    to it. Measured on Gen NX 2026-10-29: a file holding only ``*TFUNCTION``
+    left no nodes, no time-history load cases and no other functions.
+
+    ⚠️ The document keeps its previous path. A later :func:`save` - or the
+    save :func:`analyze` makes before solving - overwrites the previous file
+    with the imported model. Call :func:`save_as` with a new name first.
+
+    ⚠️ The response does not say whether the import worked. A file with one
+    bad ``*GROUND-ACC`` line answered ``"... command complete"`` and left an
+    empty model (Gen NX 2026-10-30). Read the model back before trusting it.
+    """
     return _post("/doc/IMPORTMXT", path, client)
 
 
@@ -193,6 +207,10 @@ def export_mxt(path: str, client: Optional[MidasClient] = None) -> dict:
     File", while Gen NX offers "MGTX file (for GEN NX)", a batch MGTX, "MGT
     File (for Gen)" and "MGT File (v885 for nGen)". Use the extension the
     target product writes, not the other one's.
+
+    A time-history load case with ``bSUBSEQ`` false is written without its
+    ``bKEEP``, so importing the file back sets ``bKEEP`` to true on every such
+    case (Gen NX 2026-10-30).
     """
     return _post("/doc/EXPORTMXT", path, client)
 
@@ -210,7 +228,15 @@ def analyze(analysis_type: Optional[str] = None, client: Optional[MidasClient] =
     returning a dict that reads as success; every result table would otherwise
     come back empty with nothing pointing at the cause. A model the solver
     rejects up front (e.g. no boundary conditions) is reported the other way,
-    as a normal ``{"error": ...}`` body, and raises from the client.
+    as a normal ``{"error": ...}`` body, and raises from the client. A model
+    the product will not analyse at all answers
+    ``{"message": "MIDAS GEN NX Analysis is not allowed."}`` and raises too
+    (Gen NX 2026-10-29).
+
+    ⚠️ The product saves the open document before analysing, leaving the
+    previous file as ``.bak`` - even when it then answers "not allowed"
+    (Gen NX 2026-10-29). Save under a name you mean to overwrite first; an
+    unsaved new document raises a blocking "Save As" dialog instead.
 
     ⚠️ Live-tested: on a large model (4000+ nodes), this call legitimately
     took longer than a 90s client timeout to solve — a

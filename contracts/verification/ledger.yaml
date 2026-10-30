@@ -6409,3 +6409,49 @@ records:
     BeamLoad.update (2.10.4) the same entries were stored with the documented defaults. The confirmed /db/CNLD,
     /db/BMLD and /db/NMAS cases passed through scripts/live_crud_check.py and live-crud.mjs. Evidence in
     docs/live_verification_notes.md.
+- id: ledger-write-2026-10-29
+  endpoints:
+  - /db/THFC
+  - /db/THIS
+  - /db/THGA
+  - /doc/ANAL
+  - /doc/IMPORTMXT
+  - /doc/SAVE
+  - /doc/OPEN
+  date: '2026-10-29'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-29 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    Re-measured a time-history import project's Gen findings on an empty /doc/NEW document after a checkpoint to
+    C:/temp. /db/THGA's key must be its /db/THIS case's id, and a NAME that disagrees is echoed but not stored.
+    /doc/ANAL saved the open document with a .bak even when it answered "Analysis is not allowed.".
+    /doc/IMPORTMXT replaced the whole model and kept the document's path, so /doc/SAVE overwrote the earlier file.
+    Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-30
+  endpoints:
+  - /db/THFC
+  - /db/THIS
+  - /db/THGA
+  - /db/THMS
+  - /db/THNL
+  - /doc/ANAL
+  - /doc/EXPORTMXT
+  - /doc/IMPORTMXT
+  - /doc/OPEN
+  date: '2026-10-30'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-30 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    Empty /doc/NEW document after a checkpoint to C:/temp: a column with nodal mass and eigenvalue control, three
+    /db/THIS cases, ground accelerations, multi-support excitation and a dynamic nodal load, analysed. /db/THMS and
+    /db/THNL are keyed by node; /db/THMS refuses zero scale factors, Normal-type functions and a case holding a
+    ground acceleration. Time-history table rows need "(TH:max)"-style names. A failed MGT import answered "command
+    complete" with an empty model; a round trip set bKEEP true. Evidence in docs/live_verification_notes.md.

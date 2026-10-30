@@ -29,10 +29,25 @@ verification:
       ref: db-write-sweep-2026-08-13
     - product: gen
       ref: db-write-sweep-2026-08-13
+    - product: gen
+      ref: time-history-gen-2026-10-29
+    - product: gen
+      ref: time-history-gen-2026-10-30
 
 operations:
   - method: POST
     risk: write
+    notes: >-
+      Replaces the whole open model with the file's content; it does not add
+      to it. A file holding only *TFUNCTION left a model with no nodes, no
+      /db/THIS and no other functions (Gen NX 2026-10-29). The document keeps
+      its previous path, so a later /doc/SAVE - or the save /doc/ANAL makes
+      first - overwrites the previous file with the imported model. A file
+      with one bad *GROUND-ACC line answered "... command complete" and left
+      an empty model (2026-10-30): the response does not say whether the
+      import worked, so read the model back. Exporting and re-importing turns
+      every /db/THIS bKEEP from false to true, because the exported line ends
+      at bSUBSEQ.
     request:
       wrapper: argument
       itemSchema: scalar

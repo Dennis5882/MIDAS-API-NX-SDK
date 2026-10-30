@@ -29,10 +29,16 @@ verification:
       ref: db-write-sweep-2026-08-13
     - product: gen
       ref: db-write-sweep-2026-08-13
+    - product: gen
+      ref: time-history-gen-2026-10-30
 
 operations:
   - method: POST
     risk: write
+    notes: >-
+      A /db/THIS case with bSUBSEQ false is written ending at "..., INIT, NO",
+      without bKEEP, so /doc/IMPORTMXT of the file stores bKEEP true (Gen NX
+      2026-10-30).
     request:
       wrapper: argument
       itemSchema: scalar

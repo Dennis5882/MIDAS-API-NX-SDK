@@ -36,7 +36,10 @@ member forces, mode shapes, story drift, ...).
 - `mapi_key`, `product` — same as [Inspect a project](inspect-project.md)
 - `load_case_names` — a list like `["DL(ST)"]`; the exact spelling has to
   match a load case/combination that exists in the model, with the
-  `(ST)`/`(CB)`/`(CS)` type suffix the manual documents
+  `(ST)`/`(CB)`/`(CS)` type suffix the manual documents. A time-history
+  case takes `(TH:max)`, `(TH:min)` or `(TH:all)` - plain `(max)` returns
+  no rows - and comes back labelled `CASE(max)`. Only these envelopes are
+  available, not values per time step (Gen NX, 2026-10-30).
 
 ## Full code
 

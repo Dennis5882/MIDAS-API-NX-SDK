@@ -6,6 +6,19 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Changed
+
+- `doc.analyze()` rejects `"... Analysis is not allowed."` as well as
+  `"... Analysis failed."`. Gen NX answers a model it will not analyse with
+  that HTTP-200 message, and it used to resolve as success.
+
+### Documentation
+
+- `doc.importMxt()` and `doc.exportMxt()` document that an import replaces
+  the whole model, keeps the previous document path, and can answer "command
+  complete" for an import that left an empty model; and that a round trip
+  sets `bKEEP` on time-history load cases. Measured on Gen NX 2026-10-29/30.
+
 ## 2.10.4 - 2026-10-28
 
 > **A behaviour change in what `nodalLoad` and `beamLoad` send.** Both now

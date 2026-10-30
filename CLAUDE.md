@@ -267,8 +267,8 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   proves the request shape is one the server accepts, and every field-name/enum/default defect
   found so far was invisible to reads. **Re-verifying adds a record; it never edits one**, which is
   what the old append-only `method` string in `coverage.json` got wrong twice. Until the migration
-  the same fact lived in two files — 40 contracts cite only a read session for an endpoint the
-  ledger holds at write level, and the two disagreed about what `level` even meant. Those 40 were
+  the same fact lived in two files — 39 contracts cite only a read session for an endpoint the
+  ledger holds at write level, and the two disagreed about what `level` even meant. Those were
   audited on 2026-09-21 and **none is a contract defect**: a ref names the session a contract was
   promoted from, and what would make a stale one worth acting on is the later write having revealed
   something the contract misses. `check_fixture_contract.py` measures that, and not one of the 40
@@ -423,8 +423,11 @@ Two things that have already caused rework:
   resource-level guards reached them, and Steel-Frame lost every material and a 324-element frame
   to the body form.
 - **Not every failure carries an `error` key.** `/doc/ANAL` reports a failed solve as
-  `{"message": "... Analysis failed."}` and `/doc/SAVEAS` returns `"... command complete"` for a
-  save that never happened. Error bodies also arrive under **201**, not just 200. When adding a
+  `{"message": "... Analysis failed."}` and a refused one as `"... Analysis is not allowed."`
+  (both raise since 2026-10-30), `/doc/SAVEAS` returns `"... command complete"` for a
+  save that never happened, and `/doc/IMPORTMXT` for an import that left an empty model.
+  `/doc/IMPORTMXT` replaces the whole model and keeps the old document path, and
+  `/doc/ANAL` saves the open document before solving. Error bodies also arrive under **201**, not just 200. When adding a
   write endpoint, verify the failure shape live rather than assuming `MidasResultError` covers it.
 - **`verify_connection()` can't see a blocked session.** While a modal dialog is up, `/mapikey/verify`
   still answers `"connected"` (the relay serves it) while every `/db/*` call times out.

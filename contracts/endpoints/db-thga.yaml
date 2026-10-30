@@ -34,6 +34,10 @@ verification:
       ref: db-write-sweep-2026-08-16
     - product: gen
       ref: db-write-sweep-2026-08-16
+    - product: gen
+      ref: time-history-gen-2026-10-29
+    - product: gen
+      ref: time-history-gen-2026-10-30
 
 operations:
   - method: DELETE
@@ -71,6 +75,15 @@ operations:
       keyStability: stable
   - method: POST
     risk: write
+    notes: >-
+      The record key must be the id of the /db/THIS load case the ground
+      acceleration belongs to (Gen NX 2026-10-29 and 2026-10-30). A key no
+      THIS record has is refused with "[Error] Ground Acceleration Load input
+      data contain errors."; it is not a one-per-model limit - two records,
+      keyed 1 and 3 by their own cases, were stored and analysed. When the key
+      names one case and NAME another, the response echoes the NAME sent but
+      the record is stored under the key's case name: the key decides, and the
+      echo cannot be trusted. /db/THMS and /db/THNL are keyed by node instead.
     request:
       wrapper: assign
       itemSchema: fields

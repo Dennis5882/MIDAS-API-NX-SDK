@@ -36,6 +36,8 @@ verification:
       ref: db-write-sweep-2026-08-25
     - product: gen
       ref: db-write-sweep-2026-08-25
+    - product: gen
+      ref: time-history-gen-2026-10-30
 
 operations:
   - method: DELETE
@@ -73,6 +75,9 @@ operations:
       keyStability: stable
   - method: POST
     risk: write
+    notes: >-
+      Keyed by node: key 2 was stored for a case whose /db/THIS id is 1 (Gen
+      NX 2026-10-30), so the /db/THGA key rule does not apply here.
     request:
       wrapper: assign
       itemSchema: fields

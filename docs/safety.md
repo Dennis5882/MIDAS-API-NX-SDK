@@ -36,9 +36,11 @@ This is the single most important thing on the page.
   **2xx** status. This SDK raises `MidasResultError` for those; opt out with
   `MidasClient(raise_on_result_error=False)` if you want the raw body.
 - Some don't even do that. `/doc/ANAL` reports a failed solve as
-  `{"message": "... Analysis failed."}`, with no `error` key.
-  `/doc/SAVEAS` answers `"... command complete"` for a save that never
-  happened.
+  `{"message": "... Analysis failed."}`, and a refused one as
+  `"... Analysis is not allowed."`, with no `error` key; `doc.analyze()`
+  raises on both. `/doc/SAVEAS` answers `"... command complete"` for a save
+  that never happened, and `/doc/IMPORTMXT` for an import that left an empty
+  model.
 - Error bodies have also arrived under **201**, not just 200.
 
 !!! tip "The rule that actually protects you"

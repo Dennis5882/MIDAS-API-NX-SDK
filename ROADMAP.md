@@ -118,6 +118,8 @@ Each row is one `(date, Gen build, Civil build)` combination the ledger cites, *
 | 2026-10-27 | MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-27 (last author-confirmed 10/17/2026) | ? |
 | 2026-10-28 | ? | MIDAS Civil NX 2026 (v2.2), build not re-read on 2026-10-28 (last author-confirmed 10/17/2026) |
 | 2026-10-28 | MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-28 (last author-confirmed 10/17/2026) | ? |
+| 2026-10-29 | MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-29 (last author-confirmed 10/17/2026) | ? |
+| 2026-10-30 | MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-10-30 (last author-confirmed 10/17/2026) | ? |
 
 > Static snapshot; re-run scripts/vendor_coverage.py to refresh. POST result-table types and the three Design Code chapters (25-27) are not itemized by URL in INDEX.md and are represented as single aggregate rows rather than one row per table/check.
 
