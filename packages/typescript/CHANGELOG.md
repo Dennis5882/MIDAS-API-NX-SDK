@@ -8,16 +8,18 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ### Changed
 
-- `doc.analyze()` rejects `"... Analysis is not allowed."` as well as
-  `"... Analysis failed."`. Gen NX answers a model it will not analyse with
-  that HTTP-200 message, and it used to resolve as success.
+- `doc.analyze()` rejects `"... Analysis is not allowed."` and
+  `"error status"` as well as `"... Analysis failed."`. Gen NX and Civil NX
+  answer a model they will not analyse with those HTTP-200 messages, and
+  they used to resolve as success.
 
 ### Documentation
 
 - `doc.importMxt()` and `doc.exportMxt()` document that an import replaces
   the whole model, keeps the previous document path, and can answer "command
   complete" for an import that left an empty model; and that a round trip
-  sets `bKEEP` on time-history load cases. Measured on Gen NX 2026-10-29/30.
+  sets `bKEEP` on time-history load cases on Gen NX. Measured on Gen NX
+  2026-10-29/30 and Civil NX 2026-10-30.
 
 ## 2.10.4 - 2026-10-28
 

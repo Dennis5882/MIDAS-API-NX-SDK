@@ -1035,3 +1035,29 @@ records:
     riskRef: db-items-put-inherits-first-entry
     evidence:
       - docs/live_verification_notes.md
+  - id: time-history-civil-2026-10-30
+    endpoints: ["/db/THFC", "/db/THIS", "/db/THGA", "/db/THMS", "/db/THNL", "/doc/ANAL", "/doc/EXPORTMXT", "/doc/IMPORTMXT", "/doc/OPEN", "/post/TABLE"]
+    date: "2026-10-30"
+    nxVersion: MIDAS Civil NX 2026 (v2.2), build not re-read on 2026-10-30 (last author-confirmed 10/17/2026)
+    level: write
+    outcome: success
+    method: >-
+      The Gen time-history measurements of 2026-10-29/30 repeated with raw
+      request() and doc functions on an empty /doc/NEW document after a
+      checkpoint to C:/temp: a 3.2 m column, functions of three types, three
+      /db/THIS cases, ground accelerations, multi-support excitation, a
+      dynamic nodal load, /doc/ANAL with and without mass and eigenvalue
+      control, displacement tables, an EXPORTMXT/IMPORTMXT round trip, a
+      partial MCT, an MCT with one bad line, and /doc/OPEN over unsaved
+      changes.
+    finding: >-
+      As on Gen for the /db/THGA, /db/THMS and /db/THNL key rules and
+      refusals, /db/THFC, the save before analysis, whole-model replacement
+      by import, a failed import answering "command complete", and /doc/OPEN.
+      A refused analysis answered "error status", which neither SDK raised
+      on. Civil keeps bKEEP through an export round trip. Two "(TH:max)"
+      displacement-table requests each ran past a 120 s timeout while a model
+      file grew to 26 GB; a save made right after could not be reopened, so
+      later steps in that session are not counted.
+    evidence:
+      - docs/live_verification_notes.md

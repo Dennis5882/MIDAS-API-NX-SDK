@@ -6455,3 +6455,28 @@ records:
     /db/THNL are keyed by node; /db/THMS refuses zero scale factors, Normal-type functions and a case holding a
     ground acceleration. Time-history table rows need "(TH:max)"-style names. A failed MGT import answered "command
     complete" with an empty model; a round trip set bKEEP true. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-10-30-2
+  endpoints:
+  - /db/THFC
+  - /db/THIS
+  - /db/THGA
+  - /db/THMS
+  - /db/THNL
+  - /doc/ANAL
+  - /doc/EXPORTMXT
+  - /doc/IMPORTMXT
+  - /doc/OPEN
+  date: '2026-10-30'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.2), build not re-read on 2026-10-30 (last author-confirmed 10/17/2026)
+  outcome: success
+  method: >-
+    The Gen time-history measurements of 2026-10-29/30 repeated on Civil NX, on an empty /doc/NEW document after a
+    checkpoint to C:/temp. Key rules, /db/THMS refusals, the save before analysis, whole-model replacement by
+    IMPORTMXT and a failed import answering "command complete" matched Gen. A refused analysis answered
+    "error status". bKEEP survived the round trip. Two "(TH:max)" /post/TABLE requests ran past 120 s while a
+    model file grew to 26 GB, and a save right after could not be reopened, so the steps after them are not
+    counted. Evidence in docs/live_verification_notes.md.

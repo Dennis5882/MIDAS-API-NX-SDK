@@ -13061,7 +13061,7 @@ Ledger `ledger-write-2026-10-29`, `ledger-write-2026-10-30`.
 | `/db/THGA` | key 1 (case `TH_A`), `NAME: "TH_C"` | response echoes `TH_C`; read back as `TH_A` - the key decides |
 | `/db/THGA` | two records, keys 1 and 3, each its own case | both stored and analysed - no one-per-model limit |
 | `/db/THMS` | keys 1 and 3 (supported nodes), case id 2 | stored |
-| `/db/THMS` | key 2 (free node), key 9 (no node) | refused |
+| `/db/THMS` | key 2 (free node), key 9 (no node) | refused - but sent with `SCALEY`/`SCALEZ` 0, which is refused on its own; not retried with a valid payload |
 | `/db/THNL` | key 2 (node), case id 1 | stored |
 
 So the "key = case id" rule is `/db/THGA`'s alone; `/db/THMS` and `/db/THNL`
@@ -13079,7 +13079,8 @@ are keyed by node.
 answered `{"message": "MIDAS GEN NX Analysis is not allowed."}` - the model
 had no eigenvalue control or mass - and the file on disk then held node 99,
 with a `.bak` beside it. Neither SDK raised on that message, because both
-matched only "failed"; both now match "not allowed" too. A column with mass,
+matched only "failed"; both now match "not allowed" too, and Civil's
+"error status" (next section). A column with mass,
 eigenvalue control and a static load case analysed normally on 2026-10-30.
 
 **`/doc/IMPORTMXT` replaces the model.**
@@ -13109,3 +13110,57 @@ discarding the unsaved node.
 labelled `TH_GA(max)`, `TH_GA(min)`, `TH_GA(all)`; `TH:MAX` works as well.
 `TH_GA(max)`, `TH_GA(TH)` and `TH_GA` return no rows. Only these envelope
 rows are available, not values per time step.
+
+## 2026-10-30 (Civil) - the same time-history measurements on Civil NX
+
+Civil NX connected alongside Gen; the Civil key from `.env`, an empty
+`/doc/NEW` document after a checkpoint to `C:/temp`, the same column and
+steps as the Gen session above (steel material in place of concrete).
+Ledger `ledger-write-2026-10-30-2`.
+
+**The same as Gen.**
+
+- `/db/THFC` on a document with no nodes, and the 7,875-point function by
+  POST and PUT in about 0.2 s, read back exactly.
+- `/db/THGA`: key 7 (no such case) refused with the same message; key 1 with
+  `NAME: "TH_GA2"` echoed `TH_GA2` and stored `TH_GA`; keys 1 and 3 by their
+  own cases both stored.
+- `/db/THMS`: `SCALEY`/`SCALEZ` 0 refused with `input data contain errors`;
+  a Normal-type function and a case holding a ground acceleration refused
+  with `Unknown Error`. With a valid payload keys **1, 2 and 3** were all
+  stored for a case whose id is 2 - including node 2, which has no support.
+  This corrects the Gen section's reading of key 2. `/db/THNL` stored key 2.
+- `/doc/ANAL` saved the open document first: node 99, added and not
+  saved, was in the file afterwards, with a `.bak` beside it.
+- `/doc/IMPORTMXT` of a partial MCT replaced the model; an export with one
+  `*GROUND-ACC` line naming a missing case answered
+  `"MIDAS CIVIL NX command complete"` and left an empty model.
+- `/doc/OPEN` over an unsaved node opened in 3.7 s, no dialog.
+
+**Different from Gen.**
+
+- **A refused analysis answers `{"message": "error status"}`**, with no
+  product name, for the model before mass and eigenvalue control were
+  added. A static result file (`*_Static Load.mec`) was written beside it.
+  `doc.analyze()` returned this as success; both SDKs now raise on it. With
+  nodal mass and `/db/EIGV` the analysis answered `command complete`.
+- **`bKEEP` survives the round trip.** Civil exports
+  `1, 1, 1, 0, 2, 0.01, 1, NO, NO, INIT, 0, NO` - one more field than Gen -
+  and every case read back `bKEEP: false` after the import.
+- Civil's export also writes `*MULTI-SPT` lines as `node, case, ...`, which
+  is where the node key comes from.
+
+**Not settled: `(TH:max)` on Civil.** `TH_GA(TH:max)`, `(TH:min)`,
+`(TH:all)` in one request, then `TH_GA2(TH:max)` alone, each ran past the
+client's 120 s timeout. `TH_GA(max)` and `TH_GA` returned no rows at once,
+and `DL(ST)` returned its row. While the two requests ran, the `.mcbz` file
+the document had been opened from (`/doc/OPEN` of the F1 checkpoint, before
+a `/doc/SAVEAS` under another name) grew from about 190 KB to 26 GB, and
+stopped growing when the second request ended. A `/doc/SAVEAS` taken right
+after wrote a 20 KB file that Civil then refused to open
+(`"MIDAS CIVIL NX : Failed to open file"`), as did the next save in the
+session, so the steps after these requests are not counted as evidence -
+including a `/doc/SAVE` after an import whose file would not reopen. Civil
+kept answering and returned to an empty document normally. Measured once;
+whether `(TH:max)` reads per-step results on Civil, or something else made
+the file grow, is open. Do not repeat it on a disk without room to spare.

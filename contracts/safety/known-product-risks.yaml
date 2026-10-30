@@ -33,7 +33,8 @@ clientRules:
       Several endpoints answer HTTP 200 - and sometimes 201 - with an
       {"error": {...}} body. Others report failure in a plain "message" string:
       /doc/ANAL reports a failed solve as {"message": "... Analysis failed."}
-      and a refused one as {"message": "... Analysis is not allowed."},
+      and a refused one as {"message": "... Analysis is not allowed."} on Gen
+      NX or {"message": "error status"} on Civil NX,
       /doc/SAVEAS returns "... command complete" for a save that never
       happened, and /doc/IMPORTMXT returns it for an import that left an
       empty model.

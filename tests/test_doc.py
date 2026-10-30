@@ -75,15 +75,19 @@ def test_analyze_raises_when_the_200_body_says_the_analysis_failed(gen_client):
     assert exc_info.value.response_body == {"message": "MIDAS CIVIL NX Analysis failed."}
 
 
+@pytest.mark.parametrize("message", [
+    "MIDAS GEN NX Analysis is not allowed.",  # Gen NX 2026-10-29
+    "error status",  # Civil NX 2026-10-30
+])
 @responses.activate
-def test_analyze_raises_when_the_product_does_not_allow_the_analysis(gen_client):
-    """Gen NX 2026-10-29: a refused analysis is a plain 200 message too."""
-    body = {"message": "MIDAS GEN NX Analysis is not allowed."}
+def test_analyze_raises_when_the_product_refuses_the_analysis(gen_client, message):
+    """A refused analysis is a plain 200 message too, worded per product."""
+    body = {"message": message}
     responses.add(responses.POST, "https://x.test:443/gen/doc/ANAL", json=body, status=200)
     with pytest.raises(MidasResultError) as exc_info:
         doc.analyze(client=gen_client)
 
-    assert "not allowed" in str(exc_info.value)
+    assert message in str(exc_info.value)
     assert exc_info.value.response_body == body
 
 

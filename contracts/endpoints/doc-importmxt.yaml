@@ -27,6 +27,8 @@ verification:
   records:
     - product: civil
       ref: db-write-sweep-2026-08-13
+    - product: civil
+      ref: time-history-civil-2026-10-30
     - product: gen
       ref: db-write-sweep-2026-08-13
     - product: gen
@@ -44,10 +46,11 @@ operations:
       its previous path, so a later /doc/SAVE - or the save /doc/ANAL makes
       first - overwrites the previous file with the imported model. A file
       with one bad *GROUND-ACC line answered "... command complete" and left
-      an empty model (2026-10-30): the response does not say whether the
-      import worked, so read the model back. Exporting and re-importing turns
+      an empty model (2026-10-30), on Civil NX as well: the response does not
+      say whether the import worked, so read the model back. Civil NX also
+      replaced the model on import. On Gen, exporting and re-importing turns
       every /db/THIS bKEEP from false to true, because the exported line ends
-      at bSUBSEQ.
+      at bSUBSEQ; Civil's export writes one more field and keeps it.
     request:
       wrapper: argument
       itemSchema: scalar

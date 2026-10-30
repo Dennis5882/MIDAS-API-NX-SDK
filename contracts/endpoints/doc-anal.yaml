@@ -27,6 +27,8 @@ verification:
   records:
     - product: civil
       ref: db-write-sweep-2026-07-22
+    - product: civil
+      ref: time-history-civil-2026-10-30
     - product: gen
       ref: db-write-sweep-2026-07-22
     - product: gen
@@ -40,8 +42,11 @@ operations:
     notes: >-
       Saves the open document before analysing, leaving the previous file as
       .bak, and did so even when it answered "MIDAS GEN NX Analysis is not
-      allowed." (Gen NX 2026-10-29). That refusal arrives as a plain message
-      like "Analysis failed.", and both SDKs raise on either.
+      allowed." (Gen NX 2026-10-29). Civil NX did the same on 2026-10-30, where
+      a time-history model with no mass or eigenvalue control answered
+      {"message": "error status"} - with no product name - after writing a
+      static result file. Each arrives as a plain message like "Analysis
+      failed.", and both SDKs raise on all three.
     request:
       wrapper: assign
       itemSchema: fields

@@ -53,19 +53,21 @@ export const doc = {
    * or the save `analyze()` makes first, overwrites the previous file - call
    * `saveAs()` with a new name first. The response does not say whether the
    * import worked: a file with one bad line answered "command complete" and
-   * left an empty model (Gen NX 2026-10-30), so read the model back.
+   * left an empty model (Gen NX and Civil NX 2026-10-30), so read the model
+   * back.
    */
   importMxt: (path: string, options?: OperationOptions) => post("/doc/IMPORTMXT", path, options),
   exportJson: (path: string, options?: OperationOptions) => post("/doc/EXPORT", path, options),
   /**
    * Export the model as an MCT/MGT file. A time-history load case with
    * `bSUBSEQ` false is written without its `bKEEP`, so importing the file back
-   * sets `bKEEP` to true (Gen NX 2026-10-30).
+   * sets `bKEEP` to true on Gen NX (2026-10-30); Civil NX keeps it.
    */
   exportMxt: (path: string, options?: OperationOptions) => post("/doc/EXPORTMXT", path, options),
   /**
-   * Run analysis and reject the known HTTP-200 failure messages, "Analysis
-   * failed." and "Analysis is not allowed.".
+   * Run analysis and reject the known HTTP-200 failure messages: "Analysis
+   * failed.", Gen NX's "Analysis is not allowed." and Civil NX's
+   * "error status".
    *
    * @warning The product saves the open document before analysing, leaving
    * the previous file as `.bak`, even when it then refuses the analysis.
@@ -84,7 +86,7 @@ export const doc = {
     if (
       client.raiseOnResultError &&
       typeof message === "string" &&
-      ["failed", "not allowed"].some((marker) => message.toLowerCase().includes(marker))
+      ["failed", "not allowed", "error status"].some((marker) => message.toLowerCase().includes(marker))
     ) {
       throw new MidasResultError(
         `POST /doc/ANAL -> 200, but the analysis did not succeed: ${message}`,

@@ -34,6 +34,8 @@ verification:
   records:
     - product: civil
       ref: db-write-sweep-2026-08-16
+    - product: civil
+      ref: time-history-civil-2026-10-30
     - product: gen
       ref: db-write-sweep-2026-08-16
     - product: gen
@@ -78,7 +80,7 @@ operations:
     notes: >-
       Stored on a document with no nodes, and a 7,875-point function was
       written by POST and by PUT in about 0.2 s each and read back exactly
-      (Gen NX 2026-10-30).
+      (Gen NX and Civil NX 2026-10-30).
     request:
       wrapper: assign
       itemSchema: fields

@@ -424,7 +424,7 @@ Two things that have already caused rework:
   to the body form.
 - **Not every failure carries an `error` key.** `/doc/ANAL` reports a failed solve as
   `{"message": "... Analysis failed."}` and a refused one as `"... Analysis is not allowed."`
-  (both raise since 2026-10-30), `/doc/SAVEAS` returns `"... command complete"` for a
+  on Gen or `"error status"` on Civil (all raise since 2026-10-30), `/doc/SAVEAS` returns `"... command complete"` for a
   save that never happened, and `/doc/IMPORTMXT` for an import that left an empty model.
   `/doc/IMPORTMXT` replaces the whole model and keeps the old document path, and
   `/doc/ANAL` saves the open document before solving. Error bodies also arrive under **201**, not just 200. When adding a

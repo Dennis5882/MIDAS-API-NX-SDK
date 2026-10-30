@@ -26,9 +26,10 @@ from .client import post_argument as _post
 #: that MidasClient checks for. Observed live 2026-07-26 on Civil NX 2026
 #: (v2.1). A model the product will not analyse is reported the same way, as
 #: ``{"message": "MIDAS GEN NX Analysis is not allowed."}`` (Gen NX
-#: 2026-10-29). Matched case-insensitively on the stable words rather than on
-#: the full strings, since each sentence embeds the product name.
-_ANALYSIS_FAILURE_MARKERS = ("failed", "not allowed")
+#: 2026-10-29), and on Civil NX as a bare ``{"message": "error status"}``
+#: (2026-10-30). Matched case-insensitively on the stable words rather than on
+#: the full strings, since the sentences embed the product name.
+_ANALYSIS_FAILURE_MARKERS = ("failed", "not allowed", "error status")
 
 
 def _check_analysis_message(response: dict, client: Optional[MidasClient]) -> dict:
@@ -184,7 +185,8 @@ def import_mxt(path: str, client: Optional[MidasClient] = None) -> dict:
 
     ⚠️ The response does not say whether the import worked. A file with one
     bad ``*GROUND-ACC`` line answered ``"... command complete"`` and left an
-    empty model (Gen NX 2026-10-30). Read the model back before trusting it.
+    empty model (Gen NX and Civil NX 2026-10-30). Read the model back before
+    trusting it.
     """
     return _post("/doc/IMPORTMXT", path, client)
 
@@ -210,7 +212,7 @@ def export_mxt(path: str, client: Optional[MidasClient] = None) -> dict:
 
     A time-history load case with ``bSUBSEQ`` false is written without its
     ``bKEEP``, so importing the file back sets ``bKEEP`` to true on every such
-    case (Gen NX 2026-10-30).
+    case on Gen NX (2026-10-30). Civil NX writes one more field and keeps it.
     """
     return _post("/doc/EXPORTMXT", path, client)
 
@@ -230,12 +232,13 @@ def analyze(analysis_type: Optional[str] = None, client: Optional[MidasClient] =
     rejects up front (e.g. no boundary conditions) is reported the other way,
     as a normal ``{"error": ...}`` body, and raises from the client. A model
     the product will not analyse at all answers
-    ``{"message": "MIDAS GEN NX Analysis is not allowed."}`` and raises too
-    (Gen NX 2026-10-29).
+    ``{"message": "MIDAS GEN NX Analysis is not allowed."}`` on Gen NX
+    (2026-10-29) and ``{"message": "error status"}`` on Civil NX (2026-10-30),
+    and raises too.
 
     ⚠️ The product saves the open document before analysing, leaving the
-    previous file as ``.bak`` - even when it then answers "not allowed"
-    (Gen NX 2026-10-29). Save under a name you mean to overwrite first; an
+    previous file as ``.bak`` - even when it then refuses the analysis
+    (Gen NX 2026-10-29, Civil NX 2026-10-30). Save under a name you mean to overwrite first; an
     unsaved new document raises a blocking "Save As" dialog instead.
 
     ⚠️ Live-tested: on a large model (4000+ nodes), this call legitimately

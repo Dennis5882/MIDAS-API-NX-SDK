@@ -39,7 +39,9 @@ member forces, mode shapes, story drift, ...).
   `(ST)`/`(CB)`/`(CS)` type suffix the manual documents. A time-history
   case takes `(TH:max)`, `(TH:min)` or `(TH:all)` - plain `(max)` returns
   no rows - and comes back labelled `CASE(max)`. Only these envelopes are
-  available, not values per time step (Gen NX, 2026-10-30).
+  available, not values per time step (Gen NX, 2026-10-30). On Civil NX the
+  same request ran past 120 s twice, while a model file grew to 26 GB; it
+  is not settled there, so do not send it to a Civil session you care about.
 
 ## Full code
 

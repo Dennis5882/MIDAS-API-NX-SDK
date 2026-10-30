@@ -53,14 +53,17 @@ describe("doc operations", () => {
     });
   });
 
-  it("rejects the HTTP-200 message for an analysis the product does not allow", async () => {
-    const { client } = mockClient({ message: "MIDAS GEN NX Analysis is not allowed." });
+  it.each(["MIDAS GEN NX Analysis is not allowed.", "error status"])(
+    "rejects the HTTP-200 refusal message %s",
+    async (message) => {
+      const { client } = mockClient({ message });
 
-    await expect(doc.analyze(undefined, { client })).rejects.toMatchObject({
-      name: MidasResultError.name,
-      endpoint: "/doc/ANAL",
-    });
-  });
+      await expect(doc.analyze(undefined, { client })).rejects.toMatchObject({
+        name: MidasResultError.name,
+        endpoint: "/doc/ANAL",
+      });
+    },
+  );
 
   it("returns an analysis failure message when result-error raising is disabled", async () => {
     const response = { message: "MIDAS GEN NX Analysis failed." };
