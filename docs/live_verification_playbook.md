@@ -42,7 +42,7 @@ scoreboard.
   and `MVLDeu`, `MVLDbs` and `PHGE` round-trip on those models. The design-function harness ran end to end for the first time, and the TABLE
   `EXPORT_PATH` and REPORT files were inspected on the host, so those eight
   design endpoints are write-level now (live notes, 2026-10-24).
-- **2.10.5 is published on PyPI and npm** (2026-10-30): `doc.analyze()`
+- **2.10.5 is published on PyPI and npm** (2026-10-31): `doc.analyze()`
   raises on Gen's `"Analysis is not allowed."` and Civil's `"error status"`,
   which both answer as HTTP 200. No type or export changed. The npm
   changelog's `Unreleased` is empty.

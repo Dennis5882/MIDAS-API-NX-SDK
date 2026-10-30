@@ -6,7 +6,7 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
-## 2.10.5 - 2026-10-30
+## 2.10.5 - 2026-10-31
 
 > **A behaviour change in `doc.analyze()`.** It now rejects two HTTP-200
 > refusal messages it used to resolve with. Nothing else changed at runtime.
