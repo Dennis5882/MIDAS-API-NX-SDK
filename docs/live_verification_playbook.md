@@ -42,10 +42,10 @@ scoreboard.
   and `MVLDeu`, `MVLDbs` and `PHGE` round-trip on those models. The design-function harness ran end to end for the first time, and the TABLE
   `EXPORT_PATH` and REPORT files were inspected on the host, so those eight
   design endpoints are write-level now (live notes, 2026-10-24).
-- **2.10.4 is published on PyPI and npm** (2026-10-28): `/db/CNLD` and
-  `/db/BMLD` fill documented defaults into every `ITEMS` entry, because a Gen
-  PUT copies omitted entry fields from the record's first entry. No type or
-  export changed. The npm changelog's `Unreleased` is empty.
+- **2.10.5 is published on PyPI and npm** (2026-10-30): `doc.analyze()`
+  raises on Gen's `"Analysis is not allowed."` and Civil's `"error status"`,
+  which both answer as HTTP 200. No type or export changed. The npm
+  changelog's `Unreleased` is empty.
 - **Coverage: 400/400 implemented, 312 write / 88 read.** Of the 225 `/db`
   endpoints, 210 are write-level and 15 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 338 cases over 259
