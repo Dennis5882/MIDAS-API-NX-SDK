@@ -128,10 +128,6 @@ export class DbResource<TPayload extends object = JsonObject> {
     return client.request("GET", `/info${this.metadata.endpoint}`);
   }
 
-  /**
-   * Apply the contract's required-explicit field values to every record,
-   * without overriding anything the caller supplied.
-   */
   /** Refuse the payload shapes the contract records as silently discarded. */
   private rejectEmpty(items: ItemMap<TPayload>, method: HttpMethod): void {
     const fields = this.metadata.rejectEmptyFields;
@@ -166,7 +162,9 @@ export class DbResource<TPayload extends object = JsonObject> {
       for (const path of paths) {
         for (const [where, holder] of this.resolve(payload as Record<string, unknown>, path, id)) {
           const field = path.slice(path.lastIndexOf(".") + 1);
-          if (holder[field] === undefined) {
+          // `== null`: the product refuses a null exactly as it refuses an
+          // omission (/db/PRES DIRECTION, both products, 2026-11-01).
+          if (holder[field] == null) {
             throw new MidasRequestError(
               `${field} must be sent explicitly for ${this.metadata.endpoint}: its documented default is one the product refuses (${where})`,
               { method, endpoint: this.metadata.endpoint },
@@ -250,6 +248,25 @@ export class DbResource<TPayload extends object = JsonObject> {
    * the background after this promise rejects.
    */
   async delete(ids: readonly ItemId[], client: MidasClient = getDefaultClient()): Promise<Record<string, JsonObject>> {
+    // Untyped JavaScript can pass one string, which `for...of` would split
+    // into characters (delete("12") deleting records 1 and 2). An id of "",
+    // ".", ".." or one containing "/" builds a URL that can resolve to the bare
+    // table path, whose DELETE empties the table.
+    if (typeof ids === "string" || !Array.isArray(ids)) {
+      throw new MidasRequestError(
+        `${this.metadata.className}.delete() takes an array of ids, not ${JSON.stringify(ids)}; pass [${JSON.stringify(ids)}]`,
+        { method: "DELETE", endpoint: this.metadata.endpoint },
+      );
+    }
+    for (const id of ids) {
+      const text = String(id);
+      if (text === "" || text === "." || text === ".." || text.includes("/")) {
+        throw new MidasRequestError(
+          `${this.metadata.className}.delete(): ${JSON.stringify(id)} is not a record id; DELETE ${this.metadata.endpoint}/${text} could resolve to the whole table`,
+          { method: "DELETE", endpoint: this.metadata.endpoint },
+        );
+      }
+    }
     this.check(client, "DELETE");
     const responses: Record<string, JsonObject> = {};
     // MIDAS NX sessions are stateful and several operations can block the

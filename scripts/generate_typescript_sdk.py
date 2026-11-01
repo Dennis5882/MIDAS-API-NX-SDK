@@ -52,6 +52,8 @@ _TABLE_OPTION_NAMES = {
     "parts": "parts",
     "story_names": "storyNames",
     "modes": "modes",
+    "average_nodal_result": "averageNodalResult",
+    "node_flag": "nodeFlag",
     "additional": "additional",
     "set_calculation_method": "calculationMethod",
 }

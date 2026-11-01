@@ -38,6 +38,11 @@ function isJsonObject(value: unknown): value is JsonObject {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/** Error detail as text; an object is shown as JSON, not "[object Object]". */
+function describe(detail: unknown): string {
+  return typeof detail === "object" && detail !== null ? JSON.stringify(detail) : String(detail);
+}
+
 export class MidasClient {
   readonly mapiKey: string;
   readonly product: Product;
@@ -88,7 +93,9 @@ export class MidasClient {
     options: RequestOptions & { confirm?: boolean } = {},
   ): Promise<T> {
     const path = command.split(/[?#]/, 1)[0] ?? command;
-    if (method === "DELETE" && WHOLE_TABLE_DELETE.test(path) && options.confirm !== true) {
+    // Upper-cased because fetch normalizes "delete" to DELETE on the wire, so a
+    // lowercase method from untyped JavaScript must not slip past the guard.
+    if (method.toUpperCase() === "DELETE" && WHOLE_TABLE_DELETE.test(path) && options.confirm !== true) {
       throw new DestructiveOperationError(
         `DELETE ${path} empties the whole table, whatever ids the body names, and cannot be undone; DELETE ${path.replace(/\/$/, "")}/<id> removes one record. Pass { confirm: true } if emptying the table is intended.`,
         { method: "DELETE", endpoint: path },
@@ -125,6 +132,7 @@ export class MidasClient {
     if (options.signal?.aborted) onAbort();
 
     let response: Response;
+    let text: string;
     try {
       const init: RequestInit = {
         method,
@@ -139,6 +147,10 @@ export class MidasClient {
       // the default and a `fetch: window.fetch` option alike.
       const fetchImpl = this.fetch;
       response = await fetchImpl(url, init);
+      // Read the body while the timer and abort signal still apply: a relay
+      // that sends headers and then stalls would otherwise hang forever, and a
+      // connection dropped mid-body would escape as a bare TypeError.
+      text = await response.text();
     } catch (cause) {
       throw new MidasConnectionError(`${method} ${endpoint} failed`, { method, endpoint, cause });
     } finally {
@@ -146,7 +158,6 @@ export class MidasClient {
       options.signal?.removeEventListener("abort", onAbort);
     }
 
-    const text = await response.text();
     let data: JsonValue = {};
     if (text) {
       try {
@@ -164,7 +175,7 @@ export class MidasClient {
       if (this.raiseOnResultError && isJsonObject(data) && data.error) {
         const detail = isJsonObject(data.error) ? data.error.message ?? data.error : data.error;
         throw new MidasResultError(
-          `${method} ${endpoint} -> ${response.status} with an error body: ${String(detail)}`,
+          `${method} ${endpoint} -> ${response.status} with an error body: ${describe(detail)}`,
           { statusCode: response.status, method, endpoint, responseBody: data },
         );
       }
@@ -175,9 +186,11 @@ export class MidasClient {
     let detail: JsonValue | undefined;
     if (isJsonObject(data)) {
       const error = data.error;
-      detail = data.message ?? (isJsonObject(error) ? error.message ?? error : error);
+      // `||`, not `??`: this API answers `"message": ""` routinely, and an
+      // empty one must not hide error.message (Python's `or` does the same).
+      detail = data.message || (isJsonObject(error) ? error.message ?? error : error);
     }
-    throw new ErrorClass(`${method} ${endpoint} -> ${response.status}: ${String(detail ?? response.statusText)}`, {
+    throw new ErrorClass(`${method} ${endpoint} -> ${response.status}: ${describe(detail || response.statusText)}`, {
       statusCode: response.status,
       method,
       endpoint,

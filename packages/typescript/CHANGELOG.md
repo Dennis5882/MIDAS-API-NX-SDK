@@ -6,6 +6,33 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+> **Behaviour changes.** Three calls that used to reach the server now
+> reject before sending anything.
+
+### Changed
+
+- `request()` refuses a whole-table `DELETE` whatever the method's case.
+  `"delete"` used to slip past the guard, and fetch sends it as `DELETE`.
+- A resource's `delete()` rejects a bare string (it was split into
+  characters, so `"12"` deleted records 1 and 2) and ids that are empty,
+  `.`, `..` or contain `/`, which build URLs that can resolve elsewhere.
+- A required-explicit field set to `null` counts as missing. Both products
+  refuse `/db/PRES` `DIRECTION: null` exactly as they refuse an omitted one
+  (2026-11-01).
+
+### Added
+
+- `getTable()` options `averageNodalResult` and `nodeFlag`, sending
+  `AVERAGE_NODAL_RESULT` and `NODE_FLAG` as Python's `get_table()` does.
+
+### Fixed
+
+- The request timeout now covers reading the response body, and a stalled
+  body rejects with `MidasConnectionError`.
+- Error messages no longer let an empty `message` hide `error.message`, and
+  show an error object without a message as JSON rather than
+  `[object Object]`.
+
 ## 2.10.5 - 2026-10-31
 
 > **A behaviour change in `doc.analyze()`.** It now rejects two HTTP-200

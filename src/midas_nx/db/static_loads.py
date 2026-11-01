@@ -244,7 +244,9 @@ class PressureLoad(DbResource):
             if not isinstance(item, dict):
                 continue
             for index, entry in enumerate(item.get("ITEMS") or []):
-                if isinstance(entry, dict) and "DIRECTION" not in entry:
+                # None counts as missing: the product refuses a null DIRECTION
+                # exactly as it refuses an omitted one (both products, 2026-11-01).
+                if isinstance(entry, dict) and entry.get("DIRECTION") is None:
                     raise MidasRequestError(
                         "DIRECTION must be sent explicitly for /db/PRES: the "
                         'documented default "NORMAL" is refused on a PLATE '

@@ -358,6 +358,26 @@ def test_request_refuses_a_whole_table_delete_before_sending(gen_client, command
     assert "/<id> removes one record" in str(raised.value)
 
 
+def test_request_refuses_a_lowercase_whole_table_delete(gen_client):
+    """requests sends "delete" as DELETE, so the guard compares upper-cased."""
+    with responses.RequestsMock() as mocked:
+        with pytest.raises(DestructiveOperationError):
+            gen_client.request("delete", "/db/MATL")
+        assert len(mocked.calls) == 0
+
+
+@pytest.mark.parametrize("ids", ["12", ["."], [".."], ["1/.."], [""]])
+def test_resource_delete_refuses_ids_that_are_not_record_ids(gen_client, ids):
+    """A bare string would be split into characters ("12" -> records 1 and 2),
+    and these ids build URLs that can resolve to the bare table path."""
+    from midas_nx.db.node_element import Node
+
+    with responses.RequestsMock() as mocked:
+        with pytest.raises(MidasRequestError):
+            Node.delete(ids, client=gen_client)
+        assert len(mocked.calls) == 0
+
+
 @responses.activate
 def test_request_sends_a_whole_table_delete_once_confirmed(gen_client):
     responses.add(responses.DELETE, "https://x.test:443/gen/db/MATL", json={}, status=200)

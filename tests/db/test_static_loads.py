@@ -177,6 +177,18 @@ def test_pressure_load_update_requires_a_direction_too(gen_client):
 
 
 @responses.activate
+def test_pressure_load_treats_a_none_direction_as_missing(gen_client):
+    """Both products refuse DIRECTION null with the same message as an omitted
+    one (2026-11-01), so None must not pass the check."""
+    responses.add(responses.POST, "https://x.test:443/gen/db/PRES", json={}, status=200)
+
+    with pytest.raises(MidasRequestError, match=r"ITEMS\[0\]"):
+        PressureLoad.create({116: {"ITEMS": [{"LCNAME": "LC", "DIRECTION": None}]}}, client=gen_client)
+
+    assert not responses.calls
+
+
+@responses.activate
 def test_pressure_load_still_allows_normal_sent_explicitly(gen_client):
     """The value is legitimate; only leaving it to the default is not.
 

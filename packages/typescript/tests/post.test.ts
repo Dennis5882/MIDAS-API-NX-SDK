@@ -44,6 +44,22 @@ describe("unwrapTable", () => {
   });
 });
 
+describe("plate-table options", () => {
+  it("sends AVERAGE_NODAL_RESULT and NODE_FLAG, as Python's get_table does", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(
+      new Response(JSON.stringify({}), { status: 200 }),
+    );
+    await getTable("PLATESTRESSL", {
+      client: new MidasClient({ fetch }),
+      averageNodalResult: true,
+      nodeFlag: { CENTER: true, NODES: false },
+    });
+    const argument = JSON.parse(String(fetch.mock.calls[0]?.[1]?.body)).Argument;
+    expect(argument.AVERAGE_NODAL_RESULT).toBe(true);
+    expect(argument.NODE_FLAG).toEqual({ CENTER: true, NODES: false });
+  });
+});
+
 describe("EIGENVALUEMODE components", () => {
   const sent = async (call: (client: MidasClient) => Promise<unknown>) => {
     const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(

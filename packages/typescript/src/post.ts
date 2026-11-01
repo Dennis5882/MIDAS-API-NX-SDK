@@ -1,5 +1,6 @@
 import { getDefaultClient } from "./client";
 import type { OperationOptions } from "./operation";
+import type { PostBaseTypes } from "./generated/types";
 import type { JsonObject, JsonValue } from "./types";
 
 export interface NodeElementsSelector {
@@ -40,6 +41,16 @@ export interface TableOptions extends OperationOptions {
   parts?: string[];
   storyNames?: string[];
   modes?: string[];
+  /**
+   * `AVERAGE_NODAL_RESULT`, for chapter 20's plate, plane-stress, plane-strain
+   * and axisymmetric result tables only.
+   */
+  averageNodalResult?: boolean;
+  /**
+   * `NODE_FLAG`: element-centre (`CENTER`) or per-node (`NODES`) output, for a
+   * subset of the same chapter 20 tables.
+   */
+  nodeFlag?: PostBaseTypes.NodeFlag;
   additional?: Record<string, JsonValue | undefined>;
   calculationMethod?: Record<string, JsonValue | undefined>;
 }
@@ -90,6 +101,8 @@ function tableArgument(tableType: string, options: TableOptions): JsonObject {
     PARTS: options.parts,
     STORY_NAMES: options.storyNames,
     MODES: options.modes,
+    AVERAGE_NODAL_RESULT: options.averageNodalResult,
+    NODE_FLAG: options.nodeFlag as JsonObject | undefined,
     ADDITIONAL: options.additional as JsonObject | undefined,
     SET_CALCULATION_METHOD: options.calculationMethod as JsonObject | undefined,
   });

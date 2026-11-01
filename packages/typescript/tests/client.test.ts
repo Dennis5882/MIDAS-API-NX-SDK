@@ -4,6 +4,7 @@ import {
   DestructiveOperationError,
   MidasAuthError,
   MidasClient,
+  MidasConnectionError,
   MidasResultError,
   MidasServerError,
   ProductMismatchError,
@@ -93,6 +94,38 @@ describe("MidasClient", () => {
     }
   });
 
+  it("applies the timeout while the body is read, and wraps a stalled body", async () => {
+    // Headers arrive, the body never finishes: the abort signal must still end it.
+    const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(async (_url, init) => {
+      const body = new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode('{"a":'));
+          init?.signal?.addEventListener("abort", () => controller.error(init.signal?.reason));
+        },
+      });
+      return new Response(body, { status: 200 });
+    });
+    const client = new MidasClient({ fetch, timeout: 20 });
+
+    await expect(client.request("GET", "/db/NODE")).rejects.toBeInstanceOf(MidasConnectionError);
+  });
+
+  it("does not let an empty message hide error.message", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(
+      response({ message: "", error: { message: "Wrong Field" } }, { status: 400 }),
+    );
+    await expect(new MidasClient({ fetch }).request("GET", "/db/NODE")).rejects.toThrow(
+      /-> 400: Wrong Field$/,
+    );
+  });
+
+  it("shows an error object without a message as JSON", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(response({ error: { code: 3 } }));
+    await expect(new MidasClient({ fetch }).request("GET", "/db/NODE")).rejects.toThrow(
+      'with an error body: {"code":3}',
+    );
+  });
+
   it("enforces product compatibility", () => {
     const client = new MidasClient({ product: "gen", fetch: vi.fn() });
     expect(() => client.checkProduct(["civil"], "Civil-only resource")).toThrow(
@@ -116,6 +149,16 @@ describe("whole-table DELETE guard", () => {
       expect(fetch).not.toHaveBeenCalled();
     },
   );
+
+  it("refuses a lowercase method too, which fetch sends as DELETE", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(response({}));
+    const client = new MidasClient({ fetch });
+
+    await expect(client.request("delete" as never, "/db/MATL")).rejects.toBeInstanceOf(
+      DestructiveOperationError,
+    );
+    expect(fetch).not.toHaveBeenCalled();
+  });
 
   it("sends it once confirmed, and leaves a per-id DELETE alone", async () => {
     const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(async () => response({}));

@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   DestructiveOperationError,
   MidasClient,
+  MidasRequestError,
   defineDbResource,
 } from "../src";
 
@@ -77,6 +78,35 @@ describe("DbResource", () => {
 
     await expect(node.delete([1, 2], client)).rejects.toThrow();
     expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  // A bare string would be split into characters ("12" -> records 1 and 2),
+  // and these ids build URLs that can resolve to the bare table path.
+  it.each<[unknown]>([["12"], [["."]], [[".."]], [["1/.."]], [[""]]])(
+    "refuses %j as delete ids before sending anything",
+    async (ids) => {
+      const fetch = vi.fn<typeof globalThis.fetch>();
+      const node = defineDbResource(metadata);
+      await expect(
+        node.delete(ids as never, new MidasClient({ fetch })),
+      ).rejects.toBeInstanceOf(MidasRequestError);
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+
+  it("treats a null required-explicit field as missing", async () => {
+    // Both products refuse /db/PRES DIRECTION null exactly as they refuse an
+    // omitted one (2026-11-01).
+    const fetch = vi.fn<typeof globalThis.fetch>();
+    const pres = defineDbResource({
+      ...metadata,
+      endpoint: "/db/PRES",
+      requiredExplicitFields: ["ITEMS[].DIRECTION"],
+    });
+    await expect(
+      pres.create({ 4: { ITEMS: [{ LCNAME: "LC", DIRECTION: null }] } } as never, new MidasClient({ fetch })),
+    ).rejects.toBeInstanceOf(MidasRequestError);
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it("blocks whole-table deletion unless explicitly confirmed", async () => {

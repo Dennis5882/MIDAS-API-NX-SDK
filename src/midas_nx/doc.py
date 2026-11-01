@@ -9,9 +9,11 @@ the product through MIDASIT's relay, so it may be on a different computer than
 the one running this code — that is a normal deployment, not an edge case. It
 applies to ``open_project``/``save_as``/``import_*``/``export_*`` here, and
 equally to ``EXPORT_PATH`` on result tables, design reports and view captures.
-Derive the path from ``MidasClient.verify_connection()["user"]`` rather than
-from your own environment; see :func:`save_as` for the pattern and the failure
-mode, which is silent.
+Name a directory you know exists and is writable on that machine; do not
+derive one from ``MidasClient.verify_connection()["user"]``, which is the MAPI
+account's email, not the NX host's Windows profile (2026-08-31, and again on
+both products 2026-11-01). See :func:`save_as` for the failure mode, which is
+silent.
 """
 from __future__ import annotations
 

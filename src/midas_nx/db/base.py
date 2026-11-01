@@ -25,6 +25,7 @@ from typing import ClassVar, Optional, TypedDict
 from ..client import (
     DestructiveOperationError,
     MidasClient,
+    MidasRequestError,
     UnsupportedMethodError,
     get_default_client,
 )
@@ -276,7 +277,25 @@ class DbResource:
         Deleting an id that isn't there is a no-op, so this is safe to call
         without checking first. If you actually want to empty a table, say so
         with :meth:`delete_all`.
+
+        A bare string is refused rather than iterated: ``delete("12")`` would
+        otherwise delete records 1 and 2. So is an id that is empty, ``.``,
+        ``..`` or contains ``/``, since the URL it builds can resolve to the
+        bare table path, whose DELETE empties the table.
         """
+        if isinstance(ids, (str, bytes)):
+            raise MidasRequestError(
+                f"{cls.__name__}.delete() takes a list of ids, not one string {ids!r}; "
+                f"pass [{ids!r}] (Hint: a string would be split into characters)"
+            )
+        ids = list(ids)
+        for i in ids:
+            text = str(i)
+            if text in ("", ".", "..") or "/" in text:
+                raise MidasRequestError(
+                    f"{cls.__name__}.delete(): id {i!r} is not a record id; "
+                    f"DELETE {cls.ENDPOINT}/{text} could resolve to the whole table"
+                )
         client = client or get_default_client()
         cls._check(client, "DELETE")
         return {i: client.request("DELETE", f"{cls.ENDPOINT}/{i}") for i in ids}
