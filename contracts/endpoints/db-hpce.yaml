@@ -105,6 +105,12 @@ fields:
     documentedOptional: true
     safeToOmit: unverified
     provenance: manual
+    # Stored truncated to an integer on both products (2026-11-01, Gen Build
+    # 10/30/2026, Civil 10/31/2026): POST/PUT answer 0.025, 0.5 and 2.5 as
+    # sent, GET reads 0, 0 and 2, and the Pipe Cooling dialog shows 0 for the
+    # 0.025 record - so the truncation is in what is stored, not in the read.
+    # A real pipe diameter therefore reaches the analysis as 0. Recorded only,
+    # at the author's request; see docs/vendor_report_triage.md.
   - key: COEF
     description: >-
       대류 계수
@@ -196,6 +202,12 @@ fields:
     # failure, and sent both empty and omitted with no change to the error -
     # so the pair is declared and recorded, and nothing is claimed about what
     # it does. That failure is still open; see docs/live_verification_notes.md.
+    # 2026-11-01: it is not. Both fields name a /db/HSTG hydration stage - the
+    # dialog's Inflow Start/End are stage drop-downs - and with an existing
+    # stage's name the POST is accepted on both products; without one it
+    # answers Wrong Key. Live behaviour says the pair is needed; requirement
+    # stays `unstated` here because changing it changes a published type, and
+    # the author asked for a record only.
   - key: END_STAGE
     description: >-
       End Stage

@@ -6480,3 +6480,57 @@ records:
     "error status". bKEEP survived the round trip. Two "(TH:max)" /post/TABLE requests ran past 120 s while a
     model file grew to 26 GB, and a save right after could not be reopened, so the steps after them are not
     counted. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-11-01
+  endpoints:
+  - /db/ACTL
+  date: '2026-11-01'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), Build 10/30/2026 (author-confirmed from the About dialog 2026-11-01)
+  outcome: success
+  method: >-
+    On the author's request (2026-11-01, "Gen Civil 다 켜져 있으니 라이브로 테스트 해볼래?"), on the machine holding
+    this checkout, which is also the NX host, on an empty document saved to C:/temp afterwards. Gen's own /info
+    shape - ACWC, no CLATS - was accepted by POST and a PUT moving ITER 20 to 7 and TOL 0.001 to 0.0005 read
+    back as sent; the same POST with CLATS, the case's old payload, answers Wrong Field. The Gen case was split
+    from Civil's and completed create/read/update/read/delete/read through scripts/live_crud_check.py --tier
+    extras8, and npm replayed the same emitted fixture on Gen the same day (live-crud.mjs --endpoints /db/ACTL)
+    with the same answer. Evidence in docs/live_verification_notes.md.
+- id: ledger-read-2026-11-01-2
+  endpoints:
+  - /db/ACTL
+  date: '2026-11-01'
+  level: read
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.3), Build 10/31/2026 (author-confirmed from the About dialog 2026-11-01)
+  outcome: write_rejected
+  method: >-
+    Same session as ledger-write-2026-11-01. A PUT moving ITER 20 to 7 and TOL 0.001 to 0.0005 was answered as
+    sent and read back 20 and 0.001, while a PUT of ARDC false in the same record was stored. Civil's Main Control
+    Data dialog has no iteration count or single tolerance any more: its Tension/Compression Truss Element
+    sub-dialog shows Number of Increments and Displacement/Load/Work tolerances. Evidence in
+    docs/live_verification_notes.md.
+- id: ledger-write-2026-11-01-3
+  endpoints:
+  - /db/HPCE
+  date: '2026-11-01'
+  level: write
+  products:
+  - gen
+  - civil
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), Build 10/30/2026 (author-confirmed from the About dialog 2026-11-01)
+    civil: MIDAS Civil NX 2026 (v2.3), Build 10/31/2026 (author-confirmed from the About dialog 2026-11-01)
+  outcome: success
+  method: >-
+    On the author's request (2026-11-01, "더미 모델링은 상황에 맞게 다양하게 모델링 해야 할 수도 있음"), on the machine
+    holding this checkout, which is also the NX host, on empty documents saved to C:/temp afterwards: the base
+    model, an 8-node SOLID and a /db/HSTG hydration stage. With START_STAGE/END_STAGE naming that stage the POST
+    was accepted and the dialog showed the record; without them it answers Wrong Key. POST keys were renumbered
+    from 1. PUT TEMPER 15 to 20 read back 20 and a per-id DELETE removed one record. DIAMETER is stored as an
+    integer: 0.025 read back 0 and showed 0 in the dialog. A probe, not the harness case. Evidence in
+    docs/live_verification_notes.md.

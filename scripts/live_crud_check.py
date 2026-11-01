@@ -2848,7 +2848,13 @@ def _extras8_cases() -> List[Case]:
         #   CLATS field but does have an undocumented ACWC one; adding
         #   ACWC changes the error to "Wrong Key", suggesting it's
         #   read-only, not the cause either).
-        # Neither resolved as a fixture problem.
+        # 2026-11-01 (Gen Build 10/30/2026): Gen's half was the fixture after
+        # all. Gen's own /info shape - ACWC, no CLATS - is accepted by POST and
+        # its ITER/TOL survive a PUT; sending CLATS answers "Wrong Field".
+        # Civil (Build 10/31/2026) still keeps every field a PUT sends except
+        # ITER and TOL, and its dialog no longer has either: the truss
+        # sub-dialog shows Number of Increments and Displacement/Load/Work
+        # tolerances instead.
         Case(
             MainControlData,
             {"ARDC": True, "ANRC": True, "ITER": 20, "TOL": 0.001,
@@ -2858,7 +2864,18 @@ def _extras8_cases() -> List[Case]:
              "CSECF": False, "TRS": True, "CRBAR": False, "BMSTRESS": False,
              "CLATS": False},
             lambda p: p.get("TOL"), 0.001, 0.0005,
-            item_id=1,
+            item_id=1, products=("civil",),
+        ),
+        Case(
+            MainControlData,
+            {"ARDC": True, "ANRC": True, "ITER": 20, "TOL": 0.001,
+             "CSECF": False, "TRS": True, "ACWC": True, "BMSTRESS": False,
+             "CRBAR": False},
+            {"ARDC": True, "ANRC": True, "ITER": 7, "TOL": 0.0005,
+             "CSECF": False, "TRS": True, "ACWC": True, "BMSTRESS": False,
+             "CRBAR": False},
+            lambda p: p.get("TOL"), 0.001, 0.0005,
+            item_id=1, products=("gen",), confirmed=True,
         ),
         Case(
             PDeltaAnalysisControl,
@@ -3182,6 +3199,14 @@ def _extras10_seeds() -> List[SeedStep]:
             client=c)),
         SeedStep("solid10_seed", lambda c: _seed_hexahedral_solid(
             c, node_start=30, element_id=50)),
+        # The hydration stage /db/HPCE's START_STAGE/END_STAGE name. Id 90
+        # keeps it clear of the HSTG case's own record 1.
+        SeedStep("hstg10_seed", lambda c: ConstructionStageForHydration.create(
+            {90: {"NAME": "HSTG10_SEED", "bINITAL_TEMP": True, "INITIAL_TEMP": 20,
+                  "ADD_STEP": [1, 3, 7, 14, 28], "ACT_ELEM": ["SG10_SEED"],
+                  "ACT_BNGR": ["BG10_SEED"], "DACT_BNGR": [], "ACT_LOAD": [],
+                  "DACT_LOAD": []}},
+            client=c)),
     ]
 
 
@@ -3232,16 +3257,24 @@ def _extras10_cases() -> List[Case]:
         # isn't a documented one. Also tried the undocumented
         # START_STAGE/END_STAGE string fields /info reveals (absent from
         # the manual entirely) both empty and omitted -- no change.
+        # 2026-11-01 (Gen Build 10/30, Civil 10/31): "Wrong Key" is the stage
+        # lookup. Both fields name a /db/HSTG stage - the dialog's Inflow
+        # Start/End are stage drop-downs - and with hstg10_seed's name the
+        # POST is accepted on both products, frame or SOLID nodes alike.
+        # DIAMETER is stored truncated to an integer (0.025 shows 0 in the
+        # dialog), so the case reads TEMPER and sends a real pipe diameter.
         Case(
             PipeCooling,
             {"NAME": "HPCE_CRUD", "DIAMETER": 0.025, "COEF": 850, "HEAT": 4200,
-             "DENSITY": 1000, "TEMPER": 15, "FLOW_RATE": 20, "START_TIME": 0,
-             "END_TIME": 168, "ITEMS": [1, 2, 3, 4]},
+             "DENSITY": 1000, "TEMPER": 15, "FLOW_RATE": 20,
+             "START_STAGE": "HSTG10_SEED", "END_STAGE": "HSTG10_SEED",
+             "START_TIME": 0, "END_TIME": 168, "ITEMS": [1, 2, 3, 4]},
             {"NAME": "HPCE_CRUD", "DIAMETER": 0.025, "COEF": 850, "HEAT": 4200,
-             "DENSITY": 1000, "TEMPER": 20, "FLOW_RATE": 20, "START_TIME": 0,
-             "END_TIME": 168, "ITEMS": [1, 2, 3, 4]},
+             "DENSITY": 1000, "TEMPER": 20, "FLOW_RATE": 20,
+             "START_STAGE": "HSTG10_SEED", "END_STAGE": "HSTG10_SEED",
+             "START_TIME": 0, "END_TIME": 168, "ITEMS": [1, 2, 3, 4]},
             lambda p: p.get("TEMPER"), 15, 20,
-            item_id=1,
+            item_id=1, needs=("hstg10_seed",),
         ),
         # NODE1/NODE2 are the base model's own frame nodes; LCNAME is the
         # base model's own "LC_SCRATCH" load case.
@@ -5346,7 +5379,7 @@ TIERS: List[Tier] = [
     Tier("extras5", "batch 5: db.dynamic_loads (9 of 12, Hyper-S variants deferred)", _extras5_seeds, _extras5_cases),
     Tier("extras6", "batch 6: seismic-device family from db.boundary (SDVI/SDVE/SDST confirmed both products; SDHY/SDIS confirmed Gen-only; DRLS deferred)", _no_seeds, _extras6_cases),
     Tier("extras7", "batch 7: standalone/frame-attachable remainder of db.static_loads (PNLD/PNLA/FMLD/POSP/POSL confirmed; FBLA/EPST/EPSE fail live)", _extras7_seeds, _extras7_cases),
-    Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT/EIGV/BCCT/MVCT confirmed both products; HHCT confirmed Gen only and fails on Civil; NLCT confirmed Gen, and Civil from Build 10/17/2026; ACTL remains unresolved)", _extras8_seeds, _extras8_cases),
+    Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT/EIGV/BCCT/MVCT confirmed both products; HHCT confirmed Gen only and fails on Civil; NLCT confirmed Gen, and Civil from Build 10/17/2026; ACTL confirmed Gen from Build 10/30/2026, fails on Civil)", _extras8_seeds, _extras8_cases),
     Tier("extras9", "batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL -- all pass from Build 10/17/2026 except Gen's SBDO)", _extras9_seeds, _extras9_cases),
     Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/HAHS/STBK/HSTG confirmed; HAHS uses a real SOLID fixture; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
     Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT and /db/HECB confirmed with a SOLID hydration fixture", _extras11_seeds, _extras11_cases),

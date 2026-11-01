@@ -9,9 +9,9 @@ decides what a live run actually sends. The current baseline is `KNOWN` and
 constant was empty. PLAN.md and the live playbook state the counts, and
 `check_state_numbers.py` holds them to `scan()`.
 
-The remaining fixture-side lead is on a case nobody has watched pass:
-`/db/ACTL` sends `CLATS` on Gen even though the contract tags it Civil-only.
-The former GRDP/MVCT/NLNK-M1/TDMF findings were closed from the vendored
+No fixture-side lead remains. The last, `/db/ACTL` sending `CLATS` on Gen,
+closed on 2026-11-01: Gen's case now sends Gen's own `/info` shape and passes
+live. The former GRDP/MVCT/NLNK-M1/TDMF findings were closed from the vendored
 manual: one fixture was incomplete and three contracts had failed to encode
 the manual's explicit branch conditions.
 
@@ -85,9 +85,7 @@ CONTRACTS = ROOT / "contracts" / "endpoints"
 #: one takes a permitted source -- the manual, /info, or a recorded live
 #: observation. A fixture is never a source for a contract, which is why these
 #: are held here rather than merged.
-KNOWN: Dict[str, List[str]] = {
-    '/db/ACTL': ['gen: sends CLATS, tagged civil-only'],
-}
+KNOWN: Dict[str, List[str]] = {}
 
 KNOWN_CONTRACT_GAPS: Dict[str, List[str]] = {}
 

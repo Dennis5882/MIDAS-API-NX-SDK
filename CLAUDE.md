@@ -267,7 +267,7 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   proves the request shape is one the server accepts, and every field-name/enum/default defect
   found so far was invisible to reads. **Re-verifying adds a record; it never edits one**, which is
   what the old append-only `method` string in `coverage.json` got wrong twice. Until the migration
-  the same fact lived in two files — 39 contracts cite only a read session for an endpoint the
+  the same fact lived in two files — 41 contracts cite only a read session for an endpoint the
   ledger holds at write level, and the two disagreed about what `level` even meant. Those were
   audited on 2026-09-21 and **none is a contract defect**: a ref names the session a contract was
   promoted from, and what would make a stale one worth acting on is the later write having revealed
@@ -523,8 +523,8 @@ Two things that have already caused rework:
   a design contract can never carry `provenance: info_schema`. The three `/db/*` exceptions
   are the Civil Hyper-S trio `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1` and `/db/IEHG-TRUSS-M1`.
 - **`scripts/live_crud_check.py` write coverage is tracked in the script itself.** Cases carry
-  `confirmed=True` only once someone has watched them pass live (310 of 338 cases as of
-  2026-10-27; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
+  `confirmed=True` only once someone has watched them pass live (311 of 339 cases as of
+  2026-11-01; the first 43 landed 2026-07-29 on Civil NX, after `/db/NMAS`'s crash was
   root-caused and worked around — see above); a failure of
   a confirmed case is a **regression** and exits 1, while a failure of an
   unconfirmed one exits 3 and means "triage the fixture first". Don't flip `confirmed` to silence

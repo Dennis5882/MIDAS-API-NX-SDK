@@ -13164,3 +13164,57 @@ including a `/doc/SAVE` after an import whose file would not reopen. Civil
 kept answering and returned to an empty document normally. Measured once;
 whether `(TH:max)` reads per-step results on Civil, or something else made
 the file grow, is open. Do not repeat it on a disk without room to spare.
+
+
+## 2026-11-01 (Gen Build 10/30/2026, Civil Build 10/31/2026) - `/db/ACTL`: Gen's failure was the fixture, Civil's is not
+
+On empty documents on the NX host, each saved to `C:/temp` afterwards.
+
+- **Gen accepts its own `/info` shape.** `POST /db/ACTL` with `ARDC`, `ANRC`,
+  `ITER`, `TOL`, `CSECF`, `TRS`, `ACWC`, `BMSTRESS`, `CRBAR` created record 1,
+  and a PUT moving `ITER` 20 to 7 and `TOL` 0.001 to 0.0005 read back as sent.
+  The case had always sent Civil's `CLATS`, which Gen does not declare, and
+  that POST answers `Wrong Field`. On this build POST wants the whole record:
+  `{ITER, TOL}` alone, the booleans alone, the record without `ACWC`, and `{}`
+  all answer `Wrong Field`, while the record without `CRBAR` reached the
+  existing-key check (`Key Already Exist`). PUT took every partial body. The
+  2026-08-16 note that `/info`'s exact shape was refused on Gen was measured on
+  build 08/14/2026 and does not hold now. The Gen case was split from Civil's
+  and passes through both harnesses.
+- **Civil keeps every field but `ITER` and `TOL`.** The same PUT answered the
+  record as sent and read back 20 and 0.001; a PUT of `ARDC: false` in the
+  same record was stored. Civil's `/info` still describes `ITER` as "Number of
+  Iterations per Load Case", but its Main Control Data dialog no longer shows
+  it: the Tension/Compression Truss Element sub-dialog holds Number of
+  Increments, an intermediate output choice, and Displacement/Load/Work
+  tolerances (author's screenshots). The two API fields appear to have no
+  setting behind them any more. Unconfirmed on Civil.
+- `CLATS` is "Change Local Axis of Tapered Section" in Civil's `/info`, not
+  the dialog's "Apply Classical formula" line, which no field names.
+
+
+## 2026-11-01 (Gen Build 10/30/2026, Civil Build 10/31/2026) - `/db/HPCE`: the stage names were the missing key, and `DIAMETER` is stored as an integer
+
+On empty documents on the NX host, with the harness base model, an 8-node
+SOLID (nodes 30-37), and one `/db/HSTG` hydration stage `HSTG_CRUD`, each
+saved to `C:/temp` afterwards. Identical on both products.
+
+- **`Wrong Key` was the stage lookup, not `ITEMS`.** Without
+  `START_STAGE`/`END_STAGE` the POST answers `Wrong Key` whether `ITEMS` names
+  frame nodes `[1, 2, 3, 4]` or SOLID nodes `[30, 31]`. With both naming
+  `HSTG_CRUD` it is accepted for frame nodes, two SOLID nodes and four. With
+  the stage names and no `ITEMS` it answers `Wrong Field`. The Pipe Cooling
+  dialog's Inflow Start/End are drop-downs of hydration stages (author's
+  screenshots), and the dialog showed the stage, the 0/168 hr offsets and the
+  four nodes for the API-made record. The manual documents neither field.
+- **POST keys are renumbered.** Keys 3, 4, 5 and later 9 landed at 1, 2, 3, 4
+  while each response echoed the key sent - the `/db/NLLP` and `/db/MVLDbs`
+  pattern. `GET /db/HPCE/3` answered `Not Found Key` straight after a POST of
+  3 had answered success.
+- **`DIAMETER` is stored as an integer.** POST 0.025 and PUT 0.5, 1, 2.5, 30
+  were each answered as sent and read back 0, 0, 1, 2, 30. The dialog showed
+  0 for a record POSTed with 0.025, on both products, so the truncation is in
+  storage. `TEMPER` 15 to 20 round-tripped and a per-id DELETE removed one
+  record.
+- The live case now seeds a hydration stage and names it; it has not yet been
+  run through either harness.

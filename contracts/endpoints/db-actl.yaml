@@ -164,6 +164,12 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    # Civil NX keeps neither ITER nor TOL: a PUT is answered as sent and reads
+    # back 20 / 0.001, while ARDC in the same record is stored (2026-10-26 on
+    # a tutorial model, Build 10/31/2026 on 2026-11-01). Civil's dialog no
+    # longer shows either; its truss sub-dialog holds increments and
+    # displacement/load/work tolerances, which no field here names. Gen stores
+    # both. Recorded only - see docs/vendor_report_triage.md.
   - key: TOL
     description: >-
       Convergence Tolerance
@@ -173,6 +179,7 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    # Not stored on Civil NX - see ITER.
   - key: ACWC
     description: >-
       Auto Constraint for Wall Elements Connectivity
@@ -194,7 +201,9 @@ fields:
     # This repository already has both halves and they do not settle it: a
     # general Gen build's /info declares it (so not Japan-only by schema),
     # and a live Gen send answered `Wrong Key` - on an endpoint where Gen
-    # refuses every payload, including a bare {ITER, TOL}.
+    # then refused every payload, including a bare {ITER, TOL}. On Build
+    # 10/30/2026 (2026-11-01) Gen's /info shape with ACWC, no CLATS, is
+    # accepted by POST and round-trips; it is CLATS that answers Wrong Field.
     # Gen NX only. The section describes one endpoint for both products and
     # says nothing about either; the `products` tag is a measurement from
     # /info, not a documentation claim. See MD-46.

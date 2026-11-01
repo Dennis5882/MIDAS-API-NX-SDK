@@ -223,6 +223,37 @@ MIDASIT's internal Jira belongs in anything shipped.
   mode-dependent; not isolated. Gen also refuses `iINC_NLA: 1` without
   `iLSTEP` (`Item:Number of Load Steps`), which Civil fills in itself.
 
+### `/db/ACTL` on Civil drops `ITER` and `TOL` (2026-11-01) - recorded, not drafted
+
+The author asked for this to be recorded only. A Civil PUT moving `ITER` 20
+to 7 and `TOL` 0.001 to 0.0005 is answered with the record as sent and reads
+back 20 and 0.001, while `ARDC: false` in the same record is stored - the A-3
+signature again. Measured on a tutorial model on 2026-10-26 and on an empty
+document on Build 10/31/2026. Gen stores both since Build 10/30/2026.
+
+What would make it a report item rather than a quirk: Civil's Main Control
+Data dialog no longer has either setting. Its Tension/Compression Truss
+Element sub-dialog shows Number of Increments, an intermediate output choice
+and Displacement/Load/Work tolerances, and `/info` still describes `ITER` as
+"Number of Iterations per Load Case". So the API offers two fields with no
+setting behind them, and nothing for the settings that replaced them. Only
+the author's screenshots establish the dialog side; nobody has asked whether
+the change is deliberate. Evidence in `docs/live_verification_notes.md`.
+
+### `/db/HPCE` stores `DIAMETER` as an integer (2026-11-01) - recorded, not drafted
+
+The author asked for this to be recorded only. On both products a POST or
+PUT of `DIAMETER` 0.025, 0.5 or 2.5 is answered with the value as sent and
+reads back 0, 0 and 2; 1 and 30 survive. The Pipe Cooling dialog shows 0 for
+the 0.025 record on both, so the value is truncated when stored, not when
+read: a real pipe diameter set through the API reaches the analysis as 0. The
+A-3 signature again, with an engineering consequence. Gen Build 10/30/2026,
+Civil Build 10/31/2026; not compared with a diameter typed into the dialog.
+
+Not a candidate on its own: the endpoint answers `Wrong Key` until
+`START_STAGE`/`END_STAGE` name a hydration stage. The manual omits both
+fields; that is a documentation finding for the manual channel.
+
 ## Not candidates
 
 These look like findings in the coverage tables and are not ours to report,

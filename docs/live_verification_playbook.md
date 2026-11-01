@@ -46,12 +46,12 @@ scoreboard.
   raises on Gen's `"Analysis is not allowed."` and Civil's `"error status"`,
   which both answer as HTTP 200. No type or export changed. The npm
   changelog's `Unreleased` is empty.
-- **Coverage: 400/400 implemented, 312 write / 88 read.** Of the 225 `/db`
-  endpoints, 210 are write-level and 15 are not.
-- **Fixture (`schema/live-cases.json`, version 6):** 338 cases over 259
-  endpoints; 310 confirmed over 247 endpoints; 9 base-model steps; 83 named
+- **Coverage: 400/400 implemented, 314 write / 86 read.** Of the 225 `/db`
+  endpoints, 212 are write-level and 13 are not.
+- **Fixture (`schema/live-cases.json`, version 6):** 339 cases over 259
+  endpoints; 311 confirmed over 248 endpoints; 9 base-model steps; 84 named
   seeds; 0 unsupported.
-- **npm has replayed all 310 confirmed cases** on every product each declares.
+- **npm has replayed all 311 confirmed cases** on every product each declares.
   Keep that gap at 0: every new confirmed case goes through both harnesses.
 - **Contracts: 384 endpoints + 87 result tables.** The three drafts left, the
   IEHG trio, have no permitted source; that is final.
@@ -76,13 +76,13 @@ python scripts/info_baseline.py --divergence --check          # OK
 python scripts/report_dropped_manual_rows.py \
   --manual-api-repo "E:\AI Study\MIDAS-API" --check    # exit 0
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
-python scripts/check_fixture_contract.py --check       # 1 fixture lead over 1
-                                          # endpoint, 0 contract gaps over 0
-python scripts/report_npm_replay_coverage.py --check   # 310 cases over 247
-                                          # endpoints; every product: 310
-python scripts/check_verification_lag.py --check       # 40, ceiling 40
+python scripts/check_fixture_contract.py --check       # 0 fixture leads over 0
+                                          # endpoints, 0 contract gaps over 0
+python scripts/report_npm_replay_coverage.py --check   # 311 cases over 248
+                                          # endpoints; every product: 311
+python scripts/check_verification_lag.py --check       # 41, ceiling 41
 python scripts/verification_ledger.py                  # 397 endpoints:
-                                          # 85 read, 312 write
+                                          # 83 read, 314 write
 python scripts/report_unmerged_tables.py --check       # exit 0
 python scripts/check_state_numbers.py --check          # OK; it checks this
                                           # block's own numbers too
@@ -294,7 +294,7 @@ DOEL and SBDO - all passed too, and every other unconfirmed Civil case was re-ru
 `/db/DSTL` passed (as it has on Civil since 2026-09-01; it is one case per
 product now, Civil confirmed) and the other 23 matched their rows.
 
-### 7 endpoints with a case that has never passed
+### 6 endpoints with a case that has never passed
 
 | endpoint | last answer / reason | blocker |
 | --- | --- | --- |
@@ -302,7 +302,6 @@ product now, Civil confirmed) and the other 23 matched their rows.
 | `/db/WVLD` | `Wrong Field` | refuses even a bare `NAME`, and still with `/info`'s `NAME_THIS`/`TRAJ`/`USERGRID` added (2026-10-26) |
 | `/db/HPCE` | `Wrong Key` | product finding; unchanged on the heat-of-hydration tutorial model and with `START_STAGE`/`END_STAGE` named (2026-10-26) |
 | `/db/SINF`, `/db/MVLDpl` | POST accepted, record not stored | product finding; no bundled Civil model carries either |
-| `/db/ACTL` | Gen refuses every payload; Civil answers a PUT with the record as sent and keeps neither `ITER` nor `TOL`, on a tutorial model too (2026-10-26) | settled product behaviour |
 
 ### 8 endpoints with no case
 
@@ -329,6 +328,7 @@ They move no count. None is actionable unless its cause changes.
 | `/db/LLANop`, `/db/SLANop` | gen | refused under `BS`, the code ch08 gives Gen for this family - `contains errors.(Item:Wheel Spacing)`, the first time the item was recorded (2026-09-27) |
 | `/db/LCOM-SEISMIC` | civil | documented `ANAL="RS"` answers `The Load Combination Type is not supported.` |
 | `/db/HHCT` | civil | POST accepted, expected value not read back |
+| `/db/ACTL` | civil | a PUT is answered as sent and keeps every field but `ITER` and `TOL`, on a tutorial model too (2026-10-26, Build 10/31/2026 on 2026-11-01); Civil's dialog no longer has either. Gen's case passes since 2026-11-01 |
 | `/db/DSTL` | gen | `Errors detected in Steel Design Control Data.` |
 | `/db/SBDO` | gen | `Unknown Error` with the domain it names present (Build 10/17/2026); Civil's own case passes |
 | `/db/POGD` | gen | `Wrong Field` for the payload Civil accepts |
@@ -338,8 +338,8 @@ They move no count. None is actionable unless its cause changes.
 | `/db/PHGE` | both | `Unknown Error`: `HINGE_TYPE` names a pushover hinge property the base model lacks and no endpoint creates; round-trips on Civil's MNL-01 model |
 | `/db/TDNA`, `/db/TDPL` | both | `Not Registered String` for `IS_DB_TDNA_NOTENSIONCALC` on the base model (TDPL behind it); both round-trip on Civil's PSC tutorial model (2026-10-26), so the base model lacks a precondition |
 
-`check_fixture_contract.py`'s one lead, `/db/ACTL` sending `CLATS` on Gen, is
-covered above.
+`check_fixture_contract.py` has no fixture lead left. The last, `/db/ACTL`
+sending `CLATS` on Gen, closed on 2026-11-01 - see the table above.
 
 ### The unmerged tables
 

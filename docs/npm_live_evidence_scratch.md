@@ -1641,3 +1641,17 @@ on an empty Gen document after the Python harness passed the same cases.
 **Count:** 0 new endpoints (all five were replayed on Civil on 2026-10-26);
 184 distinct `/db` endpoints, 59 distinct `/DESIGN` endpoints and 4 distinct
 result-table operations; 247 distinct npm public-API operations overall.
+
+### 2026-11-01 - `/db/ACTL` on Gen NX
+
+`node scripts/live-crud.mjs --product gen --endpoints /db/ACTL --save-dir C:/temp`,
+on Build 10/30/2026 after the Gen case was split from Civil's and stopped
+sending `CLATS`. `PASS /db/ACTL`.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/ACTL` | 2026-11-01 | Gen |
+
+**Count:** 1 new endpoint; 185 distinct `/db` endpoints, 59 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 248 distinct npm
+public-API operations overall.
