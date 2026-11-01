@@ -6,6 +6,8 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.10.6 - 2026-11-01
+
 > **Behaviour changes.** Three calls that used to reach the server now
 > reject before sending anything.
 
