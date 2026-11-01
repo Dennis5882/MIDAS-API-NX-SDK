@@ -13218,3 +13218,91 @@ saved to `C:/temp` afterwards. Identical on both products.
   record.
 - The live case now seeds a hydration stage and names it; it has not yet been
   run through either harness.
+
+
+## 2026-11-01 (Gen Build 10/30/2026, Civil Build 10/31/2026) - `/db/PHGE` takes the element from the Assign key, and needs a hinge property the API cannot make
+
+On the harness base model in a new document on each product, saved to
+`C:/temp`. The author defined a Beam/Column, RC, M-theta, skeleton hinge
+property `PH_TEST` (My and Mz, I&J-end, trilinear) in Pushover > Hinge
+Properties > Define Pushover Hinge Properties. Identical on both products.
+
+- **`Unknown Error` is a missing hinge property.** Before `PH_TEST` existed -
+  including one attempt where the dialog was closed without a name - every
+  POST and PUT answered `Unknown Error`, and the fixture's `Myz_15` still does.
+  With it, `POST` of `{ID: 1, TYPE: BEAM, HINGE_TYPE: PH_TEST, FIBER_KEY: 0}`
+  under key 1 was accepted and read back. No endpoint creates a pushover hinge
+  property, so the base model cannot carry this case without the dialog.
+- **The Assign key is the element, not a sequence number.** Key 99 and keys
+  5 and 6 answer `Pushover Hinge has been entered in the element no. <key>
+  that has not been specified.` whatever `ID` says; key 4 (the plate) answers
+  `Type of the element does not correspond to the Element Type of the Pushover
+  Hinge Type.` with `ID: 1`; key 3 with `ID: 3` is accepted. The manual says
+  the opposite (MD-64).
+- **`ID` is echoed and not stored.** Records POSTed with `ID` 2 and 3, and a
+  PUT of `ID: 2`, were each answered as sent and read back `ID: 1`.
+- Per-id DELETE removed key 2 and left key 1.
+- The fixture case still names `Myz_15` and stays unconfirmed: it cannot pass
+  on the base model.
+
+
+## 2026-11-01 (same builds) - undocumented `/db/PHGT` and `/db/IEHP` answer; `/db/PHGT` reads hinge types and refuses every write
+
+Asked whether a pushover hinge property can be defined through the API, the
+manual has no such endpoint (ch14 lists only the assignment, `/db/PHGE`).
+`GET /info/db/<name>` was tried read-only for sixteen guessed names on both
+products. Two answered with a schema on both, identical across products:
+**`/db/PHGT`** (pushover hinge type: `NAME`, `ELEM_TYPE`, `DEFINITION`,
+`MATERIAL_TYPE`, `HINGE_TYPE`, `SKCV`/`SKCV_SUB` component arrays with `bDOF`,
+`YLDS`, `MSNR`, ...) and **`/db/IEHP`** (inelastic hinge property; `GET /db/IEHP`
+answered empty on the dummy model, and nothing was written to it).
+`PHPR`, `PHTP`, `PHGP`, `PHGD`, `PHGN`, `PHNG`, `PHPP`, `PHIN`, `PHDF`, `PHTY`,
+`PHGE-PROP`, `PHPRO`, `PUHG`, `PHHG` were 404.
+
+- `GET /db/PHGT` returns the dialog-defined `PH_TEST` in full on both.
+- **Every `/db/PHGT` write was refused.** A POST of `PH_TEST`'s own record
+  under a new name answers `[Error] No DOF has been assigned to the Pushover
+  Hinge Type.` - and so do every `bDOF` true, no `SKCV_SUB`, `SKCV_SUB` a copy
+  of `SKCV`, `HINGE_TYPE` 1, and a six-entry minimal `SKCV`, so the server is
+  not reading the `SKCV` it is sent. A PUT of the record unchanged but for
+  `DESC`, and one renaming it, answer `Unknown Error` and change nothing.
+- So a pushover hinge type can be read through the API but only made in the
+  dialog, as far as these payloads go. Neither endpoint is in either SDK; adding
+  one is a public-export decision and was not taken. Whether `/db/IEHP` can
+  create the inelastic hinge property `/db/IEHG` needs is untested.
+
+
+## 2026-11-01 (same builds) - `/db/IEHP` creates inelastic hinge properties, and `/db/IEHG` is confirmed on both products
+
+Following the `/db/PHGT` probe. The author defined `IH_TEST` (Beam-Column,
+RC, M-Theta, skeleton, Fx/Fy/Fz on Gen, My/Mz on Civil) in Properties >
+Inelastic Hinge > Define Inelastic Hinge Properties.
+
+- **`/db/IEHP` round-trips, unlike `/db/PHGT`.** `GET` returned `IH_TEST` in
+  full; `POST` of that record renamed `IH_API` was accepted and read back with
+  no field differing, under id 2 although key 5 was sent (renumbered, echoed);
+  `PUT` of `DESC` was stored. A bare `NAME`, or `NAME` with `DEFINITION` and
+  `MATERIAL_TYPE`, answers `Wrong Field`; Civil's message window named the
+  missing `COMPONENT_DIR` and `HYSTERESIS_MODEL`. `MATERIAL_TYPE: "STEEL"` is
+  accepted. `YIELDSTRENGTHOPT: 2` is refused (`Item:Yield Strength(Surface)
+  Calculation Method`); 0 is accepted.
+- **`/db/IEHG` needs `FIBER_NAME`.** `PROP_NAME` alone answers `Wrong Field`;
+  with `FIBER_NAME: ""` the shape is accepted. On element 1, the base model's
+  RC column, `IH_TEST` and `IH_API` are then refused with `Errors detected in
+  Inelastic Hinge Data.(Item:Inelastic Hinge Property)` - and the dialog's own
+  Assign refuses the same with `When calculating Inelastic Hinge Prop. Rebar
+  data is improper. (Element 1)`. With every `YIELDSTRENGTHOPT` set to 0 the
+  RC property assigns to element 1; a `STEEL` copy assigns to a steel pipe
+  column (the design tier's material and section seeds).
+- Two oddities: key 4 (the plate) is refused as `The element no. 65 is an
+  element type in which Inelastic Hinge cannot be entered.`, naming an element
+  the model does not have; key 99 (no such element) answers `{"message": ""}`
+  and stores nothing.
+- The new `/db/IEHG` case (extras20, `iehp_seed` from
+  `scripts/fixtures/iehp_dialog_record.json`) and the reworked `/db/HPCE` case
+  passed both harnesses on both products and are confirmed. The npm harness
+  writes `/db/IEHP` through `defineDbResource`, allowed for setup only.
+- The 2026-10-26 row said `/db/HPCE` still answered `Wrong Key` "with
+  `START_STAGE`/`END_STAGE` named" on the heat-of-hydration tutorial model.
+  Today the same fields with an existing stage's name are what made it pass;
+  which names were sent that day is not recorded.

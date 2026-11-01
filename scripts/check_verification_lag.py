@@ -53,8 +53,10 @@ VERIFICATION = ROOT / "contracts" / "verification"
 #: /db/HPCE (both products) turned write-level that day while their contracts
 #: still cite the 2026-08-16/17 read sweeps, and neither write found the
 #: contract wrong - ACTL's Gen fixture had sent Civil's CLATS, and HPCE's
-#: stage fields were already recorded from /info.
-LAGGING_AT_MOST = 41
+#: stage fields were already recorded from /info. Raised to 42 the same day
+#: for /db/IEHG, write-level once /db/IEHP could seed its hinge property; its
+#: contract's two fields were right, and gained a note on FIBER_NAME "".
+LAGGING_AT_MOST = 42
 
 
 def _ledger_levels() -> dict[str, str]:

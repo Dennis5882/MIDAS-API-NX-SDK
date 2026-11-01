@@ -2105,6 +2105,2114 @@
         }
       }
     },
+    "iehp_seed": {
+      "endpoint": "/db/IEHP",
+      "records": {
+        "1": {
+          "NAME": "IH_SEED_A",
+          "DESC": "",
+          "DEFINITION": "SKEL",
+          "HINGE_TYPE": "LUMP",
+          "INTERACTION_TYPE": "NONE",
+          "MATERIAL_TYPE": "RC",
+          "LOCATION": "I",
+          "USEIEHCLOCATION": "AUTO",
+          "EXIST_IJ_PROP": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "MULT_DATA": [],
+          "COMPONENT_DIR": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false
+          ],
+          "HYSTERESIS_MODEL": [
+            "KIN",
+            "KIN",
+            "KIN",
+            "KIN",
+            "KIN",
+            "KIN",
+            "",
+            "",
+            ""
+          ],
+          "HINGE_LOCATION": [
+            3,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "ALL_PROP": [
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {},
+            {}
+          ],
+          "ALL_SUBPROP": [
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {},
+            {}
+          ]
+        },
+        "2": {
+          "NAME": "IH_SEED_B",
+          "DESC": "",
+          "DEFINITION": "SKEL",
+          "HINGE_TYPE": "LUMP",
+          "INTERACTION_TYPE": "NONE",
+          "MATERIAL_TYPE": "RC",
+          "LOCATION": "I",
+          "USEIEHCLOCATION": "AUTO",
+          "EXIST_IJ_PROP": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "MULT_DATA": [],
+          "COMPONENT_DIR": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false
+          ],
+          "HYSTERESIS_MODEL": [
+            "KIN",
+            "KIN",
+            "KIN",
+            "KIN",
+            "KIN",
+            "KIN",
+            "",
+            "",
+            ""
+          ],
+          "HINGE_LOCATION": [
+            3,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "ALL_PROP": [
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {},
+            {}
+          ],
+          "ALL_SUBPROP": [
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 1,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {
+              "KINEMA": {
+                "SYMMETRIC": 0,
+                "YIELDSTRENGTHOPT": 0,
+                "DEFORMDEFINETYPE": 1,
+                "INITSTIFFNESS": 1,
+                "PALPHADELTA": 0,
+                "COMPONENTPROPS": {
+                  "CRACKFORCE": [
+                    0.5,
+                    0.5
+                  ],
+                  "CRACKMOMENT": [
+                    0.5,
+                    0.5
+                  ],
+                  "YIELDFORCE": [
+                    1,
+                    1
+                  ],
+                  "YIELDMOMENT": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEFORCE": [
+                    1,
+                    1
+                  ],
+                  "ULTIMATEMOMENT": [
+                    1,
+                    1
+                  ],
+                  "YIELDDISP1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDROTN1ST": [
+                    0.1,
+                    0.1
+                  ],
+                  "YIELDDISP2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDROTN2ND": [
+                    0.2,
+                    0.2
+                  ],
+                  "YIELDDISP3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "YIELDROTN3RD": [
+                    0.3,
+                    0.3
+                  ],
+                  "STIFFRATIO1ST": [
+                    0.5,
+                    0.5
+                  ],
+                  "STIFFRATIO2ND": [
+                    0.1,
+                    0.1
+                  ],
+                  "DEFORMCAPACITY": [
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ],
+                    [
+                      0.5,
+                      1,
+                      2,
+                      4,
+                      8
+                    ]
+                  ]
+                }
+              }
+            },
+            {},
+            {}
+          ]
+        }
+      },
+      "allowRenumbering": true
+    },
     "design_steel_material": {
       "endpoint": "/db/MATL",
       "records": {
@@ -13255,7 +15363,7 @@
         "POST",
         "PUT"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "createPayload": {
         "NAME": "HPCE_CRUD",
         "DIAMETER": 0.025,
@@ -13299,9 +15407,13 @@
         "updated": 20
       },
       "needs": [
+        "groups10",
         "hstg10_seed"
       ],
       "setup": [
+        {
+          "seed": "groups10"
+        },
         {
           "seed": "hstg10_seed"
         }
@@ -16378,6 +18490,45 @@
       "setup": [
         {
           "seed": "fiber_materials"
+        }
+      ],
+      "blockedSeeds": [],
+      "crashes": null
+    },
+    {
+      "tier": "extras20",
+      "endpoint": "/db/IEHG",
+      "name": "Assign Inelastic Hinge Properties",
+      "id": 1,
+      "products": [
+        "gen",
+        "civil"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "confirmed": true,
+      "createPayload": {
+        "PROP_NAME": "IH_SEED_A",
+        "FIBER_NAME": ""
+      },
+      "updatePayload": {
+        "PROP_NAME": "IH_SEED_B",
+        "FIBER_NAME": ""
+      },
+      "expected": {
+        "created": "IH_SEED_A",
+        "updated": "IH_SEED_B"
+      },
+      "needs": [
+        "iehp_seed"
+      ],
+      "setup": [
+        {
+          "seed": "iehp_seed"
         }
       ],
       "blockedSeeds": [],

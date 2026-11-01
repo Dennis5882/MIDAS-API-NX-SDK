@@ -42,16 +42,16 @@ scoreboard.
   and `MVLDeu`, `MVLDbs` and `PHGE` round-trip on those models. The design-function harness ran end to end for the first time, and the TABLE
   `EXPORT_PATH` and REPORT files were inspected on the host, so those eight
   design endpoints are write-level now (live notes, 2026-10-24).
-- **2.10.5 is published on PyPI and npm** (2026-10-31): `doc.analyze()`
-  raises on Gen's `"Analysis is not allowed."` and Civil's `"error status"`,
-  which both answer as HTTP 200. No type or export changed. The npm
-  changelog's `Unreleased` is empty.
-- **Coverage: 400/400 implemented, 314 write / 86 read.** Of the 225 `/db`
-  endpoints, 212 are write-level and 13 are not.
-- **Fixture (`schema/live-cases.json`, version 6):** 339 cases over 259
-  endpoints; 311 confirmed over 248 endpoints; 9 base-model steps; 84 named
+- **2.10.6 is published on PyPI and npm** (2026-11-01): `delete()` refuses
+  string and path-like ids, npm's whole-table DELETE guard is
+  case-insensitive, and `/db/PRES` `DIRECTION: null` counts as missing; npm
+  `getTable()` gains two options. The npm changelog's `Unreleased` is empty.
+- **Coverage: 400/400 implemented, 315 write / 85 read.** Of the 225 `/db`
+  endpoints, 213 are write-level and 12 are not.
+- **Fixture (`schema/live-cases.json`, version 6):** 340 cases over 260
+  endpoints; 313 confirmed over 250 endpoints; 9 base-model steps; 85 named
   seeds; 0 unsupported.
-- **npm has replayed all 311 confirmed cases** on every product each declares.
+- **npm has replayed all 313 confirmed cases** on every product each declares.
   Keep that gap at 0: every new confirmed case goes through both harnesses.
 - **Contracts: 384 endpoints + 87 result tables.** The three drafts left, the
   IEHG trio, have no permitted source; that is final.
@@ -78,11 +78,11 @@ python scripts/report_dropped_manual_rows.py \
 python scripts/live_crud_check.py --check-cases        # silent; exit 0
 python scripts/check_fixture_contract.py --check       # 0 fixture leads over 0
                                           # endpoints, 0 contract gaps over 0
-python scripts/report_npm_replay_coverage.py --check   # 311 cases over 248
-                                          # endpoints; every product: 311
-python scripts/check_verification_lag.py --check       # 41, ceiling 41
+python scripts/report_npm_replay_coverage.py --check   # 313 cases over 250
+                                          # endpoints; every product: 313
+python scripts/check_verification_lag.py --check       # 42, ceiling 42
 python scripts/verification_ledger.py                  # 397 endpoints:
-                                          # 83 read, 314 write
+                                          # 82 read, 315 write
 python scripts/report_unmerged_tables.py --check       # exit 0
 python scripts/check_state_numbers.py --check          # OK; it checks this
                                           # block's own numbers too
@@ -294,21 +294,19 @@ DOEL and SBDO - all passed too, and every other unconfirmed Civil case was re-ru
 `/db/DSTL` passed (as it has on Civil since 2026-09-01; it is one case per
 product now, Civil confirmed) and the other 23 matched their rows.
 
-### 6 endpoints with a case that has never passed
+### 5 endpoints with a case that has never passed
 
 | endpoint | last answer / reason | blocker |
 | --- | --- | --- |
 | `/db/EPST`, `/db/EPSE` | `Wrong Field` | every documented value set on EPST varied (`SEL_TYPE`, `EP_TYPE`, `ELEM_TYPE`, `DIR`); EPSE shares its fields |
 | `/db/WVLD` | `Wrong Field` | refuses even a bare `NAME`, and still with `/info`'s `NAME_THIS`/`TRAJ`/`USERGRID` added (2026-10-26) |
-| `/db/HPCE` | `Wrong Key` | product finding; unchanged on the heat-of-hydration tutorial model and with `START_STAGE`/`END_STAGE` named (2026-10-26) |
 | `/db/SINF`, `/db/MVLDpl` | POST accepted, record not stored | product finding; no bundled Civil model carries either |
 
-### 8 endpoints with no case
+### 7 endpoints with no case
 
 | endpoint | what stands in the way |
 | --- | --- |
-| `/db/IEHG` | `PROP_NAME` names an inelastic hinge property that no endpoint creates (`FIBER_NAME`'s FIBR division can be built since 2026-09-28) |
-| `/db/IEHG-BEAM-M1` | `INEL_PROP_NAME` names an inelastic hinge property that no endpoint creates |
+| `/db/IEHG-BEAM-M1` | `INEL_PROP_NAME` names an inelastic hinge property; the undocumented `/db/IEHP` creates one since 2026-11-01 (it is how `/db/IEHG`'s case is seeded), so this is a lead, not yet tried |
 | `/db/EPMT-M1` | contract is `/info`-only: no value stated anywhere, so any payload would be hand-written |
 | `/db/REBB`, `/db/REBR` | ch24 design rebar: the manual's long keys answer `Wrong Field`, `/info`'s short keys `Unknown Error`; each needs a designed RC member |
 | `/db/IEHG-GL-M1`, `/db/IEHG-PSS-M1`, `/db/IEHG-TRUSS-M1` | no manual schema and `/info` 404s — **never** build a fixture |
@@ -316,7 +314,7 @@ product now, Civil confirmed) and the other 23 matched their rows.
 Write-level without a fixture case, each from a probe the base model cannot
 reproduce: `/db/CSCS`, `/db/TDCS` (Civil's PSC tutorial model, 2026-10-26),
 `/db/DRLS` and `/db/REBW` (manual probes), `/db/MVLDbs` (the BD37 tutorial model, 2026-10-26; its contract still needs a shape decision on the mutually exclusive `LCDATA_*` objects before a case). `/db/IMFM`, `/db/IMFM-M1`, `/db/FIBR`
-and `/db/RCHK` have confirmed cases since 2026-09-28.
+and `/db/RCHK` have confirmed cases since 2026-09-28; `/db/HPCE` and `/db/IEHG` since 2026-11-01.
 
 ### Unconfirmed cases on endpoints already at write level
 
@@ -335,7 +333,7 @@ They move no count. None is actionable unless its cause changes.
 | `/db/FBLA` | both | `Unknown Error` on the fixture payload; write-level from a downstream app's floor-load model (Gen, 2026-10-20) |
 | `/db/STCT` | both | Gen: drops `iITER` (`wrote 30, read back None`). Civil: never measured - the first `POST /db/STAG` auto-creates `/db/STCT` id 1 with product defaults, so the case's own POST of id 1 is refused by both harnesses before it is sent (pinned 2026-09-27; Gen does not auto-create) |
 | `/db/RPSC` | gen | the Civil case passes on a seeded PSC section (2026-10-26); on Gen that section seed is refused - `The section type ... is either not supported by the program or incorrect` (2026-10-27) |
-| `/db/PHGE` | both | `Unknown Error`: `HINGE_TYPE` names a pushover hinge property the base model lacks and no endpoint creates; round-trips on Civil's MNL-01 model |
+| `/db/PHGE` | both | `Unknown Error`: `HINGE_TYPE` names a pushover hinge property the base model lacks and no endpoint creates; round-trips on Civil's MNL-01 model, and on both products once a property is defined in the dialog (2026-11-01, where the Assign key turned out to be the element - MD-64) |
 | `/db/TDNA`, `/db/TDPL` | both | `Not Registered String` for `IS_DB_TDNA_NOTENSIONCALC` on the base model (TDPL behind it); both round-trip on Civil's PSC tutorial model (2026-10-26), so the base model lacks a precondition |
 
 `check_fixture_contract.py` has no fixture lead left. The last, `/db/ACTL`

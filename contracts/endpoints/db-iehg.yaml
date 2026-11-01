@@ -106,6 +106,12 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    # A lumped skeleton hinge has no fiber division: "" is accepted for one,
+    # and omitting the field answers Wrong Field (2026-11-01, both products).
+    # The Assign key is the element; an RC hinge whose yield strengths are
+    # computed is refused where the section has no rebar data, in the
+    # dialog as well ("Rebar data is improper"). The property itself comes
+    # from the dialog or the undocumented /db/IEHP.
 
 sdkRules:
   - id: db-iehg-delete-per-id

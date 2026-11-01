@@ -1655,3 +1655,21 @@ sending `CLATS`. `PASS /db/ACTL`.
 **Count:** 1 new endpoint; 185 distinct `/db` endpoints, 59 distinct
 `/DESIGN` endpoints and 4 distinct result-table operations; 248 distinct npm
 public-API operations overall.
+
+### 2026-11-01 - `/db/HPCE` and `/db/IEHG` on both products
+
+`node scripts/live-crud.mjs --product <gen|civil> --endpoints /db/HPCE --save-dir C:/temp`
+and the same with `/db/IEHG`, on Gen Build 10/30/2026 and Civil Build
+10/31/2026. `PASS` for both on both. `/db/HPCE` runs alone because its
+`groups10` seed has no DELETE; `/db/IEHG`'s `iehp_seed` writes the
+undocumented `/db/IEHP` through `defineDbResource`, the one setup endpoint the
+harness allows without a published resource.
+
+| Endpoint | Date | Products |
+| --- | --- | --- |
+| `/db/HPCE` | 2026-11-01 | Gen, Civil |
+| `/db/IEHG` | 2026-11-01 | Gen, Civil |
+
+**Count:** 2 new endpoints; 187 distinct `/db` endpoints, 59 distinct
+`/DESIGN` endpoints and 4 distinct result-table operations; 250 distinct npm
+public-API operations overall.

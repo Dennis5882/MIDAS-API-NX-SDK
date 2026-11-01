@@ -285,7 +285,7 @@ from midas_nx.db.project import (
     Unit,
 )
 from midas_nx.db.properties.damping import GroupDamping
-from midas_nx.db.properties.hinge import InelasticHingeControl
+from midas_nx.db.properties.hinge import InelasticHingeControl, InelasticHingeProperty
 from midas_nx.db.properties.material import (
     ChangeProperty,
     InelasticFiberMaterialLink,
@@ -3274,7 +3274,7 @@ def _extras10_cases() -> List[Case]:
              "START_STAGE": "HSTG10_SEED", "END_STAGE": "HSTG10_SEED",
              "START_TIME": 0, "END_TIME": 168, "ITEMS": [1, 2, 3, 4]},
             lambda p: p.get("TEMPER"), 15, 20,
-            item_id=1, needs=("hstg10_seed",),
+            item_id=1, needs=("groups10", "hstg10_seed"), confirmed=True,
         ),
         # NODE1/NODE2 are the base model's own frame nodes; LCNAME is the
         # base model's own "LC_SCRATCH" load case.
@@ -4201,13 +4201,28 @@ def _extras20_seeds() -> List[SeedStep]:
     npm harness cleans a seed up by the ids it sent, so they must agree.
     Everything downstream names these records, never numbers them.
     """
-    return [SeedStep(
-        "fiber_materials",
-        lambda client: InelasticMaterialProperty.create(
-            {i: _fimp_article_example(k) for i, k in enumerate(_FIBER_CHAIN_FIMP, 1)},
-            client=client,
+    return [
+        SeedStep(
+            "fiber_materials",
+            lambda client: InelasticMaterialProperty.create(
+                {i: _fimp_article_example(k) for i, k in enumerate(_FIBER_CHAIN_FIMP, 1)},
+                client=client,
+            ),
         ),
-    )]
+        # /db/IEHP is undocumented and in neither SDK, so this is a raw
+        # request: two inelastic hinge properties /db/IEHG can name.
+        SeedStep("iehp_seed", lambda client: client.request("POST", "/db/IEHP", {"Assign": {
+            "1": dict(_iehp_record(), NAME="IH_SEED_A"),
+            "2": dict(_iehp_record(), NAME="IH_SEED_B"),
+        }})),
+    ]
+
+
+def _iehp_record() -> Dict[str, Any]:
+    """An inelastic hinge property as Gen NX's dialog stores it, yield
+    strengths user-defined; see the fixture file's _source."""
+    path = Path(__file__).parent / "fixtures" / "iehp_dialog_record.json"
+    return copy.deepcopy(json.loads(path.read_text(encoding="utf-8"))["record"])
 
 
 def _fibr_payload(first_material: str) -> Dict[str, Any]:
@@ -4247,7 +4262,8 @@ def _extras20_cases() -> List[Case]:
     by material id and FIBR by its own id; each completed a round trip. The
     updates swap one FIMP name for another record the seed made, a value
     that occurs nowhere else in the record. /db/IEHG, next in the chain,
-    names an inelastic hinge property no documented endpoint creates.
+    names an inelastic hinge property no documented endpoint creates; the
+    undocumented /db/IEHP does (2026-11-01), and iehp_seed uses it.
     """
     imfm = {"CONC_NAME": "Conc_Kent&Park", "CONFINED_CONC_NAME": "Conc_Mander_Type1"}
     return [
@@ -4271,6 +4287,17 @@ def _extras20_cases() -> List[Case]:
             {"CONCRETE": dict(_IMFM_M1_CONCRETE, REBAR_NAME="Steel_Blinear")},
             lambda p: p.get("CONCRETE", {}).get("REBAR_NAME"), "Steel_MP", "Steel_Blinear",
             item_id=1, products=("civil",), needs=("fiber_materials",), confirmed=True,
+        ),
+        # Keyed by element: element 1 is the base model's RC column. An RC
+        # hinge whose yield strengths are computed answers "Rebar data is
+        # improper" there, in the dialog too, so the seed's are user-defined.
+        # A lumped skeleton hinge has no fiber division: FIBER_NAME is "".
+        Case(
+            InelasticHingeProperty,
+            {"PROP_NAME": "IH_SEED_A", "FIBER_NAME": ""},
+            {"PROP_NAME": "IH_SEED_B", "FIBER_NAME": ""},
+            lambda p: p.get("PROP_NAME"), "IH_SEED_A", "IH_SEED_B",
+            item_id=1, needs=("iehp_seed",), confirmed=True,
         ),
     ]
 
@@ -5381,7 +5408,7 @@ TIERS: List[Tier] = [
     Tier("extras7", "batch 7: standalone/frame-attachable remainder of db.static_loads (PNLD/PNLA/FMLD/POSP/POSL confirmed; FBLA/EPST/EPSE fail live)", _extras7_seeds, _extras7_cases),
     Tier("extras8", "batch 8: tractable subset of db.analysis_control (PDEL/BUCK/SMCT/EIGV/BCCT/MVCT confirmed both products; HHCT confirmed Gen only and fails on Civil; NLCT confirmed Gen, and Civil from Build 10/17/2026; ACTL confirmed Gen from Build 10/30/2026, fails on Civil)", _extras8_seeds, _extras8_cases),
     Tier("extras9", "batch 9: db.node_element's Domain feature (MADO/SBDO/DOEL -- all pass from Build 10/17/2026 except Gen's SBDO)", _extras9_seeds, _extras9_cases),
-    Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/HAHS/STBK/HSTG confirmed; HAHS uses a real SOLID fixture; HPCE fails live; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
+    Tier("extras10", "batch 10: standalone subset of db.construction_stage's heat-of-hydration family (ETFC/CCFC/HSFC/HAHS/STBK/HSTG confirmed; HAHS uses a real SOLID fixture; HPCE confirmed from 2026-11-01 once it names a hydration stage; HECB/HSPT/CSCS deferred)", _extras10_seeds, _extras10_cases),
     Tier("extras11", "batch 11a/c: /db/STCT (fails live -- iITER/TOL silently don't persist), /db/HSPT and /db/HECB confirmed with a SOLID hydration fixture", _extras11_seeds, _extras11_cases),
     Tier("extras12", "batch 12: db.bridge in full, all 4 confirmed (GSBG/GCMB/CAMB Civil-only, ULFC both products)", _extras12_seeds, _extras12_cases),
     Tier("extras13", "batch 13: tractable non-rebar subset of db.design (7 confirmed both products; DSTL Civil-only success/Gen failure; RCHK Civil-only; REBB/REBC/REBW/REBR deferred)", _no_seeds, _extras13_cases),
@@ -5391,7 +5418,7 @@ TIERS: List[Tier] = [
     Tier("extras17", "batch 17: Task A pushover controls and hinge assignment", _no_seeds, _extras17_cases),
     Tier("extras18", "batch 18: Task A ch07 tendon chain (TDNT -> TDNA -> TDPL)", _extras18_seeds, _extras18_cases),
     Tier("extras19", "Task P: ch07 pretension load on a truss element", _extras19_seeds, _extras19_cases),
-    Tier("extras20", "fiber chain: article FIMP records, IMFM material link, FIBR division", _extras20_seeds, _extras20_cases),
+    Tier("extras20", "fiber chain: article FIMP records, IMFM material link, FIBR division, IEHG on an /db/IEHP seed", _extras20_seeds, _extras20_cases),
     Tier("design_tables", "ch25-27 design-parameter tables (RC, steel, SRC) from the manual's own examples", _design_seeds, _design_table_cases),
 ]
 
@@ -5556,7 +5583,7 @@ def _mark(row: Dict[str, Any]) -> str:
 RENUMBERING_SEEDS = frozenset({
     "dl14_seed", "fbld7_seed", "pnld_seed", "prestress_load_cases",
     "ptns_load_case", "smpt_seed", "spfc_seed", "tdpl_prestress_case",
-    "thfc_seed", "thfc_force_seed", "this_seed",
+    "thfc_seed", "thfc_force_seed", "this_seed", "iehp_seed",
 })
 
 #: Seeds whose one read only guards against a record an *earlier Python tier*

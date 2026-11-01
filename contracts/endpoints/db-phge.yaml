@@ -95,6 +95,10 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    # Not the element (2026-11-01, both products): the Assign key is. Every
+    # value sent here - 1, 2, 3, 0, a plate's 4 - is echoed by the response
+    # and reads back 1, and the element the product checks is the key's. See
+    # manualDefects (MD-64).
   - key: TYPE
     description: >-
       요소 타입 · Beam/Column: "BEAM" / Wall(⚠️ Gen NX 전용): "WALL" / Truss: "TRUSS"
@@ -123,6 +127,25 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+
+manualDefects:
+  - describes: behaviour
+    manualSays: >-
+      The Assign key is an assignment sequence number, and the element is
+      named by the `ID` field ("Assign Key는 배정 순번이며, 요소 ID(`ID`)와 요소
+      타입(`TYPE`)을 별도 필드로 지정합니다").
+    actual: >-
+      The Assign key names the element. A key that is no element answers
+      "[Error] Pushover Hinge has been entered in the element no. 99 that has
+      not been specified." whatever `ID` says; key 4, the base model's plate,
+      answers "Type of the element does not correspond to the Element Type of
+      the Pushover Hinge Type." with `ID: 1`; and `ID` reads back 1 for every
+      record, whatever was sent.
+    evidence: >-
+      Live on Gen NX Build 10/30/2026 and Civil NX Build 10/31/2026,
+      2026-11-01, on the harness base model with a Beam/Column hinge property
+      PH_TEST defined in the dialog. Registered as MD-64; see
+      docs/live_verification_notes.md.
 
 sdkRules:
   - id: db-phge-delete-per-id

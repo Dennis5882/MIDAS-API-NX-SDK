@@ -37,7 +37,7 @@ import {
 // Loaded in main(), after the arguments are checked, so a refused command
 // line is refused without a build: tests/live-crud-cli.test.mjs runs before
 // `npm run build` in CI and in prepack, where dist/ does not exist yet.
-let doc, MidasClient, post, resources;
+let defineDbResource, doc, MidasClient, post, resources;
 
 const fixturePath = fileURLToPath(new URL("../../../schema/live-cases.json", import.meta.url));
 const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
@@ -149,6 +149,24 @@ function caseFor(endpoint, product) {
     (candidate) => candidate.endpoint === endpoint
       && (!product || candidate.products.includes(product)),
   );
+}
+
+// Endpoints a seed may write that neither SDK publishes. Python seeds them
+// with a raw request; here the public defineDbResource stands in. Only for
+// setup: the endpoint under test must always be a published resource.
+const UNPUBLISHED_SEED_ENDPOINTS = new Map([
+  // Undocumented; creates the inelastic hinge property /db/IEHG names
+  // (2026-11-01, both products).
+  ["/db/IEHP", { className: "InelasticHingePropertyDefinition", name: "Inelastic Hinge Property" }],
+]);
+
+function setupResourceFor(endpoint) {
+  const unpublished = UNPUBLISHED_SEED_ENDPOINTS.get(endpoint);
+  if (!unpublished) return resourceFor(endpoint);
+  return defineDbResource({
+    ...unpublished, endpoint, products: ["gen", "civil"],
+    methods: ["GET", "POST", "PUT", "DELETE"], manualChapter: "",
+  });
 }
 
 function resourceFor(endpoint) {
@@ -279,7 +297,7 @@ async function runCase(liveCase, client, cleanupContext) {
   try {
     for (const prerequisite of liveCase.setup) {
       for (const source of setupRecords(prerequisite, liveCase.endpoint)) {
-        const sourceResource = resourceFor(source.endpoint);
+        const sourceResource = setupResourceFor(source.endpoint);
         if (source.deleteIds) {
           // A seed that clears a record the fresh document supplies. Nothing
           // to clean up afterwards: the document reset restores it.
@@ -518,7 +536,7 @@ async function runPopulatedTable(tableType, client) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  ({ doc, MidasClient, post, resources } = await import("../dist/index.js"));
+  ({ defineDbResource, doc, MidasClient, post, resources } = await import("../dist/index.js"));
   const selected = args.endpoints
     .split(/[\s,]+/)
     // npm 12 on Windows can retain cmd.exe's caret quoting around a path.

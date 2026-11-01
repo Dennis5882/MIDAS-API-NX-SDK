@@ -6534,3 +6534,45 @@ records:
     from 1. PUT TEMPER 15 to 20 read back 20 and a per-id DELETE removed one record. DIAMETER is stored as an
     integer: 0.025 read back 0 and showed 0 in the dialog. A probe, not the harness case. Evidence in
     docs/live_verification_notes.md.
+- id: ledger-write-2026-11-01-4
+  endpoints:
+  - /db/PHGE
+  date: '2026-11-01'
+  level: write
+  products:
+  - gen
+  - civil
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), Build 10/30/2026 (author-confirmed from the About dialog 2026-11-01)
+    civil: MIDAS Civil NX 2026 (v2.3), Build 10/31/2026 (author-confirmed from the About dialog 2026-11-01)
+  outcome: success
+  method: >-
+    On the author's request (2026-11-01, "PHGE 한번 도 체크해볼까?"), on the machine holding this checkout, which is
+    also the NX host, on the harness base model in a new document saved to C:/temp. After the author defined a
+    Beam/Column hinge property PH_TEST in the dialog, POST of keys 1, 2 and 3 was accepted and read back, a PUT
+    was answered, and a per-id DELETE removed key 2. Without a hinge property every write answers Unknown Error.
+    The Assign key names the element and ID is echoed but always reads back 1 (MD-64). Evidence in
+    docs/live_verification_notes.md.
+- id: ledger-write-2026-11-01-5
+  endpoints:
+  - /db/HPCE
+  - /db/IEHG
+  date: '2026-11-01'
+  level: write
+  products:
+  - gen
+  - civil
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), Build 10/30/2026 (author-confirmed from the About dialog 2026-11-01)
+    civil: MIDAS Civil NX 2026 (v2.3), Build 10/31/2026 (author-confirmed from the About dialog 2026-11-01)
+  outcome: success
+  method: >-
+    On the author's request to carry on (2026-11-01, "알아서 진행해줘"), on the machine holding this checkout, which
+    is also the NX host, on empty documents with checkpoints to C:/temp. /db/HPCE's case now seeds a /db/HSTG
+    hydration stage and names it in START_STAGE/END_STAGE; /db/IEHG's new case seeds two inelastic hinge
+    properties through the undocumented /db/IEHP - the record the author's dialog stored, yield strengths
+    user-defined - and assigns them to element 1 with FIBER_NAME "". Both completed
+    create/read/update/read/delete/read through scripts/live_crud_check.py --tier extras10 and --tier
+    extras20, and npm replayed the same emitted fixture on both products the same day
+    (live-crud.mjs --endpoints /db/HPCE, then /db/IEHG) with the same answer. Evidence in
+    docs/live_verification_notes.md.
