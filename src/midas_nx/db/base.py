@@ -178,9 +178,13 @@ class DbResource:
         ENDPOINT: e.g. "/db/NODE"
         NAME: human-readable name (manual "기능" column), for error messages
         PRODUCTS: {"gen"}, {"civil"}, or {"gen", "civil"}
-        METHODS: subset of {"POST", "GET", "PUT", "DELETE"} the endpoint
-            actually supports (defaults to all four; override for
-            GET/PUT-only endpoints like MATD).
+        METHODS: subset of {"POST", "GET", "PUT", "DELETE"} the endpoint's
+            contract records - the manual, corrected where a live call
+            disproved it - and ``scripts/validate_contracts.py`` holds the two
+            equal. Defaults to all four; override for GET/PUT-only endpoints
+            like MATD. It says a verb is documented, not that a write through
+            it has been verified live on either product: that evidence is the
+            repository's ``contracts/verification/ledger.yaml``.
 
     Also provides ``.info()`` — a server-side schema introspection GET
     (``/info/db/...``), independent of ``METHODS``/CRUD; see its docstring.

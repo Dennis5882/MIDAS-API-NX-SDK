@@ -42,10 +42,9 @@ scoreboard.
   and `MVLDeu`, `MVLDbs` and `PHGE` round-trip on those models. The design-function harness ran end to end for the first time, and the TABLE
   `EXPORT_PATH` and REPORT files were inspected on the host, so those eight
   design endpoints are write-level now (live notes, 2026-10-24).
-- **2.10.6 is published on PyPI and npm** (2026-11-01): `delete()` refuses
-  string and path-like ids, npm's whole-table DELETE guard is
-  case-insensitive, and `/db/PRES` `DIRECTION: null` counts as missing; npm
-  `getTable()` gains two options. The npm changelog's `Unreleased` is empty.
+- **2.10.7 is published on PyPI and npm** (2026-11-03): Python gains
+  `midas_nx.db.all_resources()`; npm republished unchanged. The npm
+  changelog's `Unreleased` is empty.
 - **Coverage: 400/400 implemented, 315 write / 85 read.** Of the 225 `/db`
   endpoints, 213 are write-level and 12 are not.
 - **Fixture (`schema/live-cases.json`, version 6):** 340 cases over 260

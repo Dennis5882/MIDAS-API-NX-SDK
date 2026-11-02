@@ -6,6 +6,12 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.10.7 - 2026-11-03
+
+No change to this package. The shared version number moves because the Python
+package gains `midas_nx.db.all_resources()`; npm republishes the same tarball
+content under the aligned number.
+
 ## 2.10.6 - 2026-11-01
 
 > **Behaviour changes.** Three calls that used to reach the server now
