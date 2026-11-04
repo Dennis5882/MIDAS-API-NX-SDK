@@ -6,6 +6,22 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Added
+
+- `resources.db.staticLoads.legacyWindLoad` (`/db/WIND`) and
+  `resources.db.staticLoads.legacySeismicLoad` (`/db/SEIS`), with their payload
+  types `LegacyWindLoadPayload` and `LegacySeismicLoadPayload` (two new
+  exports, 751 -> 753). Both endpoints are undocumented legacy routes that
+  MIDASIT keeps without maintenance, and the only API route for the overseas
+  codes (ASCE7, Eurocode, IS875, NSCP, DPT, ...): `staticWindLoad` and
+  `staticSeismicLoad` take KDS and USER TYPE only. Their contracts come from the
+  server's own `/info` schema and a Gen NX session on 2026-11-04; Civil NX was
+  not checked, so `products` is `["gen"]` for now.
+- `WIND_CODE` takes the legacy spellings (`"EURO2005"`, `"ASCE7(2016)"`,
+  `"NSCP 2024"`, `"DPT.1311-50:2007"`), and `SEIS_LOAD_CODE` the code object's
+  own name (`"KBC2016"`, `"EURO2004"`). Read a record back after writing it: a
+  missing required value answers `{"message": ""}` and stores nothing.
+
 ## 2.10.7 - 2026-11-03
 
 No change to this package. The shared version number moves because the Python

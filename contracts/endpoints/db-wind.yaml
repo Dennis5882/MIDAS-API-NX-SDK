@@ -1,0 +1,6568 @@
+# /db/WIND
+#
+# Written from GET /info/db/WIND (Gen NX, captured 2026-11-04) and the 2026-11-04
+# Gen NX session in docs/live_verification_notes.md. The manual has no
+# section for this endpoint, so every field is provenance: info_schema and
+# requirement: unstated; live findings are recorded on the fields they touch.
+contractVersion: 1
+id: db-wind
+endpoint: /db/WIND
+name: Wind Loads (legacy)
+summary: >-
+  The legacy per-country static wind loads, one record per wind load case. MIDASIT keeps it without maintenance; it is the only API route for the overseas codes, since /db/SWIND takes KDS and USER TYPE only.
+surface:
+  className: LegacyWindLoad
+  exportName: legacyWindLoad
+  modulePath: [db, staticLoads]
+  payloadTypeName: LegacyWindLoadPayload
+
+products: [gen]
+productsEvidence: >-
+  Measured on Gen NX only, 2026-11-04. Civil NX was not connected that day, so
+  Civil is unchecked rather than refused; widen once a Civil session answers.
+
+recordKey:
+  kind: record_id
+  description: >-
+    The /db/STLD load case number the record belongs to.
+
+source:
+  manual:
+    status: absent
+    justification: >-
+      No manual chapter documents /db/WIND. The fields below are the server's own GET /info/db/WIND schema; methods, the record key and the failure shapes come from the 2026-11-04 Gen NX session recorded in docs/live_verification_notes.md, which wrote, updated and deleted records of 28 codes. WIND_CODE takes the legacy names listed there (EURO2005, CH2001, ASCE7(2016), NSCP 2024, ...), not the dialog's spellings, and the matching parameters go in the object of that code.
+  liveNotes:
+    - docs/live_verification_notes.md
+
+verification:
+  status: verified_gen
+  records:
+    - product: gen
+      ref: db-wind-seis-legacy-2026-11-04
+
+operations:
+  - method: DELETE
+    variant: per_id
+    path: /db/WIND/{id}
+    risk: destructive
+    mitigation: none
+    summary: Delete exactly the record named in the path.
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+    notes: >-
+      Measured 2026-11-04 on Gen NX: removed the named record, and a GET of it
+      then answered Not Found Key - see risk db-delete-body-empties-table.
+  - method: DELETE
+    variant: whole_table
+    risk: destructive
+    mitigation: confirmation_required
+    summary: Empty the entire table.
+    request:
+      wrapper: assign
+      itemSchema: none
+      description: >-
+        The /db/* body form, never sent to this endpoint; listed so both SDKs
+        guard it like every other table.
+    response:
+      wrapper: message
+  - method: GET
+    risk: read_only
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+  - method: POST
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+  - method: PUT
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+
+fields:
+  - key: WIND_CODE
+    description: >-
+      Wind Load Code Name
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: DESC
+    description: >-
+      Description
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: SCALE_FACTOR_X
+    description: >-
+      Scale Factor : X
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: SCALE_FACTOR_Y
+    description: >-
+      Scale Factor : Y
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: SCALE_FACTOR_R
+    description: >-
+      Scale Factor : R
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: WIND_ECCEN_X
+    description: >-
+      Wind Eccentricity Direction : X-Dir
+    type: integer
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: WIND_ECCEN_Y
+    description: >-
+      Wind Eccentricity Direction : Y-Dir
+    type: integer
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: KS92
+    description: >-
+      KS92
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PRES_COEF
+        description: >-
+          Pressure Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: JP87
+    description: >-
+      JP87
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: PRES_REDUCT_FACTOR
+        description: >-
+          Pressure Rediction Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PRES_COEF
+        description: >-
+          Pressure Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: UBC97
+    description: >-
+      UBC97
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: PROCEDURE
+        description: >-
+          Procedure
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PRES_COEF
+        description: >-
+          Pressure Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: OPT_PROJECTED_AREA
+        description: >-
+          Use Projected Area Method
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MEAN_ROOF_HEIGHT
+        description: >-
+          Mean Roof Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: ANSI82
+    description: >-
+      ANSI82
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WINWARD_COEF
+        description: >-
+          Winward Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LEWARD_COEF
+        description: >-
+          Leward Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: KS2000
+    description: >-
+      KS2000
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MEAN_ROOF_HEIGHT
+        description: >-
+          Mean Roof Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: OPT_INCLUDE_TOPOGRAPHY
+        description: >-
+          Include Topographic Effects Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: KZT
+        description: >-
+          Kzt
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: H_KZT
+        description: >-
+          Vertical Range For Kzt
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STRUCTURE_TYPE
+        description: >-
+          Structure Type (Rigid/Flexible)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_X
+        description: >-
+          Gust Factor : Gx
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_Y
+        description: >-
+          Gust Factor : Gy
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: OPT_USE_FORCE_COEF
+        description: >-
+          Load Evaluation Using Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: IBC2000
+    description: >-
+      IBC2000
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PROCEDURE
+        description: >-
+          Procedure
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ROOF_HEIGHT
+        description: >-
+          Roof Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WIND_DIRECTION_FACTOR
+        description: >-
+          Pressure Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STRUCTURE_TYPE
+        description: >-
+          Structure Type (Rigid/Flexible)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_X
+        description: >-
+          Gust Factor : Gx
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_Y
+        description: >-
+          Gust Factor : Gy
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bTOPOGRAPHY
+        description: >-
+          Include topography effect
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_SHAPE
+        description: >-
+          Hill Shape
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_LOCATION
+        description: >-
+          Building Location
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_HEIGHT
+        description: >-
+          Hill Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_LENGTH
+        description: >-
+          Hill Length
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_DISTANCE
+        description: >-
+          Hill Distance
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bAUTO_CALC
+        description: >-
+          Auto Calc Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: KEY_WNAT
+        description: >-
+          Wnat Key
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: EURO1992
+    description: >-
+      EURO1992
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: PROCEDURE
+        description: >-
+          Procedure
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ROUGH_CATEGORY
+        description: >-
+          Rough Category
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: REF_WIND_SPEED
+        description: >-
+          Ref Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WINDWARD_COEF
+        description: >-
+          Windward Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LEEWARD_COEF
+        description: >-
+          Leeward Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FRICTION_COEF
+        description: >-
+          Rfiction Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bTOPOGRAPHY
+        description: >-
+          Include topography effect
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHY_COEF
+        description: >-
+          Topography Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHY_RANGE
+        description: >-
+          Topography Range
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_DISTANCE
+        description: >-
+          Hill Distance
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR
+        description: >-
+          Gust Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: BS6399_1997
+    description: >-
+      BS6399_1997
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: PROCEDURE
+        description: >-
+          Procedure
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SITE_CATEGORY
+        description: >-
+          Site Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_TYPE_FACTOR
+        description: >-
+          Building Type Factor
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MEAN_ROOF_HEIGHT
+        description: >-
+          Mean Roof Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_SEPERATION
+        description: >-
+          Building Seperation
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FRICTION_COEF
+        description: >-
+          Friction Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEA_DISTANCE
+        description: >-
+          Sea Distance
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOWN_DISTANCE
+        description: >-
+          Town Distance
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ALTITUDE_FACTOR
+        description: >-
+          Altitude Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTIONAL_FACTOR
+        description: >-
+          Directional Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEASONAL_FACTOR
+        description: >-
+          Seasonal Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PROBABILITY_FACTOR
+        description: >-
+          Probability Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHIC_FACTOR
+        description: >-
+          Topographic Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: CH2002
+    description: >-
+      CH2002
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: ROUGH_CATEGORY
+        description: >-
+          Rough Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MODIFY_FACTOR
+        description: >-
+          Modify Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WINDWARD_COEF
+        description: >-
+          Windward Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LEEWARD_COEF
+        description: >-
+          Leeward Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PULSE_MAGNIFY_METHOD
+        description: >-
+          Pulse Magnify Method (0:Automatic Calculation, 1:User Defined)
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STRUCTURAL_MATL
+        description: >-
+          Structural Material
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_RATIO
+        description: >-
+          Damping Ratio
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental Period in x direction
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental Period in y direction
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PULSE_MAGNIFY_FACTOR_X
+        description: >-
+          Pulse Magnify Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PULSE_MAGNIFY_FACTOR_Y
+        description: >-
+          Pulse Magnify Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: JPN2000
+    description: >-
+      JPN2000
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: NBC1995
+    description: >-
+      NBC1995
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: PROCEDURE
+        description: >-
+          Procedure
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_HEIGHT
+        description: >-
+          Building Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR
+        description: >-
+          Gust Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_X
+        description: >-
+          Gust Factor : Gx
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_Y
+        description: >-
+          Gust Factor : Gy
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bTOPOGRAPHY
+        description: >-
+          Include topography effect
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_SHAPE
+        description: >-
+          Hill Shape
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_LOCATION
+        description: >-
+          Building Location
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_HEIGHT
+        description: >-
+          Hill Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_LENGTH
+        description: >-
+          Hill Length
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_DISTANCE
+        description: >-
+          Hill Distance
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: IS1987
+    description: >-
+      IS1987
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: PROCEDURE
+        description: >-
+          Procedure
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TERRAIN_CATEGORY
+        description: >-
+          Terrain Category
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_CLASS
+        description: >-
+          Building Class
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FRICTION_COEF
+        description: >-
+          Friction Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR
+        description: >-
+          Gust Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bAUTO_CALC_RISK
+        description: >-
+          Use Auto Calc Risk
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STRUCTURE_CLASS
+        description: >-
+          Structure Class
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RISK_COEF
+        description: >-
+          Risk Coef
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bTOPOGRAPHY
+        description: >-
+          Include topography effect
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHIC_FACTOR
+        description: >-
+          Topographic Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHY_RANGE
+        description: >-
+          Topography Range
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: TAIWAN1986
+    description: >-
+      TAIWAN1986
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SITE_CATEGORY
+        description: >-
+          Site Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SHAPE_FACTOR
+        description: >-
+          Shape Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: JP2004
+    description: >-
+      JP2004
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: PROCEDURE
+        description: >-
+          Procedure
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_HEIGHT
+        description: >-
+          Building Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ENV_FACTOR
+        description: >-
+          Environment Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MEAN_WIND_SPEED
+        description: >-
+          Mean Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_X
+        description: >-
+          Direction Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_Y
+        description: >-
+          Direction Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bTOPOGRAPHY_X
+        description: >-
+          Include topography effect : X
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_SHAPE_X
+        description: >-
+          Hill Shape : X
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_HEIGHT_X
+        description: >-
+          Hill Height : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_LENGTH_X
+        description: >-
+          Hill Length : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_DISTANCE_X
+        description: >-
+          Building Distance : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bTOPOGRAPHY_Y
+        description: >-
+          Include topography effect : Y
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_SHAPE_Y
+        description: >-
+          Hill Shape : Y
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_HEIGHT_Y
+        description: >-
+          Hill Height : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_LENGTH_Y
+        description: >-
+          Hill Length : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_DISTANCE_Y
+        description: >-
+          Building Distance : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF_X
+        description: >-
+          Force Coefficient : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF_Y
+        description: >-
+          Force Coefficient : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_X
+        description: >-
+          Gust Factor : Gx
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_Y
+        description: >-
+          Gust Factor : Gy
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BREADTH_X
+        description: >-
+          Breadth : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BREADTH_Y
+        description: >-
+          Breadth : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_X
+        description: >-
+          Damping : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_Y
+        description: >-
+          Damping : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_R
+        description: >-
+          Damping : R
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FREQUENCY_X
+        description: >-
+          Frequency : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FREQUENCY_Y
+        description: >-
+          Frequency : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FREQUENCY_R
+        description: >-
+          Frequency : R
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MODE_FACTOR_X
+        description: >-
+          Mode Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MODE_FACTOR_Y
+        description: >-
+          Mode Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MODE_FACTOR_R
+        description: >-
+          Mode Factor : R
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LOAD_FACTOR_X
+        description: >-
+          Load Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LOAD_FACTOR_Y
+        description: >-
+          Load Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LOAD_FACTOR_R
+        description: >-
+          Load Factor : R
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WIND_DIRECTION
+        description: >-
+          Wind Direction
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: COMB_TYPE
+        description: >-
+          Comb Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: EURO2005
+    description: >-
+      EURO2005
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: TERRAIN
+        description: >-
+          Terrain
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CFR
+        description: >-
+          CFR
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: VB
+        description: >-
+          VB
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: C_DIR
+        description: >-
+          C Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: C_SEASON
+        description: >-
+          C Season
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: KL
+        description: >-
+          KL
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CPE_METHOD
+        description: >-
+          CPE Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CPE_10
+        description: >-
+          CPE 10
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CPE_01
+        description: >-
+          CPE 01
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CPE_LEE
+        description: >-
+          CPE Lee
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LACK_METHOD
+        description: >-
+          Lack Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LACK_FACTOR
+        description: >-
+          Lack Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CS_Cd
+        description: >-
+          CS Cd
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CS_B
+        description: >-
+          CS b
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CS_D
+        description: >-
+          CS D
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CS_N1
+        description: >-
+          CS N1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CS_Dt
+        description: >-
+          CS Dt
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bOROGRAPHY
+        description: >-
+          Orography Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ORO_TYPE
+        description: >-
+          Orography Type
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_LOC
+        description: >-
+          Building Location
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ORO_H
+        description: >-
+          H (Orography)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ORO_Lu
+        description: >-
+          Lu (Orography)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ORO_Ld
+        description: >-
+          Ld (Orography)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ORO_X
+        description: >-
+          X (Orography)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bNEIGHBOR
+        description: >-
+          Neighbor Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NEI_Ha
+        description: >-
+          HA (Neighbor)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NEI_X
+        description: >-
+          X (Neighbor)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NEI_Dl
+        description: >-
+          Dl (Neighbor)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NEI_Hh
+        description: >-
+          Hh (Neighbor)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bDISPLACE
+        description: >-
+          DIsplace Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIS_Ha
+        description: >-
+          Ha (Displace)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIS_X
+        description: >-
+          X (Displace)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: KBC2009
+    description: >-
+      KBC2009
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ROOF_HEIGHT
+        description: >-
+          Roof Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHIC_EFFECT
+        description: >-
+          Topographic Effect
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: KZT
+        description: >-
+          KZT
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: VZT
+        description: >-
+          VZT
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RIGIDITY
+        description: >-
+          Structure Type (Rigid/Flexible)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_X
+        description: >-
+          Gust Factor : Gx
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_Y
+        description: >-
+          Gust Factor : Gy
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bAUTO_CALC
+        description: >-
+          Auto Calc Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: KEY_WNAT
+        description: >-
+          Wnat Key
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: IBC2009
+    description: >-
+      IBC2009(ASCE7-05)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_X
+        description: >-
+          Eccen : X
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_Y
+        description: >-
+          Eccen : Y
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PROCEDURE
+        description: >-
+          Procedure
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CNET_WINDWARD
+        description: >-
+          Windward (Cnet)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CNET_LEEWARD
+        description: >-
+          Leeward (Cnet)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_X
+        description: >-
+          Direction Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_Y
+        description: >-
+          Direction Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ROOF_HEIGHT
+        description: >-
+          Roof Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RIGIDITY
+        description: >-
+          Structure Type (Rigid/Flexible)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_X
+        description: >-
+          Gust Factor : Gx
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_Y
+        description: >-
+          Gust Factor : Gy
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHY_ITEMS
+        description: >-
+          TOPOGRAPHY_ITEMS
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: bTOPOGRAPHY
+            description: >-
+              Include topography effect
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_SHAPE
+            description: >-
+              Hill Shape
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BLDG_LOCATION
+            description: >-
+              Building Location
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_HEIGHT
+            description: >-
+              Hill Height
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_LENGTH
+            description: >-
+              Hill Length
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_DISTANCE
+            description: >-
+              Hill Distance
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bAUTO_CALC
+        description: >-
+          Auto Calc Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: KEY_WNAT
+        description: >-
+          Wnat Key
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: IBC2012
+    description: >-
+      IBC2012(ASCE7-10)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_X
+        description: >-
+          Eccen : X
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_Y
+        description: >-
+          Eccen : Y
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PROCEDURE
+        description: >-
+          Procedure
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CNET_WINDWARD
+        description: >-
+          Windward (Cnet)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CNET_LEEWARD
+        description: >-
+          Leeward (Cnet)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_X
+        description: >-
+          Direction Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_Y
+        description: >-
+          Direction Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ROOF_HEIGHT
+        description: >-
+          Roof Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RIGIDITY
+        description: >-
+          Structure Type (Rigid/Flexible)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_X
+        description: >-
+          Gust Factor : Gx
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_Y
+        description: >-
+          Gust Factor : Gy
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHY_ITEMS
+        description: >-
+          TOPOGRAPHY_ITEMS
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: bTOPOGRAPHY
+            description: >-
+              Include topography effect
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_SHAPE
+            description: >-
+              Hill Shape
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BLDG_LOCATION
+            description: >-
+              Building Location
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_HEIGHT
+            description: >-
+              Hill Height
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_LENGTH
+            description: >-
+              Hill Length
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_DISTANCE
+            description: >-
+              Hill Distance
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bAUTO_CALC
+        description: >-
+          Auto Calc Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: KEY_WNAT
+        description: >-
+          Wnat Key
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: CH2012
+    description: >-
+      CH2012
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: ROUGH_CATEGORY
+        description: >-
+          Rough Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_PRES
+        description: >-
+          Basic Wind Pressure
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MODIFY_FACTOR
+        description: >-
+          Modify Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WINDWARD_COEF_X
+        description: >-
+          Windward Coefficient : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WINDWARD_COEF_Y
+        description: >-
+          Windward Coefficient : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LEEWARD_COEF_X
+        description: >-
+          Leeward Coefficient : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LEEWARD_COEF_Y
+        description: >-
+          Leeward Coefficient : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_RATIO
+        description: >-
+          Damping Ratio
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STRUCT_METHOD
+        description: >-
+          Struct Method (0 : Table / 1 : Calculation)
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PARTITION_COEF
+        description: >-
+          Partition Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WINDSHIELD
+        description: >-
+          Windshield
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Period : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Period : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ALONG_VIBRATION
+        description: >-
+          Consider Along-wind Vibration
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bCROSS_VIBRATION
+        description: >-
+          Consider Cross-wind Vibration
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bCROSS
+        description: >-
+          Cross Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SECT_TYPE
+        description: >-
+          Section Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CROSS_PERIOD_X
+        description: >-
+          Cross Period : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CROSS_PERIOD_Y
+        description: >-
+          Cross Period : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bTORSION
+        description: >-
+          Torsion Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TORSION_PERIOD
+        description: >-
+          Torsion Ratio
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bWIND_COMPORT
+        description: >-
+          Wind Comfort
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CHECK_WIND_PRES
+        description: >-
+          Check Wind Pressure
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CHECK_DAMPING_RATIO
+        description: >-
+          Check Damping Ratio
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: NSR2010
+    description: >-
+      NSR2010
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ROOF_HEIGHT
+        description: >-
+          Roof Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHY_ITEMS
+        description: >-
+          TOPOGRAPHY_ITEMS
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: bTOPOGRAPHY
+            description: >-
+              Include topography effect
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_SHAPE
+            description: >-
+              Hill Shape
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BLDG_LOCATION
+            description: >-
+              Building Location
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_HEIGHT
+            description: >-
+              Hill Height
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_LENGTH
+            description: >-
+              Hill Length
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_DISTANCE
+            description: >-
+              Hill Distance
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: ECCEN_X
+        description: >-
+          Eccen : X
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_Y
+        description: >-
+          Eccen : Y
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_X
+        description: >-
+          Direction Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_Y
+        description: >-
+          Direction Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RIGIDITY
+        description: >-
+          Structure Type (Rigid/Flexible)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_X
+        description: >-
+          Gust Factor : Gx
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_Y
+        description: >-
+          Gust Factor : Gy
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bAUTO_CALC
+        description: >-
+          Auto Calc Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: KEY_WNAT
+        description: >-
+          Wnat Key
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: KDS19_KBC16
+    description: >-
+      KDS19_KBC16
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: INPUT_METHOD
+        description: >-
+          Input Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SIMPLE
+        description: >-
+          Simplified Method
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: BASIC_WIND_SPEED
+            description: >-
+              Basic Wind Speed
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ROOF_HEIGHT
+            description: >-
+              Roof Height
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: SIMPLE_CE
+            description: >-
+              Ce
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: GENERAL
+        description: >-
+          General Method
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: EXP_CATEGORY
+            description: >-
+              Exposure Category
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BASIC_WIND_SPEED
+            description: >-
+              Basic Wind Speed
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: IMPORTANCE_FACTOR
+            description: >-
+              Importance Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ROOF_HEIGHT
+            description: >-
+              Roof Height
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: TOPOGRAPHIC_EFFECT
+            description: >-
+              Topographic Effect
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: KZT
+            description: >-
+              KZT
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: VZT
+            description: >-
+              VZT
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: RIGIDITY
+            description: >-
+              Structure Type (Rigid/Flexible)
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR_X
+            description: >-
+              Gust Factor : Gx
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR_Y
+            description: >-
+              Gust Factor : Gy
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: bUSE_FORCE_COEF
+            description: >-
+              Use Force Coefficient
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: FORCE_COEF
+            description: >-
+              Force Coefficient
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: bAUTO_CALC
+            description: >-
+              Auto Calc Boolean
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: KEY_WNAT
+            description: >-
+              Wnat Key
+            type: integer
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WNAT_STRUCT_TYPE
+            description: >-
+              Wmat Struct Type
+            type: integer
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BUILDING_TYPE
+            description: >-
+              Building Type
+            type: integer
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: bACROSS_WIND
+            description: >-
+              Across Wind Boolean
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: bTORSIONAL_WIND
+            description: >-
+              Torsional Wind Boolean
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: bWIND_RESPONSE
+            description: >-
+              Wind Response Boolean
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BL_X
+            description: >-
+              Breadth : X
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BL_Y
+            description: >-
+              Breadth : Y
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: NO_X
+            description: >-
+              Natural Frequency : X
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: NO_Y
+            description: >-
+              Natural Frequency : Y
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: NO_T
+            description: >-
+              Torsional Natural Frequency
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MX1ST
+            description: >-
+              1st Vibration Generalized Mass : X
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MY1ST
+            description: >-
+              1st Vibration Generalized Mass : Y
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MT1ST
+            description: >-
+              Generalized inertial Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: DAMPING_RATIO
+            description: >-
+              Damping Ratio
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WA_LCNAME
+            description: >-
+              WA : Load Case Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WT_LCNAME
+            description: >-
+              WT : Load Case Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+  - key: KDS2021
+    description: >-
+      KDS2021
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: INPUT_METHOD
+        description: >-
+          Input Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SIMPLE
+        description: >-
+          Simplified Method
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: BASIC_WIND_SPEED
+            description: >-
+              Basic Wind Speed
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ROOF_HEIGHT
+            description: >-
+              Roof Height
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: SIMPLE_CE
+            description: >-
+              Ce
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: GENERAL
+        description: >-
+          General Method
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: bVORTEX_SHEDDING
+            description: >-
+              Vortex Shedding Boolean
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: VORTEX_AVERAGE_ROOF
+            description: >-
+              Vortex Average Roof
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: VORTEX_DM
+            description: >-
+              Vortex DM
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: VORTEX_DB
+            description: >-
+              Vortex DB
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: VORTEX_N
+            description: >-
+              Vortex N
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: VORTEX_MASS
+            description: >-
+              Vortex Mass
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: VORTEX_DAMP
+            description: >-
+              Vortex Damp
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: EXP_CATEGORY
+            description: >-
+              Exposure Category
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BASIC_WIND_SPEED
+            description: >-
+              Basic Wind Speed
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: IMPORTANCE_FACTOR
+            description: >-
+              Importance Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ROOF_HEIGHT
+            description: >-
+              Roof Height
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: TOPOGRAPHIC_EFFECT
+            description: >-
+              Topographic Effect
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: KZT
+            description: >-
+              KZT
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: VZT
+            description: >-
+              VZT
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: RIGIDITY
+            description: >-
+              Structure Type (Rigid/Flexible)
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR_X
+            description: >-
+              Gust Factor : Gx
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR_Y
+            description: >-
+              Gust Factor : Gy
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: bUSE_FORCE_COEF
+            description: >-
+              Use Force Coefficient
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: FORCE_COEF
+            description: >-
+              Force Coefficient
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: bAUTO_CALC
+            description: >-
+              Auto Calc Boolean
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: KEY_WNAT
+            description: >-
+              Wnat Key
+            type: integer
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WNAT_STRUCT_TYPE
+            description: >-
+              Wmat Struct Type
+            type: integer
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BUILDING_TYPE
+            description: >-
+              Building Type
+            type: integer
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: bACROSS_WIND
+            description: >-
+              Across Wind Boolean
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: bTORSIONAL_WIND
+            description: >-
+              Torsional Wind Boolean
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: bWIND_RESPONSE
+            description: >-
+              Wind Response Boolean
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BL_X
+            description: >-
+              Breadth : X
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BL_Y
+            description: >-
+              Breadth : Y
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: NO_X
+            description: >-
+              Natural Frequency : X
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: NO_Y
+            description: >-
+              Natural Frequency : Y
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: NO_T
+            description: >-
+              Torsional Natural Frequency
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MX1ST
+            description: >-
+              1st Vibration Generalized Mass : X
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MY1ST
+            description: >-
+              1st Vibration Generalized Mass : Y
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MT1ST
+            description: >-
+              Generalized inertial Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: DAMPING_RATIO
+            description: >-
+              Damping Ratio
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WA_LCNAME
+            description: >-
+              WA : Load Case Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WT_LCNAME
+            description: >-
+              WT : Load Case Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: DIST_FACTOR_X
+            description: >-
+              Dist Factor : X
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: DIST_FACTOR_Y
+            description: >-
+              Dist Factor : Y
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: bL_SHAPE_BUILDING
+            description: >-
+              L Shape Building Boolean
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: AM_FACTOR_ALONG
+            description: >-
+              Am Factors : Along
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: AM_FACTOR_ACROSS
+            description: >-
+              Am Factors : Across
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: AM_FACTOR_TORSIONAL
+            description: >-
+              Am Factors : Torsional
+            type: array
+            items:
+              type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: TOTAL_MASS
+            description: >-
+              Total Mass
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: VIBRATION_MODE
+            description: >-
+              Vibration Mode
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+  - key: IS875_2015
+    description: >-
+      IS875_2015
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: PROCEDURE
+        description: >-
+          Procedure
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TERRAIN_CATEGORY
+        description: >-
+          Terrain Category
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bAUTO_CALC_RISK_COEF
+        description: >-
+          Use Auto Calc Risk Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STRUCTURE_CLASS
+        description: >-
+          Structure Class
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RISK_COEF
+        description: >-
+          Risk Coef
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bTOPOGRAPHY
+        description: >-
+          Include topography effect
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHIC_FACTOR
+        description: >-
+          Topographic Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHY_RANGE
+        description: >-
+          Topography Range
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_CLASS
+        description: >-
+          Building Class
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FRICTION_COEF
+        description: >-
+          Friction Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bINCL_CYCL_REG_EFF
+        description: >-
+          Include Cyclonnic Reg Effects
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: K4_FACTOR
+        description: >-
+          k4 Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: KD_FACTOR
+        description: >-
+          kd Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: KC_FACTOR
+        description: >-
+          kc Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_PARAMS
+        description: >-
+          Gust Effect Parameters
+        type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: PROCEDURE
+            description: >-
+              Procedure
+            type: integer
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STEEL_TYPE
+            description: >-
+              Steel Type
+            type: integer
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BETA
+            description: >-
+              Beta
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ALONG_WIND_PERIOD
+            description: >-
+              Along Wind Period sec
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ACROSS_WIND_PERIOD
+            description: >-
+              Across Wind Period sec
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MODE_SHAPE_FACTOR
+            description: >-
+              Mode Shape Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: CFS
+            description: >-
+              Cfs
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MC
+            description: >-
+              Mc
+            type: integer
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+  - key: CH2019
+    description: >-
+      CH2019
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: ROUGH_CATEGORY
+        description: >-
+          Rough Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_PRES
+        description: >-
+          Basic Wind Pressure
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MODIFY_FACTOR
+        description: >-
+          Modify Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WINDWARD_COEF_X
+        description: >-
+          Windward Coefficient : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WINDWARD_COEF_Y
+        description: >-
+          Windward Coefficient : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LEEWARD_COEF_X
+        description: >-
+          Leeward Coefficient : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LEEWARD_COEF_Y
+        description: >-
+          Leeward Coefficient : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_RATIO
+        description: >-
+          Damping Ratio
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STRUCT_METHOD
+        description: >-
+          Struct Method (0 : Table / 1 : Calculation)
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PARTITION_COEF
+        description: >-
+          Partition Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WINDSHIELD
+        description: >-
+          Windshield
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Period : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Period : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ALONG_VIBRATION
+        description: >-
+          Consider Along-wind Vibration
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bCROSS_VIBRATION
+        description: >-
+          Consider Cross-wind Vibration
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bCROSS
+        description: >-
+          Cross Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SECT_TYPE
+        description: >-
+          Section Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CROSS_PERIOD_X
+        description: >-
+          Cross Period : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CROSS_PERIOD_Y
+        description: >-
+          Cross Period : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bTORSION
+        description: >-
+          Torsion Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TORSION_PERIOD
+        description: >-
+          Torsion Ratio
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bWIND_COMPORT
+        description: >-
+          Wind Comfort
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CHECK_WIND_PRES
+        description: >-
+          Check Wind Pressure
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CHECK_DAMPING_RATIO
+        description: >-
+          Check Damping Ratio
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WIND_DIRECTION_COE
+        description: >-
+          Wind Direction Coe
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: DPT2007
+    description: >-
+      DPT2007
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    # NOTE: measured 2026-11-04 on Gen NX - dropping any one of the 25
+    # members below answers Wrong Field and stores nothing, and
+    # VIBR_FREQ_PARAMS/VIBR_DAMP_PARAMS of any length but three answer
+    # {"message": ""} and store nothing. Recorded as a note because
+    # requirement and safeToOmit: false speak for a manual this
+    # endpoint does not have.
+    properties:
+      - key: INPUT_METHOD
+        description: >-
+          Input Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WIND_ZONE
+        description: >-
+          Wind Zone
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bTOPOGRAPHY
+        description: >-
+          Include topography effect
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_LOCATION
+        description: >-
+          Building Location
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_SHAPE
+        description: >-
+          Hill Shape
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_HEIGHT
+        description: >-
+          Hill Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: HILL_LENGTH
+        description: >-
+          Hill Length
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BLDG_DISTANCE
+        description: >-
+          Building Distance
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BREADTH_X
+        description: >-
+          Breadth : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BREADTH_Y
+        description: >-
+          Breadth : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FREQUENCY_X
+        description: >-
+          Frequency : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FREQUENCY_Y
+        description: >-
+          Frequency : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_X
+        description: >-
+          Damping : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_Y
+        description: >-
+          Damping : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STRUCTURE_GUST_FACTOR_X
+        description: >-
+          Structure Gust Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STRUCTURE_GUST_FACTOR_Y
+        description: >-
+          Structure Gust Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bACROSS_WIND
+        description: >-
+          Across Wind Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bTORSIONAL_WIND
+        description: >-
+          Torsional Wind Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: VIBR_FREQ_PARAMS
+        description: >-
+          Vibration Frequency Params
+        type: array
+        items:
+          type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: VIBR_DAMP_PARAMS
+        description: >-
+          Vibration Damping Params
+        type: array
+        items:
+          type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_X
+        description: >-
+          Eccen : X
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_Y
+        description: >-
+          Eccen : Y
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: ASCE7_16
+    description: >-
+      ASCE7(2016)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MEAN_ROOF_HEIGHT
+        description: >-
+          Mean Roof Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHY_ITEMS
+        description: >-
+          TOPOGRAPHY_ITEMS
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: bTOPOGRAPHY
+            description: >-
+              Include topography effect
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_SHAPE
+            description: >-
+              Hill Shape
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BLDG_LOCATION
+            description: >-
+              Building Location
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_HEIGHT
+            description: >-
+              Hill Height
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_LENGTH
+            description: >-
+              Hill Length
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_DISTANCE
+            description: >-
+              Hill Distance
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: ECCEN_X
+        description: >-
+          Eccen : X
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_Y
+        description: >-
+          Eccen : Y
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_X
+        description: >-
+          Direction Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_Y
+        description: >-
+          Direction Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GROUND_ELEV_FACTOR_X
+        description: >-
+          Ground Elevation Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GROUND_ELEV_FACTOR_Y
+        description: >-
+          Ground Elevation Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RIGIDITY
+        description: >-
+          Structure Type (Rigid/Flexible)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_X
+        description: >-
+          Gust Factor : Gx
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_Y
+        description: >-
+          Gust Factor : Gy
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: ASCE7_22
+    description: >-
+      ASCE7(2022)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MEAN_ROOF_HEIGHT
+        description: >-
+          Mean Roof Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHY_ITEMS
+        description: >-
+          TOPOGRAPHY_ITEMS
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: bTOPOGRAPHY
+            description: >-
+              Include topography effect
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_SHAPE
+            description: >-
+              Hill Shape
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BLDG_LOCATION
+            description: >-
+              Building Location
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_HEIGHT
+            description: >-
+              Hill Height
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_LENGTH
+            description: >-
+              Hill Length
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_DISTANCE
+            description: >-
+              Hill Distance
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: ECCEN_X
+        description: >-
+          Eccen : X
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_Y
+        description: >-
+          Eccen : Y
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_X
+        description: >-
+          Direction Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_Y
+        description: >-
+          Direction Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GROUND_ELEV_FACTOR_X
+        description: >-
+          Ground Elevation Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GROUND_ELEV_FACTOR_Y
+        description: >-
+          Ground Elevation Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RIGIDITY
+        description: >-
+          Structure Type (Rigid/Flexible)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_X
+        description: >-
+          Gust Factor : Gx
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_Y
+        description: >-
+          Gust Factor : Gy
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: NSCP2024
+    description: >-
+      NSCP 2024
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: BASIC_WIND_SPEED
+        description: >-
+          Basic Wind Speed
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EXP_CATEGORY
+        description: >-
+          Exposure Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: MEAN_ROOF_HEIGHT
+        description: >-
+          Mean Roof Height
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TOPOGRAPHY_ITEMS
+        description: >-
+          TOPOGRAPHY_ITEMS
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: bTOPOGRAPHY
+            description: >-
+              Include topography effect
+            type: boolean
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_SHAPE
+            description: >-
+              Hill Shape
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: BLDG_LOCATION
+            description: >-
+              Building Location
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_HEIGHT
+            description: >-
+              Hill Height
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_LENGTH
+            description: >-
+              Hill Length
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: HILL_DISTANCE
+            description: >-
+              Hill Distance
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: ECCEN_X
+        description: >-
+          Eccen : X
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ECCEN_Y
+        description: >-
+          Eccen : Y
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_X
+        description: >-
+          Direction Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DIRECTION_FACTOR_Y
+        description: >-
+          Direction Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GROUND_ELEV_FACTOR_X
+        description: >-
+          Ground Elevation Factor : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GROUND_ELEV_FACTOR_Y
+        description: >-
+          Ground Elevation Factor : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RIGIDITY
+        description: >-
+          Structure Type (Rigid/Flexible)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_X
+        description: >-
+          Gust Factor : Gx
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: GUST_FACTOR_Y
+        description: >-
+          Gust Factor : Gy
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bUSE_FORCE_COEF
+        description: >-
+          Use Force Coefficient
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_COEF
+        description: >-
+          Force Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: USER
+    description: >-
+      USER
+    type: array
+    items:
+      type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: STORY_NAME
+        description: >-
+          Story Name
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ELIV
+        description: >-
+          ELIV
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LOAD_H
+        description: >-
+          LOAD_H
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LOAD_BX
+        description: >-
+          LOAD_BX
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: LOAD_BY
+        description: >-
+          LOAD_BY
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PRESS_X
+        description: >-
+          PRESS_X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PRESS_Y
+        description: >-
+          PRESS_X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: ADDITIONS
+    description: >-
+      ADDITIONS
+    type: array
+    items:
+      type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: STORY_NAME
+        description: >-
+          Story Name
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ALONG_X
+        description: >-
+          Along : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ALONG_Y
+        description: >-
+          Along : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ACROSS_X
+        description: >-
+          Across : X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ACROSS_Y
+        description: >-
+          Across : Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TORSIONAL_RZ_X
+        description: >-
+          Torsional R / Torsional Rz(x)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TORSIONAL_RZ_Y
+        description: >-
+          Torsional Rz(y)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: bSUPPORT_ACROSS_WIND
+        description: >-
+          Support Across Wind
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: PROFILE
+    description: >-
+      Profile
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: ALONG_X_PROFILE
+        description: >-
+          Along X-Dir. Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Story Level
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: PRESSURE
+            description: >-
+              Pressure
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_H
+            description: >-
+              Loaded H
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_B
+            description: >-
+              Loaded B
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR
+            description: >-
+              Gust Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WIND_FORCE
+            description: >-
+              Wind Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_DISP
+            description: >-
+              Max. Displacement
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_ACC
+            description: >-
+              Max. Acceleration
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: ALONG_Y_PROFILE
+        description: >-
+          Along Y-Dir. Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Story Level
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: PRESSURE
+            description: >-
+              Pressure
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_H
+            description: >-
+              Loaded H
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_B
+            description: >-
+              Loaded B
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR
+            description: >-
+              Gust Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WIND_FORCE
+            description: >-
+              Wind Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_DISP
+            description: >-
+              Max. Displacement
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_ACC
+            description: >-
+              Max. Acceleration
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: ALONG_SRSS_PROFILE
+        description: >-
+          Along SRSS Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Story Level
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: PRESSURE
+            description: >-
+              Pressure
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_H
+            description: >-
+              Loaded H
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_B
+            description: >-
+              Loaded B
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR
+            description: >-
+              Gust Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WIND_FORCE
+            description: >-
+              Wind Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_DISP
+            description: >-
+              Max. Displacement
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_ACC
+            description: >-
+              Max. Acceleration
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: ACROSS_X_PROFILE
+        description: >-
+          Across X-Dir. Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Story Level
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: PRESSURE
+            description: >-
+              Pressure
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_H
+            description: >-
+              Loaded H
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_B
+            description: >-
+              Loaded B
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR
+            description: >-
+              Gust Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WIND_FORCE
+            description: >-
+              Wind Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_DISP
+            description: >-
+              Max. Displacement
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_ACC
+            description: >-
+              Max. Acceleration
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: ACROSS_Y_PROFILE
+        description: >-
+          Across Y-Dir. Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Story Level
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: PRESSURE
+            description: >-
+              Pressure
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_H
+            description: >-
+              Loaded H
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_B
+            description: >-
+              Loaded B
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR
+            description: >-
+              Gust Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WIND_FORCE
+            description: >-
+              Wind Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_DISP
+            description: >-
+              Max. Displacement
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_ACC
+            description: >-
+              Max. Acceleration
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: ACROSS_SRSS_PROFILE
+        description: >-
+          Across SRSS Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Story Level
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: PRESSURE
+            description: >-
+              Pressure
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_H
+            description: >-
+              Loaded H
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_B
+            description: >-
+              Loaded B
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR
+            description: >-
+              Gust Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WIND_FORCE
+            description: >-
+              Wind Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_DISP
+            description: >-
+              Max. Displacement
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_ACC
+            description: >-
+              Max. Acceleration
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: TORSIONAL_X_PROFILE
+        description: >-
+          Torsional TX Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Story Level
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: PRESSURE
+            description: >-
+              Pressure
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_H
+            description: >-
+              Loaded H
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_B
+            description: >-
+              Loaded B
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR
+            description: >-
+              Gust Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WIND_FORCE
+            description: >-
+              Wind Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_DISP
+            description: >-
+              Max. Displacement
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_ACC
+            description: >-
+              Max. Acceleration
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: TORSIONAL_Y_PROFILE
+        description: >-
+          Torsional TY Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Story Level
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: PRESSURE
+            description: >-
+              Pressure
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_H
+            description: >-
+              Loaded H
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_B
+            description: >-
+              Loaded B
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR
+            description: >-
+              Gust Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WIND_FORCE
+            description: >-
+              Wind Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_DISP
+            description: >-
+              Max. Displacement
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_ACC
+            description: >-
+              Max. Acceleration
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: TORSIONAL_SUM_PROFILE
+        description: >-
+          Torsional Sum. Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Story Level
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: PRESSURE
+            description: >-
+              Pressure
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_H
+            description: >-
+              Loaded H
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: LOADED_B
+            description: >-
+              Loaded B
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: GUST_FACTOR
+            description: >-
+              Gust Factor
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: WIND_FORCE
+            description: >-
+              Wind Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_DISP
+            description: >-
+              Max. Displacement
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: MAX_ACC
+            description: >-
+              Max. Acceleration
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema

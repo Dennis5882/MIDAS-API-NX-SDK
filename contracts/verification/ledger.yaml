@@ -6576,3 +6576,22 @@ records:
     extras20, and npm replayed the same emitted fixture on both products the same day
     (live-crud.mjs --endpoints /db/HPCE, then /db/IEHG) with the same answer. Evidence in
     docs/live_verification_notes.md.
+- id: ledger-write-2026-11-04
+  endpoints:
+  - /db/WIND
+  - /db/SEIS
+  date: '2026-11-04'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-11-04 (last author-confirmed Build 10/30/2026 on 2026-11-01)
+  outcome: success
+  method: >-
+    On the author's request (2026-11-04, "진행시켜", for a Thai DPT plugin), on the machine holding this
+    checkout, which is also the NX host, on a Thai project model the author allowed for testing: a scratch
+    /db/STLD case per probe, written, read back and deleted, key lists compared before and after every run.
+    /db/WIND stored 28 of its 30 known code names, and a PUT and a per-id DELETE behaved as contracted;
+    /db/SEIS stored KBC2016 and EURO2004 records, updated by a PUT and removed by a per-id DELETE. Both are
+    undocumented; the contracts were written from /info and this session (2026-11-04, "넣어주는게 맞음").
+    A JP2004 probe crashed Gen. Evidence in docs/live_verification_notes.md.

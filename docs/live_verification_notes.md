@@ -13312,9 +13312,12 @@ Inelastic Hinge > Define Inelastic Hinge Properties.
 Measured for a separate project (a Thai DPT wind plugin), on a Thai project
 model with a scratch load case (`/db/STLD` 25) written, read back and deleted
 per probe; the STLD and WIND key lists were compared before and after every
-run. The build string was not re-read this session. `/db/WIND` is in neither
-the manual nor this SDK; nothing here changes either. How each code computes
-is that project's business and is recorded there, not here.
+run. The build string was not re-read this session. `/db/WIND` is not in the
+manual. It was not in this SDK either until the same day, when the author
+asked for it and `/db/SEIS` to be added ("해외코드시 사용해야하니 넣어주는게
+맞음") as `LegacyWindLoad` and `LegacySeismicLoad`, contracted from `/info`
+and this session. How each code computes is that project's business and is
+recorded there, not here.
 
 - **`WIND_CODE` takes the legacy names, not the display names.**
   `GET /info/db/WIND` declares 31 code objects (`KS92` ... `NSCP2024`, `USER`)
@@ -13366,3 +13369,26 @@ is that project's business and is recorded there, not here.
   `/doc/EXPORTMXT` backup was imported into the restarted product's empty
   document (3137 nodes, STLD 1-24, WIND 5-20, 9 stories, as before) and never
   saved.
+
+- **`/db/WIND` verbs, measured for the contract.** POST, GET, PUT and
+  `DELETE /db/WIND/{id}` all behaved as for any `/db/*` table. A PUT of
+  `{"DESC": "partial"}` alone merged into the stored record rather than
+  replacing it; the per-id DELETE removed the record and a GET of it then
+  answered `Not Found Key`.
+- **`/db/SEIS` takes the code object's own name.** `SEIS_LOAD_CODE` is
+  `KBC2016`, `EURO2004`, `IBC2012` - the `/info` property names - except
+  `NSCP 2024`, spelled with a space while its object is `NSCP2024`. The
+  dialog spellings (`KBC(2016)`, `EUROCODE-8(2004)`) and every name sent
+  without its object answer `Unknown Error`, so unlike `/db/WIND` a
+  name-only probe tells nothing. With the object, values decide: KBC2016
+  answered `(Item:Fa)` until `FA`/`FV`/`SDS`/`SD1` were set, then stored with a
+  non-zero profile; EURO2004 stored on probe values with a zero one; IBC2012
+  and NSCP 2024 stopped at `(Item:TL)`. The 2026-11-04 DPT investigation had
+  recorded KBC2016 as refusing every shape; that was values, not the route.
+- **`/db/SEIS` verbs.** POST, a merging PUT (`DESC` alone), `GET
+  /db/SEIS/{id}` and the per-id DELETE behaved as for `/db/WIND`. **A
+  whole-table `GET /db/SEIS` answers `Right Value Can't Empty` while the table
+  holds a `DPT.1301/1302-61:2018` record** (the Thai model's keys 21-24, made
+  in the dialog); the per-id GET of another record still answers.
+- Civil NX was not connected all day (`client does not exist`), so both
+  resources declare Gen only, as unchecked on Civil rather than refused.

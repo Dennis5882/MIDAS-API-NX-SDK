@@ -136,7 +136,7 @@ PYTHON_SOURCED_AT_MOST = 0
 #: Every exported type in `types.ts`. Not a ceiling: adding or removing an
 #: export is a change to the published surface, so it has to be made here on
 #: purpose, together with the changelog entry that says so.
-EXPORTED_TYPES = 751
+EXPORTED_TYPES = 753
 
 #: A table contract builds the request-option types of one result table
 #: (`requestFields.additional`), and marks them with where they came from.

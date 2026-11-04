@@ -45,14 +45,15 @@ scoreboard.
 - **2.10.7 is published on PyPI and npm** (2026-11-03): Python gains
   `midas_nx.db.all_resources()`; npm republished unchanged. The npm
   changelog's `Unreleased` is empty.
-- **Coverage: 400/400 implemented, 315 write / 85 read.** Of the 225 `/db`
-  endpoints, 213 are write-level and 12 are not.
+- **Coverage: 402/402 implemented, 317 write / 85 read.** Of the 227 `/db`
+  endpoints, 215 are write-level and 12 are not. Two of them, the legacy
+  `/db/WIND` and `/db/SEIS`, have no manual section (2026-11-04).
 - **Fixture (`schema/live-cases.json`, version 6):** 340 cases over 260
   endpoints; 313 confirmed over 250 endpoints; 9 base-model steps; 85 named
   seeds; 0 unsupported.
 - **npm has replayed all 313 confirmed cases** on every product each declares.
   Keep that gap at 0: every new confirmed case goes through both harnesses.
-- **Contracts: 384 endpoints + 87 result tables.** The three drafts left, the
+- **Contracts: 386 endpoints + 87 result tables.** The three drafts left, the
   IEHG trio, have no permitted source; that is final.
 
 ## Gates
@@ -80,8 +81,8 @@ python scripts/check_fixture_contract.py --check       # 0 fixture leads over 0
 python scripts/report_npm_replay_coverage.py --check   # 313 cases over 250
                                           # endpoints; every product: 313
 python scripts/check_verification_lag.py --check       # 42, ceiling 42
-python scripts/verification_ledger.py                  # 397 endpoints:
-                                          # 82 read, 315 write
+python scripts/verification_ledger.py                  # 399 endpoints:
+                                          # 82 read, 317 write
 python scripts/report_unmerged_tables.py --check       # exit 0
 python scripts/check_state_numbers.py --check          # OK; it checks this
                                           # block's own numbers too

@@ -4,7 +4,7 @@
     "pythonPackage": "midas-nx",
     "coverageLedger": "docs/coverage.json"
   },
-  "resourceCount": 305,
+  "resourceCount": 307,
   "resources": [
     {
       "className": "AssignBoundaryCombinationHyperS",
@@ -5860,6 +5860,64 @@
       ],
       "payloadTypeName": "FloorLoadTypePayload",
       "payloadType": "Types.DbStaticLoadsTypes.FloorLoadTypePayload"
+    },
+    {
+      "className": "LegacySeismicLoad",
+      "exportName": "legacySeismicLoad",
+      "endpoint": "/db/SEIS",
+      "name": "Seismic Loads (legacy)",
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "pythonModule": "midas_nx.db.static_loads",
+      "modulePath": [
+        "db",
+        "staticLoads"
+      ],
+      "manual": [
+        {
+          "name": "Seismic Loads (legacy, undocumented)",
+          "chapterFile": null,
+          "status": "implemented"
+        }
+      ],
+      "payloadTypeName": "LegacySeismicLoadPayload",
+      "payloadType": "Types.DbStaticLoadsTypes.LegacySeismicLoadPayload"
+    },
+    {
+      "className": "LegacyWindLoad",
+      "exportName": "legacyWindLoad",
+      "endpoint": "/db/WIND",
+      "name": "Wind Loads (legacy)",
+      "products": [
+        "gen"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "pythonModule": "midas_nx.db.static_loads",
+      "modulePath": [
+        "db",
+        "staticLoads"
+      ],
+      "manual": [
+        {
+          "name": "Wind Loads (legacy, undocumented)",
+          "chapterFile": null,
+          "status": "implemented"
+        }
+      ],
+      "payloadTypeName": "LegacyWindLoadPayload",
+      "payloadType": "Types.DbStaticLoadsTypes.LegacyWindLoadPayload"
     },
     {
       "className": "LoadsToMass",

@@ -238,6 +238,8 @@ export const resources = {
       finishingMaterialLoad: defineDbResource<Types.DbStaticLoadsTypes.FinishingMaterialLoadPayload>({"className":"FinishingMaterialLoad","endpoint":"/db/FMLD","name":"Finishing Material Loads","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"06_DB_Static_Loads.md"}),
       floorLoad: defineDbResource<Types.DbStaticLoadsTypes.FloorLoadPayload>({"className":"FloorLoad","endpoint":"/db/FBLA","name":"Assign Floor Loads","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"06_DB_Static_Loads.md"}),
       floorLoadType: defineDbResource<Types.DbStaticLoadsTypes.FloorLoadTypePayload>({"className":"FloorLoadType","endpoint":"/db/FBLD","name":"Define Floor Load Type","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"06_DB_Static_Loads.md"}),
+      legacySeismicLoad: defineDbResource<Types.DbStaticLoadsTypes.LegacySeismicLoadPayload>({"className":"LegacySeismicLoad","endpoint":"/db/SEIS","name":"Seismic Loads (legacy)","products":["gen"],"methods":["DELETE","GET","POST","PUT"]}),
+      legacyWindLoad: defineDbResource<Types.DbStaticLoadsTypes.LegacyWindLoadPayload>({"className":"LegacyWindLoad","endpoint":"/db/WIND","name":"Wind Loads (legacy)","products":["gen"],"methods":["DELETE","GET","POST","PUT"]}),
       loadsToMass: defineDbResource<Types.DbStaticLoadsTypes.LoadsToMassPayload>({"className":"LoadsToMass","endpoint":"/db/LTOM","name":"Loads to Masses","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"06_DB_Static_Loads.md"}),
       nodalBodyForce: defineDbResource<Types.DbStaticLoadsTypes.NodalBodyForcePayload>({"className":"NodalBodyForce","endpoint":"/db/NBOF","name":"Nodal Body Force","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"06_DB_Static_Loads.md"}),
       nodalLoad: defineDbResource<Types.DbStaticLoadsTypes.NodalLoadPayload>({"className":"NodalLoad","endpoint":"/db/CNLD","name":"Nodal Loads","products":["civil","gen"],"methods":["DELETE","GET","POST","PUT"],"manualChapter":"06_DB_Static_Loads.md","payloadDefaults":{"ITEMS[].GROUP_NAME":"","ITEMS[].FX":0.0,"ITEMS[].FY":0.0,"ITEMS[].FZ":0.0,"ITEMS[].MX":0.0,"ITEMS[].MY":0.0,"ITEMS[].MZ":0.0}}),
@@ -365,4 +367,4 @@ export const resources = {
   },
 } as const;
 
-export const resourceCount = 305 as const;
+export const resourceCount = 307 as const;

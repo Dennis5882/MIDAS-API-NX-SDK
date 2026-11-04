@@ -34,7 +34,7 @@ while tidying prose rather than measuring.
 
 **To someone installing either one: no relationship at all.** The npm package
 declares no dependencies and ships `dist/`, README, CHANGELOG and LICENSE;
-0 of 751 generated npm types come from Python. The wheel depends on `requests`
+0 of 753 generated npm types come from Python. The wheel depends on `requests`
 and nothing else. Neither package requires the other, and an npm user never
 reaches Python or PyPI.
 
@@ -49,7 +49,7 @@ equal implementations.
 `npm pack` and `npm publish` alike, so publishing rebuilds `dist/` through
 Python every time; `publish-npm.yml` sets up Python 3.13 and installs the dev
 extra for PyYAML because of it. The *reason* left is small — the IEHG trio's
-four metadata values, 3 of 305 resources, with no permitted source to contract
+four metadata values, 3 of 307 resources, with no permitted source to contract
 — but it gates the whole step: point `PYTHON_SRC` at an empty directory and
 generation dies at `DbResource itself`. A small remnant holding the gate is
 still holding the gate. An already-built `dist/` runs fine without any of this.
@@ -122,7 +122,7 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   uncontracted resources (the IEHG trio) still use the reviewed Python fallback.
   Since 2026-09-02 a contract's optional `surface` block
   also owns the **published npm names** — `className`, `exportName`, `modulePath`,
-  `payloadTypeName` — for the 302 resources that have one, and the generator raises if a name
+  `payloadTypeName` — for the 304 resources that have one, and the generator raises if a name
   disagrees with the contract, so moving a Python module can no longer rename an npm export in
   silence. This replaces the older "class and module names remain compatibility anchors until
   every resource is contracted" rule, which described a finish line the design could not reach:
@@ -143,7 +143,7 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   installed distribution. The **source tree** is still load-bearing — deleting `src/midas_nx/` breaks `npm run generate`,
   and with it `npm publish`; an already-built `dist/` still *runs*, but publishing rebuilds it
   — because the IEHG trio still takes its resource identity
-  from Python classes. Its types no longer do: 0 of 751 generated npm types come from Python
+  from Python classes. Its types no longer do: 0 of 753 generated npm types come from Python
   TypedDicts since 2026-09-22, when the last 14 - exported names nothing in the generated SDK
   referenced - were withdrawn at the author's request (`_PYTHON_TYPES_WITHDRAWN`). **Since 2026-09-22 the types are decided by contracts alone**: which types exist and in which
   namespace is decided by the contracts for every type they own (payload roots by
@@ -158,7 +158,7 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   operation `surface` with no `exportName` on `/post/TABLE`, which names types without
   publishing a generated export. An `unmergedTables` entry marked `excluded: true` is a table
   review decided, with evidence, is not part of this API (`/db/TDME`'s two iGen code tables), and
-  does not stop the contract's field list becoming the payload type. Only 3 of 305 resources still take their
+  does not stop the contract's field list becoming the payload type. Only 3 of 307 resources still take their
   identity from a Python class: the IEHG trio, which has no permitted source and so can never be
   contracted. **`scripts/report_npm_type_provenance.py` measures the type side of that rather than
   leaving it to a hand count**, and `--check` holds both it and the exported-type count as

@@ -13055,6 +13055,2596 @@ export namespace DbStaticLoadsTypes {
     }>;
   }
   /** Generated from contracts/endpoints/. */
+  export interface LegacySeismicLoadPayload {
+    /** Seismic Load Code */
+    SEIS_LOAD_CODE?: string;
+    /** Description */
+    DESC?: string;
+    /** Seismic Load Direction Factor (Scale Factor) : X-Dir */
+    SCALE_FACTOR_X?: number;
+    /** Seismic Load Direction Factor (Scale Factor) : Y-Dir */
+    SCALE_FACTOR_Y?: number;
+    /** Accidental Eccentricity : X-Dir */
+    ACCIDENT_ECCEN_X?: number;
+    /** Accidental Eccentricity : Y-Dir */
+    ACCIDENT_ECCEN_Y?: number;
+    /** Consider amplification of accidental torsion */
+    bACCIDENT_TORSION?: boolean;
+    /** Consider amplification of inherent torsion */
+    bINHERENT_TORSION?: boolean;
+    /** Korea(Arch. 1992) */
+    KS1992?: {
+      /** Soil Profile Type */
+      SOIL_FACTOR?: number;
+      /** Earthquake Area */
+      ZONE_FACTOR?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Period (Analysis) : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Period (Analysis) : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Period (Code) : X-Dir */
+      PERIOD_CODE_X?: number;
+      /** Period (Code) : Y-Dir */
+      PERIOD_CODE_Y?: number;
+      /** Response Modification Coef.(R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Coef.(R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** UBC(1991) */
+    UBC1991?: {
+      /** Soil Profile Type */
+      SOIL_FACTOR?: number;
+      /** Seismic Zone Factor */
+      ZONE_FACTOR?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Period (Analysis) : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Period (Analysis) : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Period (Code) : X-Dir */
+      PERIOD_CODE_X?: number;
+      /** Period (Code) : Y-Dir */
+      PERIOD_CODE_Y?: number;
+      /** Ductility Coef.(Rw) : X-Dir */
+      SYS_FACTOR_X?: number;
+      /** Ductility Coef.(Rw) : Y-Dir */
+      SYS_FACTOR_Y?: number;
+    };
+    /** UBC(1997) */
+    UBC1997?: {
+      /** Soil Profile Type */
+      SOIL_PROFILE_TYPE?: string;
+      /** Seismic Zone Factor */
+      ZONE_FACTOR?: number;
+      /** Seismic Source Type */
+      SEISMIC_SOURCE_TYPE?: string;
+      /** Closest Distance to Known Seismic Source */
+      CLOSEAST_DISTANCE?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Period (Analysis) : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Period (Analysis) : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Period (Code) : X-Dir */
+      PERIOD_CODE_X?: number;
+      /** Period (Code) : Y-Dir */
+      PERIOD_CODE_Y?: number;
+      /** Ductility Coef.(Rw) : X-Dir */
+      SYS_FACTOR_X?: number;
+      /** Ductility Coef.(Rw) : Y-Dir */
+      SYS_FACTOR_Y?: number;
+    };
+    /** ATC3-06 */
+    ATC306?: {
+      /** Soil Profile Coefficient */
+      SOIL_PROFILE_COEF?: number;
+      /** Effective Peak Velocity */
+      EFFECTIVE_PEAK_VELOCITY?: number;
+      /** Period (Analysis) : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Period (Analysis) : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Period (Code) : X-Dir */
+      PERIOD_CODE_X?: number;
+      /** Period (Code) : Y-Dir */
+      PERIOD_CODE_Y?: number;
+      /** Response Modification Factor : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** Korea(Arch. 2000) */
+    KS2000?: {
+      /** Soil Profile Type */
+      SOIL_FACTOR?: number;
+      /** Earthquake Area */
+      ZONE_FACTOR?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Period (Analysis) : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Period (Analysis) : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Period (Code) : X-Dir */
+      PERIOD_CODE_X?: number;
+      /** Period (Code) : Y-Dir */
+      PERIOD_CODE_Y?: number;
+      /** Response Modification Coef.(R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Coef.(R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** Japan(Arch. 2000) */
+    JIS_E?: {
+      /** Soil Profile Type */
+      SOIL_FACTOR?: number;
+      /** Earthquake Area */
+      ZONE_FACTOR?: number;
+      /** Base Shear Factor */
+      STD_SHEAR_FACTOR?: number;
+      /** Period (Analysis) : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Period (Analysis) : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Period (Code) : X-Dir */
+      PERIOD_CODE_X?: number;
+      /** Period (Code) : Y-Dir */
+      PERIOD_CODE_Y?: number;
+      /** Response Modification Coef.(R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Coef.(R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+      /** Seismic Base Shear Distribution Factor(Ai) : Use User Defined */
+      OPT_AI_USER_DEFINED?: boolean;
+      /** User Defined Factors */
+      AI_FACTOR_ITEMS?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Ai Factor : X-Dir */
+        X_DIR?: number;
+        /** Ai Factor : Y-Dir */
+        Y_DIR?: number;
+      }>;
+    };
+    /** IBC2000(ASCE7-98) */
+    IBC2000?: {
+      /** Seismic Design Category */
+      SEIS_DGN_CATEGORY?: string;
+      /** Site Class */
+      SITE_CLASS?: string;
+      /** Mapped Spectral Response Acceleration at Short Periods (Ss) */
+      DUCTILITY_CLASS?: number;
+      /** Mapped Spectral Response Acceleration at 1 Second Period (S1) */
+      REGULARITY?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Period (Analysis) : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Period (Analysis) : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Period (Code) : X-Dir */
+      PERIOD_CODE_X?: number;
+      /** Period (Code) : Y-Dir */
+      PERIOD_CODE_Y?: number;
+      /** Response Modification Coef.(R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Coef.(R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** Eurocode-8(1996) */
+    EURO1996?: {
+      /** Soil Class (S) */
+      SOIL_CLASS?: string;
+      /** Basic Behavior Factor(go) */
+      BASIC_BEHAVIOR?: string;
+      /** Ductility Class (Kd) */
+      DUCTILITY_CLASS?: string;
+      /** Elevation Regularity (Kr) */
+      REGULARITY?: string;
+      /** Failure Mode Factor (Kw) */
+      FAILURE_MODE_FACTOR?: number;
+      /** Ratio of design ground acceleration to gravity acceleration (alpha) */
+      ALPHA_FACTOR?: number;
+      /** Fundamental period : X-Dir */
+      PERIOD_X?: number;
+      /** Fundamental period : Y-Dir */
+      PERIOD_Y?: number;
+    };
+    /** China(GB50011-2001) */
+    CH2001?: {
+      /** Near Source Category */
+      NEAR_SOURCE_CATEGORY?: number;
+      /** Seis. Fortification Intensity */
+      SEIS_FORTIFICATION?: string;
+      /** Site Class */
+      SITE_CLASS?: number;
+      /** Structure Type */
+      STRUCTURE_TYPE?: string;
+      /** Damping ratio */
+      DAMPING_RATIO?: number;
+      /** Earth Response Type */
+      EARTH_RESPONSE_TYPE?: string;
+      /** Use Mansonry Multistory, Framed 1st Story, Interior Frame - Exterior Mansonry Structure */
+      OPT_A1?: boolean;
+      /** Fundamental period : X-Dir */
+      PERIOD_X?: number;
+      /** Fundamental period : Y-Dir */
+      PERIOD_Y?: number;
+    };
+    /** China Shanghai(DGJ08-9-2003) */
+    CHSH2003?: {
+      /** Seis. Fortification Intensity */
+      SEIS_FORTIFICATION?: string;
+      /** Site Class */
+      SITE_CLASS?: number;
+      /** Structure Type */
+      STRUCTURE_TYPE?: string;
+      /** Damping ratio */
+      DAMPING_RATIO?: number;
+      /** Earth Response Type */
+      EARTH_RESPONSE_TYPE?: string;
+      /** Use Mansonry Multistory, Framed 1st Story, Interior Frame - Exterior Mansonry Structure */
+      OPT_A1?: boolean;
+      /** Fundamental period : X-Dir */
+      PERIOD_X?: number;
+      /** Fundamental period : Y-Dir */
+      PERIOD_Y?: number;
+    };
+    /** NBC(1995) */
+    NBC1995?: {
+      /** Zonal Velocity Ratio (v) */
+      ZONAL_VELOCITY_RATION?: number;
+      /** Acceleration Zone (Za) */
+      ACCELERATION_ZONE?: number;
+      /** Velocity Zone (Zv) */
+      VELOCITY_ZONE?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Foundation Factor (F) */
+      FOUNDATION_FACTOR?: number;
+      /** Period (Analysis) : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Period (Analysis) : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Period (Code) : X-Dir */
+      PERIOD_CODE_X?: number;
+      /** Period (Code) : Y-Dir */
+      PERIOD_CODE_Y?: number;
+      /** Force Modification Factor(R) : X-Dir */
+      FORCE_MOD_FACTOR_X?: number;
+      /** Force Modification Factor(R) : Y-Dir */
+      FORCE_MOD_FACTOR_Y?: number;
+    };
+    /** IS1893(2002) */
+    IS2002?: {
+      /** Seismic Zone (Z) */
+      SEISMIC_ZONE?: string;
+      /** Soil Type */
+      SOIL_TYPE?: string;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Damping (%) */
+      DAMPING_RATIO?: number;
+      /** Damping Multiplying Factor */
+      DAMPING_MULTIPLY_FACTOR?: number;
+      /** Fundamental period : X-Dir */
+      PERIOD_FND_X?: number;
+      /** Fundamental period : Y-Dir */
+      PERIOD_FND_Y?: number;
+      /** Response Reduction Factor (R) : X-Dir */
+      RESPONSE_REDUCT_FACTOR_X?: number;
+      /** Response Reduction Factor (R) : Y-Dir */
+      RESPONSE_REDUCT_FACTOR_Y?: number;
+    };
+    /** Taiwan(1999) */
+    TAIWAN1999?: {
+      /** Seismic Zone (Z) */
+      SEIS_ZONE?: string;
+      /** Soil Type */
+      SOIL_TYPE?: string;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Response Reduction Factor (R) : Y-Dir */
+      SEIS_MAGNIFY_FACTOR?: number;
+      /** Period Method */
+      PERIOD_METHOD?: string;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Final Period : X-Dir */
+      PERIOD_FINAL_X?: number;
+      /** Final Period : Y-Dir */
+      PERIOD_FINAL_Y?: number;
+      /** Response Reduction Factor (R) : X-Dir */
+      RESPONSE_REDUCT_FACTOR_X?: number;
+      /** Response Reduction Factor (R) : Y-Dir */
+      RESPONSE_REDUCT_FACTOR_Y?: number;
+    };
+    /** KBC (2005) */
+    KBC2005?: {
+      /** Design Spectral Response Acceleration */
+      ACC_CALC_METHOD?: number;
+      /** Seismic Zone (Z) */
+      SEIS_ZONE?: number;
+      /** Site Class */
+      SITE_CLASS?: number;
+      /** Sds */
+      SDS?: number;
+      /** Sd1 */
+      SD1?: number;
+      /** Seis. Use Group */
+      SEIS_USE_GROUP?: number;
+      /** City Plan. Region Boolean */
+      CITY_PLAN_REGION?: boolean;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Structural Parameters : Period Method */
+      PERIOD_METHOD?: number;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Final Period : X-Dir */
+      PERIOD_FINAL_X?: number;
+      /** Final Period : Y-Dir */
+      PERIOD_FINAL_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** Taiwan(2006) */
+    TAIWAN2006?: {
+      /** Seismic Zone (Z) */
+      SEIS_ZONE?: number;
+      /** Short Period (Ss) */
+      SDS?: number;
+      /** 1sec Period (S1) */
+      SD1?: number;
+      /** Ss */
+      SMS?: number;
+      /** S1 */
+      SM1?: number;
+      /** Na */
+      NDA?: number;
+      /** Nv */
+      NDV?: number;
+      /** Na */
+      NMA?: number;
+      /** Nv */
+      NMV?: number;
+      /** Soil Type */
+      SOIL_TYPE?: number;
+      /** Short Period (Fa) */
+      FDA?: number;
+      /** Short Period (Fv) */
+      FDV?: number;
+      /** Fa */
+      FMA?: number;
+      /** Fv */
+      FMV?: number;
+      /** Sub Zone */
+      SUB_ZONE?: number;
+      /** Sds_t */
+      SDS_T?: number;
+      /** Sms_t */
+      SMS_T?: number;
+      /** Td0 */
+      TD0?: number;
+      /** Tm0 */
+      TM0?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Seismic Magnify Factor (ay) */
+      SEIS_MAGNIFY_FACTOR?: number;
+      /** Period Method */
+      PERIOD_METHOD?: string;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Final Period : X-Dir */
+      PERIOD_FINAL_X?: number;
+      /** Final Period : Y-Dir */
+      PERIOD_FINAL_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** Eurocode-8(2004) */
+    EURO2004?: {
+      /** Ground Type */
+      GROUND_TYPE?: number;
+      /** Spectrum Parameters Type */
+      SPEC_TYPE?: number;
+      /** National Annex */
+      NATIONAL_ANNEX?: number;
+      /** Region Type */
+      REGION_TYPE?: number;
+      /** Soil Factor(S) */
+      S_?: number;
+      /** Tb */
+      TB?: number;
+      /** Tc */
+      TC?: number;
+      /** Td */
+      TD?: number;
+      /** Ref. Peak Ground Acc. (AgR) */
+      AG?: number;
+      /** Behavior Factor (q) */
+      Q?: number;
+      /** Lower Bound Factor (b) */
+      BETA?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE?: number;
+      /** Fundamental Period : X-Dir */
+      PERIOD_X?: number;
+      /** Fundamental Period : Y-Dir */
+      PERIOD_Y?: number;
+    };
+    /** NTC2008 */
+    NTC2008?: {
+      /** Ground Type */
+      GROUND_TYPE?: number;
+      /** Spectrum Parameters Type */
+      SPEC_TYPE?: number;
+      /** Soil Factor(S) */
+      S_?: number;
+      /** Tb */
+      TB?: number;
+      /** Tc */
+      TC?: number;
+      /** Td */
+      TD?: number;
+      /** Ref. Peak Ground Acc. (AgR) */
+      AG?: number;
+      /** Behavior Factor (q) */
+      Q?: number;
+      /** Amplification Factor */
+      AMP_F?: number;
+      /** Tc* */
+      TC_STAR?: number;
+      /** Fundamental Period : X-Dir */
+      PERIOD_X?: number;
+      /** Fundamental Period : Y-Dir */
+      PERIOD_Y?: number;
+    };
+    /** KBC(2009) */
+    KBC2009?: {
+      /** Seismic Zone (Z) */
+      SEIS_ZONE?: number;
+      /** Zone Factor (S) */
+      ZONE_FACTOR?: number;
+      /** Site Class */
+      SITE_CLASS?: number;
+      /** Period Coef. (Cu) */
+      PERIOD_COEF?: number;
+      /** Fa */
+      FA?: number;
+      /** Fv */
+      FV?: number;
+      /** Sds */
+      SDS?: number;
+      /** Sd1 */
+      SD1?: number;
+      /** Seis. Use Group */
+      SEIS_USE_GROUP?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Structural Parameters : Period Method */
+      PERIOD_METHOD?: number;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** Taiwan(2011) */
+    TAIWAN2011?: {
+      /** Seismic Zone (Z) */
+      SEIS_ZONE?: number;
+      /** Short Period (Ss) */
+      SDS?: number;
+      /** 1sec Period (S1) */
+      SD1?: number;
+      /** Ss */
+      SMS?: number;
+      /** S1 */
+      SM1?: number;
+      /** Na */
+      NDA?: number;
+      /** Nv */
+      NDV?: number;
+      /** Na */
+      NMA?: number;
+      /** Nv */
+      NMV?: number;
+      /** Soil Type */
+      SOIL_TYPE?: number;
+      /** Short Period (Fa) */
+      FDA?: number;
+      /** Short Period (Fv) */
+      FDV?: number;
+      /** Fa */
+      FMA?: number;
+      /** Fv */
+      FMV?: number;
+      /** Sub Zone */
+      SUB_ZONE?: number;
+      /** Sds_t */
+      SDS_T?: number;
+      /** Sms_t */
+      SMS_T?: number;
+      /** Td0 */
+      TD0?: number;
+      /** Tm0 */
+      TM0?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Seismic Magnify Factor (ay) */
+      SEIS_MAGNIFY_FACTOR?: number;
+      /** Period Method */
+      PERIOD_METHOD?: string;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Final Period : X-Dir */
+      PERIOD_FINAL_X?: number;
+      /** Final Period : Y-Dir */
+      PERIOD_FINAL_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** China(GB50011_2010) */
+    CH2010?: {
+      /** Near Source Category */
+      SEIS_DGN_CATEGORY?: number;
+      /** Seis. Fortification Intensity */
+      SEIS_FORTIFICATION?: string;
+      /** Site Class */
+      SITE_CLASS?: number;
+      /** Structure Type */
+      DELTA_N?: string;
+      /** Damping ratio */
+      DAMPING?: number;
+      /** Earthquake Effect */
+      EARTH_RESPONSE?: string;
+      /** Mansonry Multistory, Framed 1st Story, Interior Frame - Exterior Mansonry Structure */
+      ALPHA_1?: boolean;
+      /** Fundamental Period : X-Dir */
+      PERIOD_X?: number;
+      /** Fundamental Period : Y-Dir */
+      PERIOD_Y?: number;
+    };
+    /** IBC2000(ASCE7-05) */
+    IBC2009?: {
+      /** Site Class */
+      SITE_CLASS?: number;
+      /** Ss */
+      SS?: number;
+      /** S1 */
+      S1?: number;
+      /** Fa */
+      FA?: number;
+      /** Fv */
+      FV?: number;
+      /** Sds */
+      SDS?: number;
+      /** Sd1 */
+      SD1?: number;
+      /** TL */
+      TL?: number;
+      /** Risk Category */
+      RISK_CATEGORY?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Structural Parameters : Period Method */
+      PERIOD_METHOD?: number;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** IBC2000(ASCE7-10) */
+    IBC2012?: {
+      /** Site Class */
+      SITE_CLASS?: number;
+      /** Ss */
+      SS?: number;
+      /** S1 */
+      S1?: number;
+      /** Fa */
+      FA?: number;
+      /** Fv */
+      FV?: number;
+      /** Sds */
+      SDS?: number;
+      /** Sd1 */
+      SD1?: number;
+      /** TL */
+      TL?: number;
+      /** Risk Category */
+      RISK_CATEGORY?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Structural Parameters : Period Method */
+      PERIOD_METHOD?: number;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** NSCP 2024 */
+    NSCP2024?: {
+      /** Site Class */
+      SITE_CLASS?: number;
+      /** Ss */
+      SS?: number;
+      /** S1 */
+      S1?: number;
+      /** Fa */
+      FA?: number;
+      /** Fv */
+      FV?: number;
+      /** Sds */
+      SDS?: number;
+      /** Sd1 */
+      SD1?: number;
+      /** TL */
+      TL?: number;
+      /** Risk Category */
+      RISK_CATEGORY?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Structural Parameters : Period Method */
+      PERIOD_METHOD?: number;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** NTC2012 */
+    NTC2012?: {
+      /** Ground Type */
+      GROUND_TYPE?: number;
+      /** Spectrum Parameters Type */
+      SPEC_TYPE?: number;
+      /** Soil Factor(S) */
+      S_?: number;
+      /** Tb */
+      TB?: number;
+      /** Tc */
+      TC?: number;
+      /** Td */
+      TD?: number;
+      /** Ref. Peak Ground Acc. (AgR) */
+      AG?: number;
+      /** Behavior Factor (q) */
+      Q?: number;
+      /** Amplification Factor */
+      AMP_F?: number;
+      /** Tc* */
+      TC_STAR?: number;
+      /** Fundamental Period : X-Dir */
+      PERIOD_X?: number;
+      /** Fundamental Period : Y-Dir */
+      PERIOD_Y?: number;
+    };
+    /** NTC2018 */
+    NTC2017?: {
+      /** Ground Type */
+      GROUND_TYPE?: number;
+      /** Spectrum Parameters Type */
+      SPEC_TYPE?: number;
+      /** Soil Factor(S) */
+      S_?: number;
+      /** Tb */
+      TB?: number;
+      /** Tc */
+      TC?: number;
+      /** Td */
+      TD?: number;
+      /** Ref. Peak Ground Acc. (AgR) */
+      AG?: number;
+      /** Behavior Factor (q) */
+      Q?: number;
+      /** Amplification Factor */
+      AMP_F?: number;
+      /** Tc* */
+      TC_STAR?: number;
+      /** Fundamental Period : X-Dir */
+      PERIOD_X?: number;
+      /** Fundamental Period : Y-Dir */
+      PERIOD_Y?: number;
+    };
+    /** NSR-10 */
+    NSR2010?: {
+      /** Site Class */
+      SITE_CLASS?: number;
+      /** Aa */
+      AA?: number;
+      /** Av */
+      AV?: number;
+      /** Fa */
+      FA?: number;
+      /** Fv */
+      FV?: number;
+      /** Period Coef. (Cu) */
+      PERIOD_COEF?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Structural Parameters : Period Method */
+      PERIOD_METHOD?: number;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Final Period : X-Dir */
+      PERIOD_FINAL_X?: number;
+      /** Final Period : Y-Dir */
+      PERIOD_FINAL_Y?: number;
+      /** Phi : X-Dir */
+      PHI_X?: number;
+      /** Phi : Y-Dir */
+      PHI_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** KBC (2016) */
+    KBC2016?: {
+      /** Seismic Zone (Z) */
+      SEIS_ZONE?: number;
+      /** Zone Factor (S) */
+      ZONE_FACTOR?: number;
+      /** Site Class */
+      SITE_CLASS?: number;
+      /** Depth to MR */
+      DEPTH_2MR?: number;
+      /** Period Coef. (Cu) */
+      PERIOD_COEF?: number;
+      /** Fa */
+      FA?: number;
+      /** Fv */
+      FV?: number;
+      /** Sds */
+      SDS?: number;
+      /** Sd1 */
+      SD1?: number;
+      /** Seis. Use Group */
+      SEIS_USE_GROUP?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Structural Parameters : Period Method */
+      PERIOD_METHOD?: number;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** P100-1 (2013) */
+    P100_2013?: {
+      /** Spectrum Parameters */
+      SPEC_TYPE?: string;
+      /** Tb */
+      TB?: number;
+      /** Tc */
+      ATC?: number;
+      /** Td */
+      TD?: number;
+      /** Design Ground Acc. (Ag) */
+      AG?: number;
+      /** Behavior Factor (q) */
+      Q?: number;
+      /** Importance Factor */
+      IMPORTANCE?: number;
+      /** Fundamental Period : X-Dir */
+      PERIOD_X?: number;
+      /** Fundamental Period : Y-Dir */
+      PERIOD_Y?: number;
+    };
+    /** IS1893(2016) */
+    IS2016?: {
+      /** Seismic Zone (Z) */
+      SEIS_ZONE?: string;
+      /** Soil Type */
+      SOIL_TYPE?: string;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Damping (%) */
+      DAMPING?: number;
+      /** Fundamental Period : X-Dir */
+      PERIOD_X?: number;
+      /** Fundamental Period : Y-Dir */
+      PERIOD_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_REDUCTION_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_REDUCTION_FACTOR_Y?: number;
+    };
+    /** KDS(41-17-00:2019) */
+    KDS2019?: {
+      /** Seismic Zone */
+      SEIS_ZONE?: number;
+      /** EPA(S) */
+      ZONE_FACTOR?: number;
+      /** Site Class */
+      SITE_CLASS?: number;
+      /** Period Coef. (Cu) */
+      PERIOD_COEF?: number;
+      /** Not Consider Cu Option */
+      OPT_NOT_CONSIDER_CU?: number;
+      /** Fa */
+      FA?: number;
+      /** Fv */
+      FV?: number;
+      /** Sds */
+      SDS?: number;
+      /** Sd1 */
+      SD1?: number;
+      /** Seis. Use Group */
+      SEIS_USE_GROUP?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Structural Parameters : Period Method */
+      PERIOD_METHOD?: number;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** IS1893(2025) */
+    IS2025?: {
+      /** Spectrum Type */
+      SPEC_TYPE?: string;
+      /** Earthquake Zone */
+      EQ_ZONE?: string;
+      /** Return Period */
+      RET_PERIOD?: string;
+      /** Zone Factor */
+      ZONE_FACTOR?: number;
+      /** Site Class */
+      SITE_CLASS?: string;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Damping (%) */
+      DAMPING?: number;
+      /** Fundamental Period : X-Dir */
+      PERIOD_X?: number;
+      /** Fundamental Period : Y-Dir */
+      PERIOD_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_REDUCTION_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_REDUCTION_FACTOR_Y?: number;
+    };
+    /** TAIWAN(2022) */
+    TAIWAN2022?: {
+      /** STRUCT_TYPE */
+      STRUCT_TYPE?: number;
+      /** Seismic Zone (Z) */
+      SEIS_ZONE?: number;
+      /** Short Period (Ss) */
+      SDS?: number;
+      /** 1sec Period (S1) */
+      SD1?: number;
+      /** Ss */
+      SMS?: number;
+      /** S1 */
+      SM1?: number;
+      /** Na */
+      NDA?: number;
+      /** Nv */
+      NDV?: number;
+      /** Na */
+      NMA?: number;
+      /** Nv */
+      NMV?: number;
+      /** Soil Type */
+      SOIL_TYPE?: number;
+      /** Short Period (Fa) */
+      FDA?: number;
+      /** Short Period (Fv) */
+      FDV?: number;
+      /** Fa */
+      FMA?: number;
+      /** Fv */
+      FMV?: number;
+      /** FSA */
+      FSA?: number;
+      /** FSV */
+      FSV?: number;
+      /** Sub Zone */
+      SUB_ZONE?: number;
+      /** Sds_t */
+      SDS_T?: number;
+      /** Sms_t */
+      SMS_T?: number;
+      /** Td0 */
+      TD0?: number;
+      /** Tm0 */
+      TM0?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Seismic Magnify Factor (ay) */
+      SEIS_MAGNIFY_FACTOR?: number;
+      /** Period Method */
+      PERIOD_METHOD?: string;
+      /** Analytical Period : X-Dir */
+      PERIOD_ANALYSIS_X?: number;
+      /** Analytical Period : Y-Dir */
+      PERIOD_ANALYSIS_Y?: number;
+      /** Approximate Period : X-Dir */
+      PERIOD_APPR_X?: number;
+      /** Approximate Period : Y-Dir */
+      PERIOD_APPR_Y?: number;
+      /** Final Period : X-Dir */
+      PERIOD_FINAL_X?: number;
+      /** Final Period : Y-Dir */
+      PERIOD_FINAL_Y?: number;
+      /** Response Modification Factor (R) : X-Dir */
+      RESPONSE_MOD_FACTOR_X?: number;
+      /** Response Modification Factor (R) : Y-Dir */
+      RESPONSE_MOD_FACTOR_Y?: number;
+    };
+    /** USER */
+    USER?: Array<{
+      /** Story Name */
+      STORY_NAME?: string;
+      /** Weight */
+      WEIGHT?: number;
+      /** Elevation */
+      ELIV?: number;
+      /** Force-X */
+      FORCE_X?: number;
+      /** Force-Y */
+      FORCE_Y?: number;
+    }>;
+    /** Additional Seismic Loads */
+    ITEMS?: Array<{
+      /** Story Name */
+      STORY_NAME?: string;
+      /** Additional-X */
+      ADD_X?: number;
+      /** Additional-Y */
+      ADD_Y?: number;
+      /** Additional-RZ */
+      ADD_R?: number;
+    }>;
+    /** Profile */
+    PROFILE?: {
+      /** Along X-Dir. Profile */
+      ALONG_X_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Weight */
+        STORY_WEIGHT?: number;
+        /** Elevation */
+        STORY_LEVEL?: number;
+        /** Seismic Force */
+        SEISMIC_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Accidental Eccentricity */
+        ACCIDENT_ECCENT?: number;
+        /** Accidental Torsion */
+        ACCIDENT_TORSION?: number;
+        /** Inherent Torsion */
+        INHERENT_TORSION?: number;
+        /** Total Torsion */
+        TOTAL_TORSION?: number;
+      }>;
+      /** Along Y-Dir. Profile */
+      ALONG_Y_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Weight */
+        STORY_WEIGHT?: number;
+        /** Elevation */
+        STORY_LEVEL?: number;
+        /** Seismic Force */
+        SEISMIC_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Accidental Eccentricity */
+        ACCIDENT_ECCENT?: number;
+        /** Accidental Torsion */
+        ACCIDENT_TORSION?: number;
+        /** Inherent Torsion */
+        INHERENT_TORSION?: number;
+        /** Total Torsion */
+        TOTAL_TORSION?: number;
+      }>;
+      /** Along SRSS Profile */
+      ALONG_SRSS_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Weight */
+        STORY_WEIGHT?: number;
+        /** Elevation */
+        STORY_LEVEL?: number;
+        /** Seismic Force */
+        SEISMIC_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Accidental Eccentricity */
+        ACCIDENT_ECCENT?: number;
+        /** Accidental Torsion */
+        ACCIDENT_TORSION?: number;
+        /** Inherent Torsion */
+        INHERENT_TORSION?: number;
+        /** Total Torsion */
+        TOTAL_TORSION?: number;
+      }>;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
+  export interface LegacyWindLoadPayload {
+    /** Wind Load Code Name */
+    WIND_CODE?: string;
+    /** Description */
+    DESC?: string;
+    /** Scale Factor : X */
+    SCALE_FACTOR_X?: number;
+    /** Scale Factor : Y */
+    SCALE_FACTOR_Y?: number;
+    /** Scale Factor : R */
+    SCALE_FACTOR_R?: number;
+    /** Wind Eccentricity Direction : X-Dir */
+    WIND_ECCEN_X?: number;
+    /** Wind Eccentricity Direction : Y-Dir */
+    WIND_ECCEN_Y?: number;
+    /** KS92 */
+    KS92?: {
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Pressure Coefficient */
+      PRES_COEF?: number;
+    };
+    /** JP87 */
+    JP87?: {
+      /** Pressure Rediction Factor */
+      PRES_REDUCT_FACTOR?: number;
+      /** Pressure Coefficient */
+      PRES_COEF?: number;
+    };
+    /** UBC97 */
+    UBC97?: {
+      /** Procedure */
+      PROCEDURE?: number;
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Pressure Coefficient */
+      PRES_COEF?: number;
+      /** Use Projected Area Method */
+      OPT_PROJECTED_AREA?: boolean;
+      /** Mean Roof Height */
+      MEAN_ROOF_HEIGHT?: number;
+    };
+    /** ANSI82 */
+    ANSI82?: {
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Winward Coefficient */
+      WINWARD_COEF?: number;
+      /** Leward Coefficient */
+      LEWARD_COEF?: number;
+    };
+    /** KS2000 */
+    KS2000?: {
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Importance Factor (I) */
+      IMPORTANCE_FACTOR?: number;
+      /** Mean Roof Height */
+      MEAN_ROOF_HEIGHT?: number;
+      /** Include Topographic Effects Boolean */
+      OPT_INCLUDE_TOPOGRAPHY?: boolean;
+      /** Kzt */
+      KZT?: number;
+      /** Vertical Range For Kzt */
+      H_KZT?: number;
+      /** Structure Type (Rigid/Flexible) */
+      STRUCTURE_TYPE?: string;
+      /** Gust Factor : Gx */
+      GUST_FACTOR_X?: number;
+      /** Gust Factor : Gy */
+      GUST_FACTOR_Y?: number;
+      /** Load Evaluation Using Force Coefficient */
+      OPT_USE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+    };
+    /** IBC2000 */
+    IBC2000?: {
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Procedure */
+      PROCEDURE?: number;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Roof Height */
+      ROOF_HEIGHT?: number;
+      /** Pressure Coefficient */
+      WIND_DIRECTION_FACTOR?: number;
+      /** Structure Type (Rigid/Flexible) */
+      STRUCTURE_TYPE?: string;
+      /** Gust Factor : Gx */
+      GUST_FACTOR_X?: number;
+      /** Gust Factor : Gy */
+      GUST_FACTOR_Y?: number;
+      /** Include topography effect */
+      bTOPOGRAPHY?: boolean;
+      /** Hill Shape */
+      HILL_SHAPE?: string;
+      /** Building Location */
+      BLDG_LOCATION?: string;
+      /** Hill Height */
+      HILL_HEIGHT?: number;
+      /** Hill Length */
+      HILL_LENGTH?: number;
+      /** Hill Distance */
+      HILL_DISTANCE?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+      /** Auto Calc Boolean */
+      bAUTO_CALC?: boolean;
+      /** Wnat Key */
+      KEY_WNAT?: number;
+    };
+    /** EURO1992 */
+    EURO1992?: {
+      /** Procedure */
+      PROCEDURE?: number;
+      /** Rough Category */
+      ROUGH_CATEGORY?: number;
+      /** Ref Wind Speed */
+      REF_WIND_SPEED?: number;
+      /** Windward Coefficient */
+      WINDWARD_COEF?: number;
+      /** Leeward Coefficient */
+      LEEWARD_COEF?: number;
+      /** Rfiction Coefficient */
+      FRICTION_COEF?: number;
+      /** Include topography effect */
+      bTOPOGRAPHY?: boolean;
+      /** Topography Coefficient */
+      TOPOGRAPHY_COEF?: number;
+      /** Topography Range */
+      TOPOGRAPHY_RANGE?: number;
+      /** Hill Distance */
+      HILL_DISTANCE?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+      /** Gust Factor */
+      GUST_FACTOR?: number;
+    };
+    /** BS6399_1997 */
+    BS6399_1997?: {
+      /** Procedure */
+      PROCEDURE?: number;
+      /** Site Category */
+      SITE_CATEGORY?: string;
+      /** Building Type Factor */
+      BLDG_TYPE_FACTOR?: string;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Mean Roof Height */
+      MEAN_ROOF_HEIGHT?: number;
+      /** Building Seperation */
+      BLDG_SEPERATION?: number;
+      /** Friction Coefficient */
+      FRICTION_COEF?: number;
+      /** Sea Distance */
+      SEA_DISTANCE?: number;
+      /** Town Distance */
+      TOWN_DISTANCE?: number;
+      /** Altitude Factor */
+      ALTITUDE_FACTOR?: number;
+      /** Directional Factor */
+      DIRECTIONAL_FACTOR?: number;
+      /** Seasonal Factor */
+      SEASONAL_FACTOR?: number;
+      /** Probability Factor */
+      PROBABILITY_FACTOR?: number;
+      /** Topographic Factor */
+      TOPOGRAPHIC_FACTOR?: number;
+    };
+    /** CH2002 */
+    CH2002?: {
+      /** Rough Category */
+      ROUGH_CATEGORY?: string;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Modify Factor */
+      MODIFY_FACTOR?: number;
+      /** Windward Coefficient */
+      WINDWARD_COEF?: number;
+      /** Leeward Coefficient */
+      LEEWARD_COEF?: number;
+      /** Pulse Magnify Method (0:Automatic Calculation, 1:User Defined) */
+      PULSE_MAGNIFY_METHOD?: number;
+      /** Structural Material */
+      STRUCTURAL_MATL?: string;
+      /** Damping Ratio */
+      DAMPING_RATIO?: number;
+      /** Fundamental Period in x direction */
+      PERIOD_X?: number;
+      /** Fundamental Period in y direction */
+      PERIOD_Y?: number;
+      /** Pulse Magnify Factor : X */
+      PULSE_MAGNIFY_FACTOR_X?: number;
+      /** Pulse Magnify Factor : Y */
+      PULSE_MAGNIFY_FACTOR_Y?: number;
+    };
+    /** JPN2000 */
+    JPN2000?: {
+      /** Exposure Category */
+      EXP_CATEGORY?: number;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+    };
+    /** NBC1995 */
+    NBC1995?: {
+      /** Procedure */
+      PROCEDURE?: number;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Building Height */
+      BLDG_HEIGHT?: number;
+      /** Gust Factor */
+      GUST_FACTOR?: number;
+      /** Gust Factor : Gx */
+      GUST_FACTOR_X?: number;
+      /** Gust Factor : Gy */
+      GUST_FACTOR_Y?: number;
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Include topography effect */
+      bTOPOGRAPHY?: boolean;
+      /** Hill Shape */
+      HILL_SHAPE?: string;
+      /** Building Location */
+      BLDG_LOCATION?: string;
+      /** Hill Height */
+      HILL_HEIGHT?: number;
+      /** Hill Length */
+      HILL_LENGTH?: number;
+      /** Hill Distance */
+      HILL_DISTANCE?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+    };
+    /** IS1987 */
+    IS1987?: {
+      /** Procedure */
+      PROCEDURE?: number;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Terrain Category */
+      TERRAIN_CATEGORY?: number;
+      /** Building Class */
+      BLDG_CLASS?: string;
+      /** Friction Coefficient */
+      FRICTION_COEF?: number;
+      /** Gust Factor */
+      GUST_FACTOR?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+      /** Use Auto Calc Risk */
+      bAUTO_CALC_RISK?: boolean;
+      /** Structure Class */
+      STRUCTURE_CLASS?: string;
+      /** Risk Coef */
+      RISK_COEF?: number;
+      /** Include topography effect */
+      bTOPOGRAPHY?: boolean;
+      /** Topographic Factor */
+      TOPOGRAPHIC_FACTOR?: number;
+      /** Topography Range */
+      TOPOGRAPHY_RANGE?: number;
+    };
+    /** TAIWAN1986 */
+    TAIWAN1986?: {
+      /** Site Category */
+      SITE_CATEGORY?: string;
+      /** Shape Factor */
+      SHAPE_FACTOR?: number;
+    };
+    /** JP2004 */
+    JP2004?: {
+      /** Procedure */
+      PROCEDURE?: number;
+      /** Building Height */
+      BLDG_HEIGHT?: number;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Environment Factor */
+      ENV_FACTOR?: number;
+      /** Mean Wind Speed */
+      MEAN_WIND_SPEED?: number;
+      /** Exposure Category */
+      EXP_CATEGORY?: number;
+      /** Direction Factor : X */
+      DIRECTION_FACTOR_X?: number;
+      /** Direction Factor : Y */
+      DIRECTION_FACTOR_Y?: number;
+      /** Include topography effect : X */
+      bTOPOGRAPHY_X?: boolean;
+      /** Hill Shape : X */
+      HILL_SHAPE_X?: number;
+      /** Hill Height : X */
+      HILL_HEIGHT_X?: number;
+      /** Hill Length : X */
+      HILL_LENGTH_X?: number;
+      /** Building Distance : X */
+      BLDG_DISTANCE_X?: number;
+      /** Include topography effect : Y */
+      bTOPOGRAPHY_Y?: boolean;
+      /** Hill Shape : Y */
+      HILL_SHAPE_Y?: number;
+      /** Hill Height : Y */
+      HILL_HEIGHT_Y?: number;
+      /** Hill Length : Y */
+      HILL_LENGTH_Y?: number;
+      /** Building Distance : Y */
+      BLDG_DISTANCE_Y?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient : X */
+      FORCE_COEF_X?: number;
+      /** Force Coefficient : Y */
+      FORCE_COEF_Y?: number;
+      /** Gust Factor : Gx */
+      GUST_FACTOR_X?: number;
+      /** Gust Factor : Gy */
+      GUST_FACTOR_Y?: number;
+      /** Breadth : X */
+      BREADTH_X?: number;
+      /** Breadth : Y */
+      BREADTH_Y?: number;
+      /** Damping : X */
+      DAMPING_X?: number;
+      /** Damping : Y */
+      DAMPING_Y?: number;
+      /** Damping : R */
+      DAMPING_R?: number;
+      /** Frequency : X */
+      FREQUENCY_X?: number;
+      /** Frequency : Y */
+      FREQUENCY_Y?: number;
+      /** Frequency : R */
+      FREQUENCY_R?: number;
+      /** Mode Factor : X */
+      MODE_FACTOR_X?: number;
+      /** Mode Factor : Y */
+      MODE_FACTOR_Y?: number;
+      /** Mode Factor : R */
+      MODE_FACTOR_R?: number;
+      /** Load Factor : X */
+      LOAD_FACTOR_X?: number;
+      /** Load Factor : Y */
+      LOAD_FACTOR_Y?: number;
+      /** Load Factor : R */
+      LOAD_FACTOR_R?: number;
+      /** Wind Direction */
+      WIND_DIRECTION?: number;
+      /** Comb Type */
+      COMB_TYPE?: number;
+    };
+    /** EURO2005 */
+    EURO2005?: {
+      /** Terrain */
+      TERRAIN?: number;
+      /** CFR */
+      CFR?: number;
+      /** VB */
+      VB?: number;
+      /** C Dir */
+      C_DIR?: number;
+      /** C Season */
+      C_SEASON?: number;
+      /** KL */
+      KL?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+      /** CPE Method */
+      CPE_METHOD?: number;
+      /** CPE 10 */
+      CPE_10?: number;
+      /** CPE 01 */
+      CPE_01?: number;
+      /** CPE Lee */
+      CPE_LEE?: number;
+      /** Lack Method */
+      LACK_METHOD?: number;
+      /** Lack Factor */
+      LACK_FACTOR?: number;
+      /** CS Cd */
+      CS_Cd?: number;
+      /** CS b */
+      CS_B?: number;
+      /** CS D */
+      CS_D?: number;
+      /** CS N1 */
+      CS_N1?: number;
+      /** CS Dt */
+      CS_Dt?: number;
+      /** Orography Boolean */
+      bOROGRAPHY?: boolean;
+      /** Orography Type */
+      ORO_TYPE?: number;
+      /** Building Location */
+      BLDG_LOC?: number;
+      /** H (Orography) */
+      ORO_H?: number;
+      /** Lu (Orography) */
+      ORO_Lu?: number;
+      /** Ld (Orography) */
+      ORO_Ld?: number;
+      /** X (Orography) */
+      ORO_X?: number;
+      /** Neighbor Boolean */
+      bNEIGHBOR?: boolean;
+      /** HA (Neighbor) */
+      NEI_Ha?: number;
+      /** X (Neighbor) */
+      NEI_X?: number;
+      /** Dl (Neighbor) */
+      NEI_Dl?: number;
+      /** Hh (Neighbor) */
+      NEI_Hh?: number;
+      /** DIsplace Boolean */
+      bDISPLACE?: boolean;
+      /** Ha (Displace) */
+      DIS_Ha?: number;
+      /** X (Displace) */
+      DIS_X?: number;
+    };
+    /** KBC2009 */
+    KBC2009?: {
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Roof Height */
+      ROOF_HEIGHT?: number;
+      /** Topographic Effect */
+      TOPOGRAPHIC_EFFECT?: number;
+      /** KZT */
+      KZT?: number;
+      /** VZT */
+      VZT?: number;
+      /** Structure Type (Rigid/Flexible) */
+      RIGIDITY?: string;
+      /** Gust Factor : Gx */
+      GUST_FACTOR_X?: number;
+      /** Gust Factor : Gy */
+      GUST_FACTOR_Y?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+      /** Auto Calc Boolean */
+      bAUTO_CALC?: boolean;
+      /** Wnat Key */
+      KEY_WNAT?: number;
+    };
+    /** IBC2009(ASCE7-05) */
+    IBC2009?: {
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Eccen : X */
+      ECCEN_X?: string;
+      /** Eccen : Y */
+      ECCEN_Y?: string;
+      /** Procedure */
+      PROCEDURE?: number;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Windward (Cnet) */
+      CNET_WINDWARD?: number;
+      /** Leeward (Cnet) */
+      CNET_LEEWARD?: number;
+      /** Direction Factor : X */
+      DIRECTION_FACTOR_X?: number;
+      /** Direction Factor : Y */
+      DIRECTION_FACTOR_Y?: number;
+      /** Roof Height */
+      ROOF_HEIGHT?: number;
+      /** Structure Type (Rigid/Flexible) */
+      RIGIDITY?: string;
+      /** Gust Factor : Gx */
+      GUST_FACTOR_X?: number;
+      /** Gust Factor : Gy */
+      GUST_FACTOR_Y?: number;
+      /** TOPOGRAPHY_ITEMS */
+      TOPOGRAPHY_ITEMS?: Array<{
+        /** Include topography effect */
+        bTOPOGRAPHY?: boolean;
+        /** Hill Shape */
+        HILL_SHAPE?: string;
+        /** Building Location */
+        BLDG_LOCATION?: string;
+        /** Hill Height */
+        HILL_HEIGHT?: number;
+        /** Hill Length */
+        HILL_LENGTH?: number;
+        /** Hill Distance */
+        HILL_DISTANCE?: number;
+      }>;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+      /** Auto Calc Boolean */
+      bAUTO_CALC?: boolean;
+      /** Wnat Key */
+      KEY_WNAT?: number;
+    };
+    /** IBC2012(ASCE7-10) */
+    IBC2012?: {
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Eccen : X */
+      ECCEN_X?: string;
+      /** Eccen : Y */
+      ECCEN_Y?: string;
+      /** Procedure */
+      PROCEDURE?: number;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Windward (Cnet) */
+      CNET_WINDWARD?: number;
+      /** Leeward (Cnet) */
+      CNET_LEEWARD?: number;
+      /** Direction Factor : X */
+      DIRECTION_FACTOR_X?: number;
+      /** Direction Factor : Y */
+      DIRECTION_FACTOR_Y?: number;
+      /** Roof Height */
+      ROOF_HEIGHT?: number;
+      /** Structure Type (Rigid/Flexible) */
+      RIGIDITY?: string;
+      /** Gust Factor : Gx */
+      GUST_FACTOR_X?: number;
+      /** Gust Factor : Gy */
+      GUST_FACTOR_Y?: number;
+      /** TOPOGRAPHY_ITEMS */
+      TOPOGRAPHY_ITEMS?: Array<{
+        /** Include topography effect */
+        bTOPOGRAPHY?: boolean;
+        /** Hill Shape */
+        HILL_SHAPE?: string;
+        /** Building Location */
+        BLDG_LOCATION?: string;
+        /** Hill Height */
+        HILL_HEIGHT?: number;
+        /** Hill Length */
+        HILL_LENGTH?: number;
+        /** Hill Distance */
+        HILL_DISTANCE?: number;
+      }>;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+      /** Auto Calc Boolean */
+      bAUTO_CALC?: boolean;
+      /** Wnat Key */
+      KEY_WNAT?: number;
+    };
+    /** CH2012 */
+    CH2012?: {
+      /** Rough Category */
+      ROUGH_CATEGORY?: string;
+      /** Basic Wind Pressure */
+      BASIC_WIND_PRES?: number;
+      /** Modify Factor */
+      MODIFY_FACTOR?: number;
+      /** Windward Coefficient : X */
+      WINDWARD_COEF_X?: number;
+      /** Windward Coefficient : Y */
+      WINDWARD_COEF_Y?: number;
+      /** Leeward Coefficient : X */
+      LEEWARD_COEF_X?: number;
+      /** Leeward Coefficient : Y */
+      LEEWARD_COEF_Y?: number;
+      /** Damping Ratio */
+      DAMPING_RATIO?: number;
+      /** Struct Method (0 : Table / 1 : Calculation) */
+      STRUCT_METHOD?: number;
+      /** Partition Coefficient */
+      PARTITION_COEF?: number;
+      /** Windshield */
+      WINDSHIELD?: number;
+      /** Period : X */
+      PERIOD_X?: number;
+      /** Period : Y */
+      PERIOD_Y?: number;
+      /** Consider Along-wind Vibration */
+      ALONG_VIBRATION?: boolean;
+      /** Consider Cross-wind Vibration */
+      bCROSS_VIBRATION?: boolean;
+      /** Cross Boolean */
+      bCROSS?: boolean;
+      /** Section Type */
+      SECT_TYPE?: number;
+      /** Cross Period : X */
+      CROSS_PERIOD_X?: number;
+      /** Cross Period : Y */
+      CROSS_PERIOD_Y?: number;
+      /** Torsion Boolean */
+      bTORSION?: boolean;
+      /** Torsion Ratio */
+      TORSION_PERIOD?: number;
+      /** Wind Comfort */
+      bWIND_COMPORT?: boolean;
+      /** Check Wind Pressure */
+      CHECK_WIND_PRES?: number;
+      /** Check Damping Ratio */
+      CHECK_DAMPING_RATIO?: number;
+    };
+    /** NSR2010 */
+    NSR2010?: {
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Roof Height */
+      ROOF_HEIGHT?: number;
+      /** TOPOGRAPHY_ITEMS */
+      TOPOGRAPHY_ITEMS?: Array<{
+        /** Include topography effect */
+        bTOPOGRAPHY?: boolean;
+        /** Hill Shape */
+        HILL_SHAPE?: string;
+        /** Building Location */
+        BLDG_LOCATION?: string;
+        /** Hill Height */
+        HILL_HEIGHT?: number;
+        /** Hill Length */
+        HILL_LENGTH?: number;
+        /** Hill Distance */
+        HILL_DISTANCE?: number;
+      }>;
+      /** Eccen : X */
+      ECCEN_X?: string;
+      /** Eccen : Y */
+      ECCEN_Y?: string;
+      /** Direction Factor : X */
+      DIRECTION_FACTOR_X?: number;
+      /** Direction Factor : Y */
+      DIRECTION_FACTOR_Y?: number;
+      /** Structure Type (Rigid/Flexible) */
+      RIGIDITY?: string;
+      /** Gust Factor : Gx */
+      GUST_FACTOR_X?: number;
+      /** Gust Factor : Gy */
+      GUST_FACTOR_Y?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+      /** Auto Calc Boolean */
+      bAUTO_CALC?: boolean;
+      /** Wnat Key */
+      KEY_WNAT?: number;
+    };
+    /** KDS19_KBC16 */
+    KDS19_KBC16?: {
+      /** Input Method */
+      INPUT_METHOD?: number;
+      /** Simplified Method */
+      SIMPLE?: {
+        /** Basic Wind Speed */
+        BASIC_WIND_SPEED?: number;
+        /** Roof Height */
+        ROOF_HEIGHT?: number;
+        /** Ce */
+        SIMPLE_CE?: number;
+      };
+      /** General Method */
+      GENERAL?: {
+        /** Exposure Category */
+        EXP_CATEGORY?: string;
+        /** Basic Wind Speed */
+        BASIC_WIND_SPEED?: number;
+        /** Importance Factor */
+        IMPORTANCE_FACTOR?: number;
+        /** Roof Height */
+        ROOF_HEIGHT?: number;
+        /** Topographic Effect */
+        TOPOGRAPHIC_EFFECT?: number;
+        /** KZT */
+        KZT?: number;
+        /** VZT */
+        VZT?: number;
+        /** Structure Type (Rigid/Flexible) */
+        RIGIDITY?: string;
+        /** Gust Factor : Gx */
+        GUST_FACTOR_X?: number;
+        /** Gust Factor : Gy */
+        GUST_FACTOR_Y?: number;
+        /** Use Force Coefficient */
+        bUSE_FORCE_COEF?: boolean;
+        /** Force Coefficient */
+        FORCE_COEF?: number;
+        /** Auto Calc Boolean */
+        bAUTO_CALC?: boolean;
+        /** Wnat Key */
+        KEY_WNAT?: number;
+        /** Wmat Struct Type */
+        WNAT_STRUCT_TYPE?: number;
+        /** Building Type */
+        BUILDING_TYPE?: number;
+        /** Across Wind Boolean */
+        bACROSS_WIND?: boolean;
+        /** Torsional Wind Boolean */
+        bTORSIONAL_WIND?: boolean;
+        /** Wind Response Boolean */
+        bWIND_RESPONSE?: number;
+        /** Breadth : X */
+        BL_X?: number;
+        /** Breadth : Y */
+        BL_Y?: number;
+        /** Natural Frequency : X */
+        NO_X?: number;
+        /** Natural Frequency : Y */
+        NO_Y?: number;
+        /** Torsional Natural Frequency */
+        NO_T?: number;
+        /** 1st Vibration Generalized Mass : X */
+        MX1ST?: number;
+        /** 1st Vibration Generalized Mass : Y */
+        MY1ST?: number;
+        /** Generalized inertial Moment */
+        MT1ST?: number;
+        /** Damping Ratio */
+        DAMPING_RATIO?: number;
+        /** WA : Load Case Name */
+        WA_LCNAME?: string;
+        /** WT : Load Case Name */
+        WT_LCNAME?: string;
+      };
+    };
+    /** KDS2021 */
+    KDS2021?: {
+      /** Input Method */
+      INPUT_METHOD?: number;
+      /** Simplified Method */
+      SIMPLE?: {
+        /** Basic Wind Speed */
+        BASIC_WIND_SPEED?: number;
+        /** Roof Height */
+        ROOF_HEIGHT?: number;
+        /** Ce */
+        SIMPLE_CE?: number;
+      };
+      /** General Method */
+      GENERAL?: {
+        /** Vortex Shedding Boolean */
+        bVORTEX_SHEDDING?: boolean;
+        /** Vortex Average Roof */
+        VORTEX_AVERAGE_ROOF?: number;
+        /** Vortex DM */
+        VORTEX_DM?: number;
+        /** Vortex DB */
+        VORTEX_DB?: number;
+        /** Vortex N */
+        VORTEX_N?: number;
+        /** Vortex Mass */
+        VORTEX_MASS?: number;
+        /** Vortex Damp */
+        VORTEX_DAMP?: number;
+        /** Exposure Category */
+        EXP_CATEGORY?: string;
+        /** Basic Wind Speed */
+        BASIC_WIND_SPEED?: number;
+        /** Importance Factor */
+        IMPORTANCE_FACTOR?: number;
+        /** Roof Height */
+        ROOF_HEIGHT?: number;
+        /** Topographic Effect */
+        TOPOGRAPHIC_EFFECT?: number;
+        /** KZT */
+        KZT?: number;
+        /** VZT */
+        VZT?: number;
+        /** Structure Type (Rigid/Flexible) */
+        RIGIDITY?: string;
+        /** Gust Factor : Gx */
+        GUST_FACTOR_X?: number;
+        /** Gust Factor : Gy */
+        GUST_FACTOR_Y?: number;
+        /** Use Force Coefficient */
+        bUSE_FORCE_COEF?: boolean;
+        /** Force Coefficient */
+        FORCE_COEF?: number;
+        /** Auto Calc Boolean */
+        bAUTO_CALC?: boolean;
+        /** Wnat Key */
+        KEY_WNAT?: number;
+        /** Wmat Struct Type */
+        WNAT_STRUCT_TYPE?: number;
+        /** Building Type */
+        BUILDING_TYPE?: number;
+        /** Across Wind Boolean */
+        bACROSS_WIND?: boolean;
+        /** Torsional Wind Boolean */
+        bTORSIONAL_WIND?: boolean;
+        /** Wind Response Boolean */
+        bWIND_RESPONSE?: number;
+        /** Breadth : X */
+        BL_X?: number;
+        /** Breadth : Y */
+        BL_Y?: number;
+        /** Natural Frequency : X */
+        NO_X?: number;
+        /** Natural Frequency : Y */
+        NO_Y?: number;
+        /** Torsional Natural Frequency */
+        NO_T?: number;
+        /** 1st Vibration Generalized Mass : X */
+        MX1ST?: number;
+        /** 1st Vibration Generalized Mass : Y */
+        MY1ST?: number;
+        /** Generalized inertial Moment */
+        MT1ST?: number;
+        /** Damping Ratio */
+        DAMPING_RATIO?: number;
+        /** WA : Load Case Name */
+        WA_LCNAME?: string;
+        /** WT : Load Case Name */
+        WT_LCNAME?: string;
+        /** Dist Factor : X */
+        DIST_FACTOR_X?: number;
+        /** Dist Factor : Y */
+        DIST_FACTOR_Y?: number;
+        /** L Shape Building Boolean */
+        bL_SHAPE_BUILDING?: number;
+        /** Am Factors : Along */
+        AM_FACTOR_ALONG?: Array<number>;
+        /** Am Factors : Across */
+        AM_FACTOR_ACROSS?: Array<number>;
+        /** Am Factors : Torsional */
+        AM_FACTOR_TORSIONAL?: Array<number>;
+        /** Total Mass */
+        TOTAL_MASS?: number;
+        /** Vibration Mode */
+        VIBRATION_MODE?: number;
+      };
+    };
+    /** IS875_2015 */
+    IS875_2015?: {
+      /** Procedure */
+      PROCEDURE?: number;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Terrain Category */
+      TERRAIN_CATEGORY?: number;
+      /** Use Auto Calc Risk Coefficient */
+      bAUTO_CALC_RISK_COEF?: boolean;
+      /** Structure Class */
+      STRUCTURE_CLASS?: string;
+      /** Risk Coef */
+      RISK_COEF?: number;
+      /** Include topography effect */
+      bTOPOGRAPHY?: boolean;
+      /** Topographic Factor */
+      TOPOGRAPHIC_FACTOR?: number;
+      /** Topography Range */
+      TOPOGRAPHY_RANGE?: number;
+      /** Building Class */
+      BLDG_CLASS?: string;
+      /** Friction Coefficient */
+      FRICTION_COEF?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+      /** Include Cyclonnic Reg Effects */
+      bINCL_CYCL_REG_EFF?: boolean;
+      /** k4 Factor */
+      K4_FACTOR?: number;
+      /** kd Factor */
+      KD_FACTOR?: number;
+      /** kc Factor */
+      KC_FACTOR?: number;
+      /** Gust Effect Parameters */
+      GUST_PARAMS?: {
+        /** Procedure */
+        PROCEDURE?: number;
+        /** Steel Type */
+        STEEL_TYPE?: number;
+        /** Beta */
+        BETA?: number;
+        /** Along Wind Period sec */
+        ALONG_WIND_PERIOD?: number;
+        /** Across Wind Period sec */
+        ACROSS_WIND_PERIOD?: number;
+        /** Mode Shape Factor */
+        MODE_SHAPE_FACTOR?: number;
+        /** Cfs */
+        CFS?: number;
+        /** Mc */
+        MC?: number;
+      };
+    };
+    /** CH2019 */
+    CH2019?: {
+      /** Rough Category */
+      ROUGH_CATEGORY?: string;
+      /** Basic Wind Pressure */
+      BASIC_WIND_PRES?: number;
+      /** Modify Factor */
+      MODIFY_FACTOR?: number;
+      /** Windward Coefficient : X */
+      WINDWARD_COEF_X?: number;
+      /** Windward Coefficient : Y */
+      WINDWARD_COEF_Y?: number;
+      /** Leeward Coefficient : X */
+      LEEWARD_COEF_X?: number;
+      /** Leeward Coefficient : Y */
+      LEEWARD_COEF_Y?: number;
+      /** Damping Ratio */
+      DAMPING_RATIO?: number;
+      /** Struct Method (0 : Table / 1 : Calculation) */
+      STRUCT_METHOD?: number;
+      /** Partition Coefficient */
+      PARTITION_COEF?: number;
+      /** Windshield */
+      WINDSHIELD?: number;
+      /** Period : X */
+      PERIOD_X?: number;
+      /** Period : Y */
+      PERIOD_Y?: number;
+      /** Consider Along-wind Vibration */
+      ALONG_VIBRATION?: boolean;
+      /** Consider Cross-wind Vibration */
+      bCROSS_VIBRATION?: boolean;
+      /** Cross Boolean */
+      bCROSS?: boolean;
+      /** Section Type */
+      SECT_TYPE?: number;
+      /** Cross Period : X */
+      CROSS_PERIOD_X?: number;
+      /** Cross Period : Y */
+      CROSS_PERIOD_Y?: number;
+      /** Torsion Boolean */
+      bTORSION?: boolean;
+      /** Torsion Ratio */
+      TORSION_PERIOD?: number;
+      /** Wind Comfort */
+      bWIND_COMPORT?: boolean;
+      /** Check Wind Pressure */
+      CHECK_WIND_PRES?: number;
+      /** Check Damping Ratio */
+      CHECK_DAMPING_RATIO?: number;
+      /** Wind Direction Coe */
+      WIND_DIRECTION_COE?: number;
+    };
+    /** DPT2007 */
+    DPT2007?: {
+      /** Input Method */
+      INPUT_METHOD?: number;
+      /** Wind Zone */
+      WIND_ZONE?: number;
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Exposure Category */
+      EXP_CATEGORY?: number;
+      /** Importance Factor */
+      IMPORTANCE_FACTOR?: number;
+      /** Include topography effect */
+      bTOPOGRAPHY?: boolean;
+      /** Building Location */
+      BLDG_LOCATION?: number;
+      /** Hill Shape */
+      HILL_SHAPE?: number;
+      /** Hill Height */
+      HILL_HEIGHT?: number;
+      /** Hill Length */
+      HILL_LENGTH?: number;
+      /** Building Distance */
+      BLDG_DISTANCE?: number;
+      /** Breadth : X */
+      BREADTH_X?: number;
+      /** Breadth : Y */
+      BREADTH_Y?: number;
+      /** Frequency : X */
+      FREQUENCY_X?: number;
+      /** Frequency : Y */
+      FREQUENCY_Y?: number;
+      /** Damping : X */
+      DAMPING_X?: number;
+      /** Damping : Y */
+      DAMPING_Y?: number;
+      /** Structure Gust Factor : X */
+      STRUCTURE_GUST_FACTOR_X?: number;
+      /** Structure Gust Factor : Y */
+      STRUCTURE_GUST_FACTOR_Y?: number;
+      /** Across Wind Boolean */
+      bACROSS_WIND?: boolean;
+      /** Torsional Wind Boolean */
+      bTORSIONAL_WIND?: boolean;
+      /** Vibration Frequency Params */
+      VIBR_FREQ_PARAMS?: Array<number>;
+      /** Vibration Damping Params */
+      VIBR_DAMP_PARAMS?: Array<number>;
+      /** Eccen : X */
+      ECCEN_X?: string;
+      /** Eccen : Y */
+      ECCEN_Y?: string;
+    };
+    /** ASCE7(2016) */
+    ASCE7_16?: {
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Mean Roof Height */
+      MEAN_ROOF_HEIGHT?: number;
+      /** TOPOGRAPHY_ITEMS */
+      TOPOGRAPHY_ITEMS?: Array<{
+        /** Include topography effect */
+        bTOPOGRAPHY?: boolean;
+        /** Hill Shape */
+        HILL_SHAPE?: string;
+        /** Building Location */
+        BLDG_LOCATION?: string;
+        /** Hill Height */
+        HILL_HEIGHT?: number;
+        /** Hill Length */
+        HILL_LENGTH?: number;
+        /** Hill Distance */
+        HILL_DISTANCE?: number;
+      }>;
+      /** Eccen : X */
+      ECCEN_X?: string;
+      /** Eccen : Y */
+      ECCEN_Y?: string;
+      /** Direction Factor : X */
+      DIRECTION_FACTOR_X?: number;
+      /** Direction Factor : Y */
+      DIRECTION_FACTOR_Y?: number;
+      /** Ground Elevation Factor : X */
+      GROUND_ELEV_FACTOR_X?: number;
+      /** Ground Elevation Factor : Y */
+      GROUND_ELEV_FACTOR_Y?: number;
+      /** Structure Type (Rigid/Flexible) */
+      RIGIDITY?: string;
+      /** Gust Factor : Gx */
+      GUST_FACTOR_X?: number;
+      /** Gust Factor : Gy */
+      GUST_FACTOR_Y?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+    };
+    /** ASCE7(2022) */
+    ASCE7_22?: {
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Mean Roof Height */
+      MEAN_ROOF_HEIGHT?: number;
+      /** TOPOGRAPHY_ITEMS */
+      TOPOGRAPHY_ITEMS?: Array<{
+        /** Include topography effect */
+        bTOPOGRAPHY?: boolean;
+        /** Hill Shape */
+        HILL_SHAPE?: string;
+        /** Building Location */
+        BLDG_LOCATION?: string;
+        /** Hill Height */
+        HILL_HEIGHT?: number;
+        /** Hill Length */
+        HILL_LENGTH?: number;
+        /** Hill Distance */
+        HILL_DISTANCE?: number;
+      }>;
+      /** Eccen : X */
+      ECCEN_X?: string;
+      /** Eccen : Y */
+      ECCEN_Y?: string;
+      /** Direction Factor : X */
+      DIRECTION_FACTOR_X?: number;
+      /** Direction Factor : Y */
+      DIRECTION_FACTOR_Y?: number;
+      /** Ground Elevation Factor : X */
+      GROUND_ELEV_FACTOR_X?: number;
+      /** Ground Elevation Factor : Y */
+      GROUND_ELEV_FACTOR_Y?: number;
+      /** Structure Type (Rigid/Flexible) */
+      RIGIDITY?: string;
+      /** Gust Factor : Gx */
+      GUST_FACTOR_X?: number;
+      /** Gust Factor : Gy */
+      GUST_FACTOR_Y?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+    };
+    /** NSCP 2024 */
+    NSCP2024?: {
+      /** Basic Wind Speed */
+      BASIC_WIND_SPEED?: number;
+      /** Exposure Category */
+      EXP_CATEGORY?: string;
+      /** Mean Roof Height */
+      MEAN_ROOF_HEIGHT?: number;
+      /** TOPOGRAPHY_ITEMS */
+      TOPOGRAPHY_ITEMS?: Array<{
+        /** Include topography effect */
+        bTOPOGRAPHY?: boolean;
+        /** Hill Shape */
+        HILL_SHAPE?: string;
+        /** Building Location */
+        BLDG_LOCATION?: string;
+        /** Hill Height */
+        HILL_HEIGHT?: number;
+        /** Hill Length */
+        HILL_LENGTH?: number;
+        /** Hill Distance */
+        HILL_DISTANCE?: number;
+      }>;
+      /** Eccen : X */
+      ECCEN_X?: string;
+      /** Eccen : Y */
+      ECCEN_Y?: string;
+      /** Direction Factor : X */
+      DIRECTION_FACTOR_X?: number;
+      /** Direction Factor : Y */
+      DIRECTION_FACTOR_Y?: number;
+      /** Ground Elevation Factor : X */
+      GROUND_ELEV_FACTOR_X?: number;
+      /** Ground Elevation Factor : Y */
+      GROUND_ELEV_FACTOR_Y?: number;
+      /** Structure Type (Rigid/Flexible) */
+      RIGIDITY?: string;
+      /** Gust Factor : Gx */
+      GUST_FACTOR_X?: number;
+      /** Gust Factor : Gy */
+      GUST_FACTOR_Y?: number;
+      /** Use Force Coefficient */
+      bUSE_FORCE_COEF?: boolean;
+      /** Force Coefficient */
+      FORCE_COEF?: number;
+    };
+    /** USER */
+    USER?: Array<{
+      /** Story Name */
+      STORY_NAME?: string;
+      /** ELIV */
+      ELIV?: number;
+      /** LOAD_H */
+      LOAD_H?: number;
+      /** LOAD_BX */
+      LOAD_BX?: number;
+      /** LOAD_BY */
+      LOAD_BY?: number;
+      /** PRESS_X */
+      PRESS_X?: number;
+      /** PRESS_X */
+      PRESS_Y?: number;
+    }>;
+    /** ADDITIONS */
+    ADDITIONS?: Array<{
+      /** Story Name */
+      STORY_NAME?: string;
+      /** Along : X */
+      ALONG_X?: number;
+      /** Along : Y */
+      ALONG_Y?: number;
+      /** Across : X */
+      ACROSS_X?: number;
+      /** Across : Y */
+      ACROSS_Y?: number;
+      /** Torsional R / Torsional Rz(x) */
+      TORSIONAL_RZ_X?: number;
+      /** Torsional Rz(y) */
+      TORSIONAL_RZ_Y?: number;
+      /** Support Across Wind */
+      bSUPPORT_ACROSS_WIND?: boolean;
+    }>;
+    /** Profile */
+    PROFILE?: {
+      /** Along X-Dir. Profile */
+      ALONG_X_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Story Level */
+        STORY_LEVEL?: number;
+        /** Pressure */
+        PRESSURE?: number;
+        /** Loaded H */
+        LOADED_H?: number;
+        /** Loaded B */
+        LOADED_B?: number;
+        /** Gust Factor */
+        GUST_FACTOR?: number;
+        /** Wind Force */
+        WIND_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Max. Displacement */
+        MAX_DISP?: number;
+        /** Max. Acceleration */
+        MAX_ACC?: number;
+      }>;
+      /** Along Y-Dir. Profile */
+      ALONG_Y_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Story Level */
+        STORY_LEVEL?: number;
+        /** Pressure */
+        PRESSURE?: number;
+        /** Loaded H */
+        LOADED_H?: number;
+        /** Loaded B */
+        LOADED_B?: number;
+        /** Gust Factor */
+        GUST_FACTOR?: number;
+        /** Wind Force */
+        WIND_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Max. Displacement */
+        MAX_DISP?: number;
+        /** Max. Acceleration */
+        MAX_ACC?: number;
+      }>;
+      /** Along SRSS Profile */
+      ALONG_SRSS_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Story Level */
+        STORY_LEVEL?: number;
+        /** Pressure */
+        PRESSURE?: number;
+        /** Loaded H */
+        LOADED_H?: number;
+        /** Loaded B */
+        LOADED_B?: number;
+        /** Gust Factor */
+        GUST_FACTOR?: number;
+        /** Wind Force */
+        WIND_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Max. Displacement */
+        MAX_DISP?: number;
+        /** Max. Acceleration */
+        MAX_ACC?: number;
+      }>;
+      /** Across X-Dir. Profile */
+      ACROSS_X_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Story Level */
+        STORY_LEVEL?: number;
+        /** Pressure */
+        PRESSURE?: number;
+        /** Loaded H */
+        LOADED_H?: number;
+        /** Loaded B */
+        LOADED_B?: number;
+        /** Gust Factor */
+        GUST_FACTOR?: number;
+        /** Wind Force */
+        WIND_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Max. Displacement */
+        MAX_DISP?: number;
+        /** Max. Acceleration */
+        MAX_ACC?: number;
+      }>;
+      /** Across Y-Dir. Profile */
+      ACROSS_Y_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Story Level */
+        STORY_LEVEL?: number;
+        /** Pressure */
+        PRESSURE?: number;
+        /** Loaded H */
+        LOADED_H?: number;
+        /** Loaded B */
+        LOADED_B?: number;
+        /** Gust Factor */
+        GUST_FACTOR?: number;
+        /** Wind Force */
+        WIND_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Max. Displacement */
+        MAX_DISP?: number;
+        /** Max. Acceleration */
+        MAX_ACC?: number;
+      }>;
+      /** Across SRSS Profile */
+      ACROSS_SRSS_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Story Level */
+        STORY_LEVEL?: number;
+        /** Pressure */
+        PRESSURE?: number;
+        /** Loaded H */
+        LOADED_H?: number;
+        /** Loaded B */
+        LOADED_B?: number;
+        /** Gust Factor */
+        GUST_FACTOR?: number;
+        /** Wind Force */
+        WIND_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Max. Displacement */
+        MAX_DISP?: number;
+        /** Max. Acceleration */
+        MAX_ACC?: number;
+      }>;
+      /** Torsional TX Profile */
+      TORSIONAL_X_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Story Level */
+        STORY_LEVEL?: number;
+        /** Pressure */
+        PRESSURE?: number;
+        /** Loaded H */
+        LOADED_H?: number;
+        /** Loaded B */
+        LOADED_B?: number;
+        /** Gust Factor */
+        GUST_FACTOR?: number;
+        /** Wind Force */
+        WIND_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Max. Displacement */
+        MAX_DISP?: number;
+        /** Max. Acceleration */
+        MAX_ACC?: number;
+      }>;
+      /** Torsional TY Profile */
+      TORSIONAL_Y_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Story Level */
+        STORY_LEVEL?: number;
+        /** Pressure */
+        PRESSURE?: number;
+        /** Loaded H */
+        LOADED_H?: number;
+        /** Loaded B */
+        LOADED_B?: number;
+        /** Gust Factor */
+        GUST_FACTOR?: number;
+        /** Wind Force */
+        WIND_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Max. Displacement */
+        MAX_DISP?: number;
+        /** Max. Acceleration */
+        MAX_ACC?: number;
+      }>;
+      /** Torsional Sum. Profile */
+      TORSIONAL_SUM_PROFILE?: Array<{
+        /** Story Name */
+        STORY_NAME?: string;
+        /** Story Level */
+        STORY_LEVEL?: number;
+        /** Pressure */
+        PRESSURE?: number;
+        /** Loaded H */
+        LOADED_H?: number;
+        /** Loaded B */
+        LOADED_B?: number;
+        /** Gust Factor */
+        GUST_FACTOR?: number;
+        /** Wind Force */
+        WIND_FORCE?: number;
+        /** Added Force */
+        ADDED_FORCE?: number;
+        /** Story Force */
+        STORY_FORCE?: number;
+        /** Story Shear */
+        STORY_SHEAR?: number;
+        /** Overturning Moment */
+        OVERTURN_MOMENT?: number;
+        /** Max. Displacement */
+        MAX_DISP?: number;
+        /** Max. Acceleration */
+        MAX_ACC?: number;
+      }>;
+    };
+  }
+  /** Generated from contracts/endpoints/. */
   export interface LoadsToMassCase {
     /** Load Case Name */
     LCNAME: string;

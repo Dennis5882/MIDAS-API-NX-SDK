@@ -1,7 +1,7 @@
 {
   "source": "docs/coverage.json",
-  "coverageRowCount": 400,
-  "coveredRowCount": 400,
+  "coverageRowCount": 402,
+  "coveredRowCount": 402,
   "rows": [
     {
       "endpoint": "/doc/NEW",
@@ -546,6 +546,16 @@
     {
       "endpoint": "/db/SSEIS",
       "canonicalEndpoint": "/db/SSEIS",
+      "surface": "resource"
+    },
+    {
+      "endpoint": "/db/WIND",
+      "canonicalEndpoint": "/db/WIND",
+      "surface": "resource"
+    },
+    {
+      "endpoint": "/db/SEIS",
+      "canonicalEndpoint": "/db/SEIS",
       "surface": "resource"
     },
     {

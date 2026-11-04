@@ -91,7 +91,8 @@ def main() -> None:
         # "19_....md / 20_....md") - split so each chapter file matches
         # individually against changed_files, instead of only the compound
         # string ever matching.
-        for chapter in e["chapter_file"].split(" / "):
+        # null = no manual chapter (legacy /db/WIND, /db/SEIS): nothing to drift.
+        for chapter in e["chapter_file"].split(" / ") if e["chapter_file"] else ():
             if e["status"] == "implemented":
                 modules_by_chapter.setdefault(chapter, set()).add(e["module"])
                 implemented_chapters.add(chapter)

@@ -1184,6 +1184,26 @@
       "module": "midas_nx.db.static_loads"
     },
     {
+      "endpoint": "/db/WIND",
+      "name": "Wind Loads (legacy, undocumented)",
+      "chapter_file": null,
+      "products": [
+        "gen"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
+      "endpoint": "/db/SEIS",
+      "name": "Seismic Loads (legacy, undocumented)",
+      "chapter_file": null,
+      "products": [
+        "gen"
+      ],
+      "status": "implemented",
+      "module": "midas_nx.db.static_loads"
+    },
+    {
       "endpoint": "/db/ETMP",
       "name": "Element Temperature",
       "chapter_file": "07_DB_Temperature_Prestress.md",

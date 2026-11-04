@@ -21,6 +21,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from verification_ledger import claims, load_records  # noqa: E402
 
+UNDOCUMENTED = "Undocumented (no manual chapter)"
+
 
 def main() -> None:
     data = json.loads((ROOT / "docs" / "coverage.json").read_text(encoding="utf-8"))
@@ -33,9 +35,11 @@ def main() -> None:
         e["endpoint"]: ledger.get(e["endpoint"]) for e in endpoints
     }
 
+    # A null chapter_file is an endpoint the manual does not document at all
+    # (the legacy /db/WIND and /db/SEIS); those sort last under their own heading.
     by_chapter: "OrderedDict[str, list[dict]]" = OrderedDict()
-    for e in sorted(endpoints, key=lambda e: e["chapter_file"]):
-        by_chapter.setdefault(e["chapter_file"], []).append(e)
+    for e in sorted(endpoints, key=lambda e: (e["chapter_file"] is None, e["chapter_file"] or "")):
+        by_chapter.setdefault(e["chapter_file"] or UNDOCUMENTED, []).append(e)
 
     total = len(endpoints)
     implemented = sum(1 for e in endpoints if e["status"] == "implemented")

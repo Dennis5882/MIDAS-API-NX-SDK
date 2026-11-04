@@ -809,3 +809,85 @@ class StaticSeismicLoad(DbResource):
     #: Gen-only: 404 (route + /info) on Civil NX, confirmed independently
     #: twice on 2026-07-29 — see db/base.py's GEN_ONLY docstring.
     PRODUCTS = GEN_ONLY
+
+
+class LegacyWindLoadPayload(TypedDict, total=False):
+    """Undocumented legacy ``/db/WIND``: the per-country static wind loads.
+
+    The manual has no section for this endpoint; its sources are the server's
+    own ``GET /info/db/WIND`` and the 2026-11-04 Gen NX session in
+    ``docs/live_verification_notes.md``. MIDASIT keeps it as-is without
+    maintenance, but it is the only API route for the overseas codes:
+    ``/db/SWIND`` (:class:`StaticWindLoad`) takes KDS and USER TYPE only.
+
+    ``WIND_CODE`` takes the legacy spelling, not the dialog's: ``"EURO2005"``,
+    ``"CH2001"``, ``"IS875(87)"``, ``"ASCE7(2016)"``, ``"NSCP 2024"``,
+    ``"DPT.1311-50:2007"``. The matching parameters go in the object of the
+    same code (``EURO2005``, ``CH2002``, ``IS1987``, ``ASCE7_16``,
+    ``NSCP2024``, ``DPT2007``); only the envelope is typed here, as for
+    ``/db/SWIND``. The record key is the ``/db/STLD`` load case number.
+
+    ⚠️ Two failures arrive without an ``error`` key, so read the record back
+    after every write: a missing required value answers ``{"message": ""}``
+    and stores nothing, and an out-of-range integer is stored and computes a
+    zero or ``null`` ``PROFILE``.
+    """
+
+    WIND_CODE: str  # legacy code name, e.g. "ASCE7(2016)"; see docstring
+    DESC: str
+    SCALE_FACTOR_X: float
+    SCALE_FACTOR_Y: float
+    SCALE_FACTOR_R: float
+    WIND_ECCEN_X: int
+    WIND_ECCEN_Y: int
+    USER: Any  # USER TYPE story pressures (array)
+    ADDITIONS: Any  # additional story wind loads (array)
+    PROFILE: Any  # computed story profile, returned by GET
+
+
+class LegacyWindLoad(DbResource):
+    ENDPOINT = "/db/WIND"
+    NAME = "Wind Loads (legacy)"
+    #: Measured on Gen NX only (2026-11-04). Civil NX was not connected that
+    #: day, so this is "unchecked on Civil", not the confirmed 404 that
+    #: GEN_ONLY records - widen it once a Civil session answers.
+    PRODUCTS = frozenset({"gen"})
+
+
+class LegacySeismicLoadPayload(TypedDict, total=False):
+    """Undocumented legacy ``/db/SEIS``: the per-country static seismic loads.
+
+    Same standing as :class:`LegacyWindLoadPayload`: no manual section, sources
+    are ``GET /info/db/SEIS`` and the 2026-11-04 Gen NX session, and
+    ``/db/SSEIS`` (:class:`StaticSeismicLoad`) takes KDS and USER TYPE only.
+
+    ``SEIS_LOAD_CODE`` takes the code object's own name - ``"KBC2016"``,
+    ``"EURO2004"``, ``"IBC2012"`` - except ``"NSCP 2024"``, spelled with a
+    space while its object is ``NSCP2024``. The dialog spellings
+    (``"KBC(2016)"``, ``"EUROCODE-8(2004)"``) are refused.
+
+    ⚠️ A whole-table ``GET /db/SEIS`` answers ``Right Value Can't Empty``
+    while any ``DPT.1301/1302-61:2018`` record exists; ``GET /db/SEIS/{id}``
+    still works. No write of that code has succeeded through the API.
+    """
+
+    SEIS_LOAD_CODE: str  # code object name, e.g. "KBC2016"; see docstring
+    DESC: str
+    SCALE_FACTOR_X: float
+    SCALE_FACTOR_Y: float
+    ACCIDENT_ECCEN_X: int
+    ACCIDENT_ECCEN_Y: int
+    bACCIDENT_TORSION: bool
+    bINHERENT_TORSION: bool
+    USER: Any  # USER story forces (array)
+    ITEMS: Any  # additional seismic loads (array)
+    PROFILE: Any  # computed story profile, returned by GET
+
+
+class LegacySeismicLoad(DbResource):
+    ENDPOINT = "/db/SEIS"
+    NAME = "Seismic Loads (legacy)"
+    #: Measured on Gen NX only (2026-11-04). Civil NX was not connected that
+    #: day, so this is "unchecked on Civil", not the confirmed 404 that
+    #: GEN_ONLY records - widen it once a Civil session answers.
+    PRODUCTS = frozenset({"gen"})

@@ -9,6 +9,8 @@ from midas_nx.db.static_loads import (
     FinishingMaterialLoad,
     FloorLoad,
     FloorLoadType,
+    LegacySeismicLoad,
+    LegacyWindLoad,
     LoadsToMass,
     NodalBodyForce,
     NodalLoad,
@@ -543,3 +545,57 @@ def test_static_seismic_load_create_sends_documented_assign_shape(gen_client):
     )
     sent = responses.calls[0].request
     assert json.loads(sent.body)["Assign"]["1"]["SEIS_CODE"] == "KDS(41-17-00:2019)"
+
+
+DPT2007 = {
+    "INPUT_METHOD": 0, "WIND_ZONE": 0, "BASIC_WIND_SPEED": 25, "EXP_CATEGORY": 0,
+    "IMPORTANCE_FACTOR": 1, "bTOPOGRAPHY": False, "BLDG_LOCATION": 0, "HILL_SHAPE": 0,
+    "HILL_HEIGHT": 0, "HILL_LENGTH": 0, "BLDG_DISTANCE": 0, "BREADTH_X": 56.6,
+    "BREADTH_Y": 21.6, "FREQUENCY_X": 0, "FREQUENCY_Y": 0, "DAMPING_X": 0, "DAMPING_Y": 0,
+    "STRUCTURE_GUST_FACTOR_X": 2, "STRUCTURE_GUST_FACTOR_Y": 2, "bACROSS_WIND": False,
+    "bTORSIONAL_WIND": False, "VIBR_FREQ_PARAMS": [0, 0, 0], "VIBR_DAMP_PARAMS": [0, 0, 0],
+    "ECCEN_X": "NONE", "ECCEN_Y": "NONE",
+}
+
+
+@responses.activate
+def test_legacy_wind_load_create_sends_the_code_object_beside_its_name(gen_client):
+    # The record a Gen NX dialog stored for a DPT wind case, read back live
+    # 2026-11-04; the key is the /db/STLD load case number.
+    responses.add(responses.POST, "https://x.test:443/gen/db/WIND", json={}, status=200)
+    LegacyWindLoad.create(
+        {
+            5: {
+                "WIND_CODE": "DPT.1311-50:2007",
+                "DESC": "",
+                "SCALE_FACTOR_X": 1,
+                "SCALE_FACTOR_Y": 0,
+                "DPT2007": DPT2007,
+            }
+        },
+        client=gen_client,
+    )
+    sent = json.loads(responses.calls[0].request.body)["Assign"]["5"]
+    assert sent["WIND_CODE"] == "DPT.1311-50:2007"
+    assert sent["DPT2007"]["VIBR_FREQ_PARAMS"] == [0, 0, 0]
+
+
+@responses.activate
+def test_legacy_wind_load_delete_names_one_record(gen_client):
+    responses.add(responses.DELETE, "https://x.test:443/gen/db/WIND/25", json={}, status=200)
+    LegacyWindLoad.delete([25], client=gen_client)
+    assert responses.calls[0].request.url == "https://x.test:443/gen/db/WIND/25"
+
+
+@responses.activate
+def test_legacy_seismic_load_create_uses_the_code_object_name(gen_client):
+    # SEIS_LOAD_CODE is the object's own name, not the dialog's "KBC(2016)".
+    responses.add(responses.POST, "https://x.test:443/gen/db/SEIS", json={}, status=200)
+    LegacySeismicLoad.create(
+        {25: {"SEIS_LOAD_CODE": "KBC2016", "SCALE_FACTOR_X": 1, "SCALE_FACTOR_Y": 0,
+              "KBC2016": {"FA": 1.2, "FV": 1.6, "SDS": 0.5, "SD1": 0.3}}},
+        client=gen_client,
+    )
+    sent = json.loads(responses.calls[0].request.body)["Assign"]["25"]
+    assert sent["SEIS_LOAD_CODE"] == "KBC2016"
+    assert sent["KBC2016"]["SDS"] == 0.5

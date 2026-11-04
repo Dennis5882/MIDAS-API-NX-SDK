@@ -1,0 +1,5000 @@
+# /db/SEIS
+#
+# Written from GET /info/db/SEIS (Gen NX, captured 2026-11-04) and the 2026-11-04
+# Gen NX session in docs/live_verification_notes.md. The manual has no
+# section for this endpoint, so every field is provenance: info_schema and
+# requirement: unstated; live findings are recorded on the fields they touch.
+contractVersion: 1
+id: db-seis
+endpoint: /db/SEIS
+name: Seismic Loads (legacy)
+summary: >-
+  The legacy per-country static seismic loads, one record per seismic load case. MIDASIT keeps it without maintenance; it is the only API route for the overseas codes, since /db/SSEIS takes KDS and USER TYPE only.
+surface:
+  className: LegacySeismicLoad
+  exportName: legacySeismicLoad
+  modulePath: [db, staticLoads]
+  payloadTypeName: LegacySeismicLoadPayload
+
+products: [gen]
+productsEvidence: >-
+  Measured on Gen NX only, 2026-11-04. Civil NX was not connected that day, so
+  Civil is unchecked rather than refused; widen once a Civil session answers.
+
+recordKey:
+  kind: record_id
+  description: >-
+    The /db/STLD load case number the record belongs to.
+
+source:
+  manual:
+    status: absent
+    justification: >-
+      No manual chapter documents /db/SEIS. The fields below are the server's own GET /info/db/SEIS schema; methods, the record key and the failure shapes come from the 2026-11-04 Gen NX session recorded in docs/live_verification_notes.md, which stored KBC2016 and EURO2004 records and updated and deleted them. SEIS_LOAD_CODE takes the code object's own name (KBC2016, EURO2004), except NSCP 2024.
+  liveNotes:
+    - docs/live_verification_notes.md
+
+verification:
+  status: verified_gen
+  records:
+    - product: gen
+      ref: db-wind-seis-legacy-2026-11-04
+
+operations:
+  - method: DELETE
+    variant: per_id
+    path: /db/SEIS/{id}
+    risk: destructive
+    mitigation: none
+    summary: Delete exactly the record named in the path.
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+    notes: >-
+      Measured 2026-11-04 on Gen NX: removed the named record, and a GET of it
+      then answered Not Found Key - see risk db-delete-body-empties-table.
+  - method: DELETE
+    variant: whole_table
+    risk: destructive
+    mitigation: confirmation_required
+    summary: Empty the entire table.
+    request:
+      wrapper: assign
+      itemSchema: none
+      description: >-
+        The /db/* body form, never sent to this endpoint; listed so both SDKs
+        guard it like every other table.
+    response:
+      wrapper: message
+  - method: GET
+    risk: read_only
+    request:
+      wrapper: none
+    response:
+      wrapper: table
+      keyStability: stable
+  - method: POST
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+  - method: PUT
+    risk: write
+    request:
+      wrapper: assign
+      itemSchema: fields
+    response:
+      wrapper: table
+      keyStability: stable
+
+fields:
+  - key: SEIS_LOAD_CODE
+    description: >-
+      Seismic Load Code
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: DESC
+    description: >-
+      Description
+    type: string
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: SCALE_FACTOR_X
+    description: >-
+      Seismic Load Direction Factor (Scale Factor) : X-Dir
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: SCALE_FACTOR_Y
+    description: >-
+      Seismic Load Direction Factor (Scale Factor) : Y-Dir
+    type: number
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: ACCIDENT_ECCEN_X
+    description: >-
+      Accidental Eccentricity : X-Dir
+    type: integer
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: ACCIDENT_ECCEN_Y
+    description: >-
+      Accidental Eccentricity : Y-Dir
+    type: integer
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: bACCIDENT_TORSION
+    description: >-
+      Consider amplification of accidental torsion
+    type: boolean
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: bINHERENT_TORSION
+    description: >-
+      Consider amplification of inherent torsion
+    type: boolean
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+  - key: KS1992
+    description: >-
+      Korea(Arch. 1992)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SOIL_FACTOR
+        description: >-
+          Soil Profile Type
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ZONE_FACTOR
+        description: >-
+          Earthquake Area
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Period (Analysis) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Period (Analysis) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_X
+        description: >-
+          Period (Code) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_Y
+        description: >-
+          Period (Code) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Coef.(R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Coef.(R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: UBC1991
+    description: >-
+      UBC(1991)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SOIL_FACTOR
+        description: >-
+          Soil Profile Type
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ZONE_FACTOR
+        description: >-
+          Seismic Zone Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Period (Analysis) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Period (Analysis) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_X
+        description: >-
+          Period (Code) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_Y
+        description: >-
+          Period (Code) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SYS_FACTOR_X
+        description: >-
+          Ductility Coef.(Rw) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SYS_FACTOR_Y
+        description: >-
+          Ductility Coef.(Rw) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: UBC1997
+    description: >-
+      UBC(1997)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SOIL_PROFILE_TYPE
+        description: >-
+          Soil Profile Type
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ZONE_FACTOR
+        description: >-
+          Seismic Zone Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEISMIC_SOURCE_TYPE
+        description: >-
+          Seismic Source Type
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CLOSEAST_DISTANCE
+        description: >-
+          Closest Distance to Known Seismic Source
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Period (Analysis) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Period (Analysis) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_X
+        description: >-
+          Period (Code) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_Y
+        description: >-
+          Period (Code) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SYS_FACTOR_X
+        description: >-
+          Ductility Coef.(Rw) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SYS_FACTOR_Y
+        description: >-
+          Ductility Coef.(Rw) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: ATC306
+    description: >-
+      ATC3-06
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SOIL_PROFILE_COEF
+        description: >-
+          Soil Profile Coefficient
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EFFECTIVE_PEAK_VELOCITY
+        description: >-
+          Effective Peak Velocity
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Period (Analysis) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Period (Analysis) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_X
+        description: >-
+          Period (Code) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_Y
+        description: >-
+          Period (Code) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: KS2000
+    description: >-
+      Korea(Arch. 2000)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SOIL_FACTOR
+        description: >-
+          Soil Profile Type
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ZONE_FACTOR
+        description: >-
+          Earthquake Area
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Period (Analysis) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Period (Analysis) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_X
+        description: >-
+          Period (Code) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_Y
+        description: >-
+          Period (Code) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Coef.(R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Coef.(R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: JIS_E
+    description: >-
+      Japan(Arch. 2000)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SOIL_FACTOR
+        description: >-
+          Soil Profile Type
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ZONE_FACTOR
+        description: >-
+          Earthquake Area
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STD_SHEAR_FACTOR
+        description: >-
+          Base Shear Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Period (Analysis) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Period (Analysis) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_X
+        description: >-
+          Period (Code) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_Y
+        description: >-
+          Period (Code) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Coef.(R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Coef.(R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: OPT_AI_USER_DEFINED
+        description: >-
+          Seismic Base Shear Distribution Factor(Ai) : Use User Defined
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AI_FACTOR_ITEMS
+        description: >-
+          User Defined Factors
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: X_DIR
+            description: >-
+              Ai Factor : X-Dir
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: Y_DIR
+            description: >-
+              Ai Factor : Y-Dir
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+  - key: IBC2000
+    description: >-
+      IBC2000(ASCE7-98)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SEIS_DGN_CATEGORY
+        description: >-
+          Seismic Design Category
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DUCTILITY_CLASS
+        description: >-
+          Mapped Spectral Response Acceleration at Short Periods (Ss)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: REGULARITY
+        description: >-
+          Mapped Spectral Response Acceleration at 1 Second Period (S1)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Period (Analysis) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Period (Analysis) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_X
+        description: >-
+          Period (Code) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_Y
+        description: >-
+          Period (Code) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Coef.(R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Coef.(R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: EURO1996
+    description: >-
+      Eurocode-8(1996)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SOIL_CLASS
+        description: >-
+          Soil Class (S)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BASIC_BEHAVIOR
+        description: >-
+          Basic Behavior Factor(go)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DUCTILITY_CLASS
+        description: >-
+          Ductility Class (Kd)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: REGULARITY
+        description: >-
+          Elevation Regularity (Kr)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FAILURE_MODE_FACTOR
+        description: >-
+          Failure Mode Factor (Kw)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ALPHA_FACTOR
+        description: >-
+          Ratio of design ground acceleration to gravity acceleration (alpha)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: CH2001
+    description: >-
+      China(GB50011-2001)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: NEAR_SOURCE_CATEGORY
+        description: >-
+          Near Source Category
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_FORTIFICATION
+        description: >-
+          Seis. Fortification Intensity
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STRUCTURE_TYPE
+        description: >-
+          Structure Type
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_RATIO
+        description: >-
+          Damping ratio
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EARTH_RESPONSE_TYPE
+        description: >-
+          Earth Response Type
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: OPT_A1
+        description: >-
+          Use Mansonry Multistory, Framed 1st Story, Interior Frame - Exterior
+          Mansonry Structure
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: CHSH2003
+    description: >-
+      China Shanghai(DGJ08-9-2003)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SEIS_FORTIFICATION
+        description: >-
+          Seis. Fortification Intensity
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: STRUCTURE_TYPE
+        description: >-
+          Structure Type
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_RATIO
+        description: >-
+          Damping ratio
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EARTH_RESPONSE_TYPE
+        description: >-
+          Earth Response Type
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: OPT_A1
+        description: >-
+          Use Mansonry Multistory, Framed 1st Story, Interior Frame - Exterior
+          Mansonry Structure
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: NBC1995
+    description: >-
+      NBC(1995)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: ZONAL_VELOCITY_RATION
+        description: >-
+          Zonal Velocity Ratio (v)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ACCELERATION_ZONE
+        description: >-
+          Acceleration Zone (Za)
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: VELOCITY_ZONE
+        description: >-
+          Velocity Zone (Zv)
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FOUNDATION_FACTOR
+        description: >-
+          Foundation Factor (F)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Period (Analysis) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Period (Analysis) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_X
+        description: >-
+          Period (Code) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_CODE_Y
+        description: >-
+          Period (Code) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_MOD_FACTOR_X
+        description: >-
+          Force Modification Factor(R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_MOD_FACTOR_Y
+        description: >-
+          Force Modification Factor(R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: IS2002
+    description: >-
+      IS1893(2002)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SEISMIC_ZONE
+        description: >-
+          Seismic Zone (Z)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SOIL_TYPE
+        description: >-
+          Soil Type
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_RATIO
+        description: >-
+          Damping (%)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING_MULTIPLY_FACTOR
+        description: >-
+          Damping Multiplying Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FND_X
+        description: >-
+          Fundamental period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FND_Y
+        description: >-
+          Fundamental period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_REDUCT_FACTOR_X
+        description: >-
+          Response Reduction Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_REDUCT_FACTOR_Y
+        description: >-
+          Response Reduction Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: TAIWAN1999
+    description: >-
+      Taiwan(1999)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SEIS_ZONE
+        description: >-
+          Seismic Zone (Z)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SOIL_TYPE
+        description: >-
+          Soil Type
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_MAGNIFY_FACTOR
+        description: >-
+          Response Reduction Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Period Method
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_X
+        description: >-
+          Final Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_Y
+        description: >-
+          Final Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_REDUCT_FACTOR_X
+        description: >-
+          Response Reduction Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_REDUCT_FACTOR_Y
+        description: >-
+          Response Reduction Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: KBC2005
+    description: >-
+      KBC (2005)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: ACC_CALC_METHOD
+        description: >-
+          Design Spectral Response Acceleration
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_ZONE
+        description: >-
+          Seismic Zone (Z)
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS
+        description: >-
+          Sds
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SD1
+        description: >-
+          Sd1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_USE_GROUP
+        description: >-
+          Seis. Use Group
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: CITY_PLAN_REGION
+        description: >-
+          City Plan. Region Boolean
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Structural Parameters : Period Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_X
+        description: >-
+          Final Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_Y
+        description: >-
+          Final Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: TAIWAN2006
+    description: >-
+      Taiwan(2006)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SEIS_ZONE
+        description: >-
+          Seismic Zone (Z)
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS
+        description: >-
+          Short Period (Ss)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SD1
+        description: >-
+          1sec Period (S1)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SMS
+        description: >-
+          Ss
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SM1
+        description: >-
+          S1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NDA
+        description: >-
+          Na
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NDV
+        description: >-
+          Nv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NMA
+        description: >-
+          Na
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NMV
+        description: >-
+          Nv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SOIL_TYPE
+        description: >-
+          Soil Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FDA
+        description: >-
+          Short Period (Fa)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FDV
+        description: >-
+          Short Period (Fv)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FMA
+        description: >-
+          Fa
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FMV
+        description: >-
+          Fv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SUB_ZONE
+        description: >-
+          Sub Zone
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS_T
+        description: >-
+          Sds_t
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SMS_T
+        description: >-
+          Sms_t
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TD0
+        description: >-
+          Td0
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TM0
+        description: >-
+          Tm0
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_MAGNIFY_FACTOR
+        description: >-
+          Seismic Magnify Factor (ay)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Period Method
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_X
+        description: >-
+          Final Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_Y
+        description: >-
+          Final Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: EURO2004
+    description: >-
+      Eurocode-8(2004)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: GROUND_TYPE
+        description: >-
+          Ground Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SPEC_TYPE
+        description: >-
+          Spectrum Parameters Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NATIONAL_ANNEX
+        description: >-
+          National Annex
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: REGION_TYPE
+        description: >-
+          Region Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: S_
+        description: >-
+          Soil Factor(S)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TB
+        description: >-
+          Tb
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TC
+        description: >-
+          Tc
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TD
+        description: >-
+          Td
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AG
+        description: >-
+          Ref. Peak Ground Acc. (AgR)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: Q
+        description: >-
+          Behavior Factor (q)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: BETA
+        description: >-
+          Lower Bound Factor (b)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: NTC2008
+    description: >-
+      NTC2008
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: GROUND_TYPE
+        description: >-
+          Ground Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SPEC_TYPE
+        description: >-
+          Spectrum Parameters Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: S_
+        description: >-
+          Soil Factor(S)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TB
+        description: >-
+          Tb
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TC
+        description: >-
+          Tc
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TD
+        description: >-
+          Td
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AG
+        description: >-
+          Ref. Peak Ground Acc. (AgR)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: Q
+        description: >-
+          Behavior Factor (q)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AMP_F
+        description: >-
+          Amplification Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TC_STAR
+        description: >-
+          Tc*
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: KBC2009
+    description: >-
+      KBC(2009)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SEIS_ZONE
+        description: >-
+          Seismic Zone (Z)
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ZONE_FACTOR
+        description: >-
+          Zone Factor (S)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_COEF
+        description: >-
+          Period Coef. (Cu)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FA
+        description: >-
+          Fa
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FV
+        description: >-
+          Fv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS
+        description: >-
+          Sds
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SD1
+        description: >-
+          Sd1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_USE_GROUP
+        description: >-
+          Seis. Use Group
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Structural Parameters : Period Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: TAIWAN2011
+    description: >-
+      Taiwan(2011)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SEIS_ZONE
+        description: >-
+          Seismic Zone (Z)
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS
+        description: >-
+          Short Period (Ss)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SD1
+        description: >-
+          1sec Period (S1)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SMS
+        description: >-
+          Ss
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SM1
+        description: >-
+          S1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NDA
+        description: >-
+          Na
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NDV
+        description: >-
+          Nv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NMA
+        description: >-
+          Na
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NMV
+        description: >-
+          Nv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SOIL_TYPE
+        description: >-
+          Soil Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FDA
+        description: >-
+          Short Period (Fa)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FDV
+        description: >-
+          Short Period (Fv)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FMA
+        description: >-
+          Fa
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FMV
+        description: >-
+          Fv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SUB_ZONE
+        description: >-
+          Sub Zone
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS_T
+        description: >-
+          Sds_t
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SMS_T
+        description: >-
+          Sms_t
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TD0
+        description: >-
+          Td0
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TM0
+        description: >-
+          Tm0
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_MAGNIFY_FACTOR
+        description: >-
+          Seismic Magnify Factor (ay)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Period Method
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_X
+        description: >-
+          Final Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_Y
+        description: >-
+          Final Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: CH2010
+    description: >-
+      China(GB50011_2010)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SEIS_DGN_CATEGORY
+        description: >-
+          Near Source Category
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_FORTIFICATION
+        description: >-
+          Seis. Fortification Intensity
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DELTA_N
+        description: >-
+          Structure Type
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING
+        description: >-
+          Damping ratio
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EARTH_RESPONSE
+        description: >-
+          Earthquake Effect
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ALPHA_1
+        description: >-
+          Mansonry Multistory, Framed 1st Story, Interior Frame - Exterior
+          Mansonry Structure
+        type: boolean
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: IBC2009
+    description: >-
+      IBC2000(ASCE7-05)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SS
+        description: >-
+          Ss
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: S1
+        description: >-
+          S1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FA
+        description: >-
+          Fa
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FV
+        description: >-
+          Fv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS
+        description: >-
+          Sds
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SD1
+        description: >-
+          Sd1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TL
+        description: >-
+          TL
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RISK_CATEGORY
+        description: >-
+          Risk Category
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Structural Parameters : Period Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: IBC2012
+    description: >-
+      IBC2000(ASCE7-10)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SS
+        description: >-
+          Ss
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: S1
+        description: >-
+          S1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FA
+        description: >-
+          Fa
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FV
+        description: >-
+          Fv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS
+        description: >-
+          Sds
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SD1
+        description: >-
+          Sd1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TL
+        description: >-
+          TL
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RISK_CATEGORY
+        description: >-
+          Risk Category
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Structural Parameters : Period Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: NSCP2024
+    description: >-
+      NSCP 2024
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SS
+        description: >-
+          Ss
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: S1
+        description: >-
+          S1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FA
+        description: >-
+          Fa
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FV
+        description: >-
+          Fv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS
+        description: >-
+          Sds
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SD1
+        description: >-
+          Sd1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TL
+        description: >-
+          TL
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RISK_CATEGORY
+        description: >-
+          Risk Category
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Structural Parameters : Period Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: NTC2012
+    description: >-
+      NTC2012
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: GROUND_TYPE
+        description: >-
+          Ground Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SPEC_TYPE
+        description: >-
+          Spectrum Parameters Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: S_
+        description: >-
+          Soil Factor(S)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TB
+        description: >-
+          Tb
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TC
+        description: >-
+          Tc
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TD
+        description: >-
+          Td
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AG
+        description: >-
+          Ref. Peak Ground Acc. (AgR)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: Q
+        description: >-
+          Behavior Factor (q)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AMP_F
+        description: >-
+          Amplification Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TC_STAR
+        description: >-
+          Tc*
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: NTC2017
+    description: >-
+      NTC2018
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: GROUND_TYPE
+        description: >-
+          Ground Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SPEC_TYPE
+        description: >-
+          Spectrum Parameters Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: S_
+        description: >-
+          Soil Factor(S)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TB
+        description: >-
+          Tb
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TC
+        description: >-
+          Tc
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TD
+        description: >-
+          Td
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AG
+        description: >-
+          Ref. Peak Ground Acc. (AgR)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: Q
+        description: >-
+          Behavior Factor (q)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AMP_F
+        description: >-
+          Amplification Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TC_STAR
+        description: >-
+          Tc*
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: NSR2010
+    description: >-
+      NSR-10
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AA
+        description: >-
+          Aa
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AV
+        description: >-
+          Av
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FA
+        description: >-
+          Fa
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FV
+        description: >-
+          Fv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_COEF
+        description: >-
+          Period Coef. (Cu)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Structural Parameters : Period Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_X
+        description: >-
+          Final Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_Y
+        description: >-
+          Final Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PHI_X
+        description: >-
+          Phi : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PHI_Y
+        description: >-
+          Phi : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: KBC2016
+    description: >-
+      KBC (2016)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SEIS_ZONE
+        description: >-
+          Seismic Zone (Z)
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ZONE_FACTOR
+        description: >-
+          Zone Factor (S)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DEPTH_2MR
+        description: >-
+          Depth to MR
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_COEF
+        description: >-
+          Period Coef. (Cu)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FA
+        description: >-
+          Fa
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FV
+        description: >-
+          Fv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS
+        description: >-
+          Sds
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SD1
+        description: >-
+          Sd1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_USE_GROUP
+        description: >-
+          Seis. Use Group
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Structural Parameters : Period Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: P100_2013
+    description: >-
+      P100-1 (2013)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SPEC_TYPE
+        description: >-
+          Spectrum Parameters
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TB
+        description: >-
+          Tb
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ATC
+        description: >-
+          Tc
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TD
+        description: >-
+          Td
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: AG
+        description: >-
+          Design Ground Acc. (Ag)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: Q
+        description: >-
+          Behavior Factor (q)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: IS2016
+    description: >-
+      IS1893(2016)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SEIS_ZONE
+        description: >-
+          Seismic Zone (Z)
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SOIL_TYPE
+        description: >-
+          Soil Type
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING
+        description: >-
+          Damping (%)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_REDUCTION_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_REDUCTION_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: KDS2019
+    description: >-
+      KDS(41-17-00:2019)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SEIS_ZONE
+        description: >-
+          Seismic Zone
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ZONE_FACTOR
+        description: >-
+          EPA(S)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_COEF
+        description: >-
+          Period Coef. (Cu)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: OPT_NOT_CONSIDER_CU
+        description: >-
+          Not Consider Cu Option
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FA
+        description: >-
+          Fa
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FV
+        description: >-
+          Fv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS
+        description: >-
+          Sds
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SD1
+        description: >-
+          Sd1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_USE_GROUP
+        description: >-
+          Seis. Use Group
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Structural Parameters : Period Method
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: IS2025
+    description: >-
+      IS1893(2025)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: SPEC_TYPE
+        description: >-
+          Spectrum Type
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: EQ_ZONE
+        description: >-
+          Earthquake Zone
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RET_PERIOD
+        description: >-
+          Return Period
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ZONE_FACTOR
+        description: >-
+          Zone Factor
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SITE_CLASS
+        description: >-
+          Site Class
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: DAMPING
+        description: >-
+          Damping (%)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_X
+        description: >-
+          Fundamental Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_Y
+        description: >-
+          Fundamental Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_REDUCTION_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_REDUCTION_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: TAIWAN2022
+    description: >-
+      TAIWAN(2022)
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: STRUCT_TYPE
+        description: >-
+          STRUCT_TYPE
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_ZONE
+        description: >-
+          Seismic Zone (Z)
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS
+        description: >-
+          Short Period (Ss)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SD1
+        description: >-
+          1sec Period (S1)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SMS
+        description: >-
+          Ss
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SM1
+        description: >-
+          S1
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NDA
+        description: >-
+          Na
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NDV
+        description: >-
+          Nv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NMA
+        description: >-
+          Na
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: NMV
+        description: >-
+          Nv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SOIL_TYPE
+        description: >-
+          Soil Type
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FDA
+        description: >-
+          Short Period (Fa)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FDV
+        description: >-
+          Short Period (Fv)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FMA
+        description: >-
+          Fa
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FMV
+        description: >-
+          Fv
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FSA
+        description: >-
+          FSA
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FSV
+        description: >-
+          FSV
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SUB_ZONE
+        description: >-
+          Sub Zone
+        type: integer
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SDS_T
+        description: >-
+          Sds_t
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SMS_T
+        description: >-
+          Sms_t
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TD0
+        description: >-
+          Td0
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: TM0
+        description: >-
+          Tm0
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: IMPORTANCE_FACTOR
+        description: >-
+          Importance Factor (I)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: SEIS_MAGNIFY_FACTOR
+        description: >-
+          Seismic Magnify Factor (ay)
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_METHOD
+        description: >-
+          Period Method
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_X
+        description: >-
+          Analytical Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_ANALYSIS_Y
+        description: >-
+          Analytical Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_X
+        description: >-
+          Approximate Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_APPR_Y
+        description: >-
+          Approximate Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_X
+        description: >-
+          Final Period : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: PERIOD_FINAL_Y
+        description: >-
+          Final Period : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_X
+        description: >-
+          Response Modification Factor (R) : X-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: RESPONSE_MOD_FACTOR_Y
+        description: >-
+          Response Modification Factor (R) : Y-Dir
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: USER
+    description: >-
+      USER
+    type: array
+    items:
+      type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: STORY_NAME
+        description: >-
+          Story Name
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: WEIGHT
+        description: >-
+          Weight
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ELIV
+        description: >-
+          Elevation
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_X
+        description: >-
+          Force-X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: FORCE_Y
+        description: >-
+          Force-Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: ITEMS
+    description: >-
+      Additional Seismic Loads
+    type: array
+    items:
+      type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: STORY_NAME
+        description: >-
+          Story Name
+        type: string
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ADD_X
+        description: >-
+          Additional-X
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ADD_Y
+        description: >-
+          Additional-Y
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+      - key: ADD_R
+        description: >-
+          Additional-RZ
+        type: number
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+  - key: PROFILE
+    description: >-
+      Profile
+    type: object
+    requirement: unstated
+    documentedDefault: null
+    documentedOptional: null
+    safeToOmit: unverified
+    provenance: info_schema
+    properties:
+      - key: ALONG_X_PROFILE
+        description: >-
+          Along X-Dir. Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_WEIGHT
+            description: >-
+              Weight
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Elevation
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: SEISMIC_FORCE
+            description: >-
+              Seismic Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ACCIDENT_ECCENT
+            description: >-
+              Accidental Eccentricity
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ACCIDENT_TORSION
+            description: >-
+              Accidental Torsion
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: INHERENT_TORSION
+            description: >-
+              Inherent Torsion
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: TOTAL_TORSION
+            description: >-
+              Total Torsion
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: ALONG_Y_PROFILE
+        description: >-
+          Along Y-Dir. Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_WEIGHT
+            description: >-
+              Weight
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Elevation
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: SEISMIC_FORCE
+            description: >-
+              Seismic Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ACCIDENT_ECCENT
+            description: >-
+              Accidental Eccentricity
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ACCIDENT_TORSION
+            description: >-
+              Accidental Torsion
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: INHERENT_TORSION
+            description: >-
+              Inherent Torsion
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: TOTAL_TORSION
+            description: >-
+              Total Torsion
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+      - key: ALONG_SRSS_PROFILE
+        description: >-
+          Along SRSS Profile
+        type: array
+        items:
+          type: object
+        requirement: unstated
+        documentedDefault: null
+        documentedOptional: null
+        safeToOmit: unverified
+        provenance: info_schema
+        properties:
+          - key: STORY_NAME
+            description: >-
+              Story Name
+            type: string
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_WEIGHT
+            description: >-
+              Weight
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_LEVEL
+            description: >-
+              Elevation
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: SEISMIC_FORCE
+            description: >-
+              Seismic Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ADDED_FORCE
+            description: >-
+              Added Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_FORCE
+            description: >-
+              Story Force
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: STORY_SHEAR
+            description: >-
+              Story Shear
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: OVERTURN_MOMENT
+            description: >-
+              Overturning Moment
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ACCIDENT_ECCENT
+            description: >-
+              Accidental Eccentricity
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: ACCIDENT_TORSION
+            description: >-
+              Accidental Torsion
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: INHERENT_TORSION
+            description: >-
+              Inherent Torsion
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
+          - key: TOTAL_TORSION
+            description: >-
+              Total Torsion
+            type: number
+            requirement: unstated
+            documentedDefault: null
+            documentedOptional: null
+            safeToOmit: unverified
+            provenance: info_schema
