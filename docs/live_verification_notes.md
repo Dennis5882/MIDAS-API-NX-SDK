@@ -13306,3 +13306,63 @@ Inelastic Hinge > Define Inelastic Hinge Properties.
   `START_STAGE`/`END_STAGE` named" on the heat-of-hydration tutorial model.
   Today the same fields with an existing stage's name are what made it pass;
   which names were sent that day is not recorded.
+
+## 2026-11-04 (Gen) - undocumented legacy `/db/WIND` stores 28 of the 30 code names it knows; failures are silent, and one probe crashed Gen
+
+Measured for a separate project (a Thai DPT wind plugin), on a Thai project
+model with a scratch load case (`/db/STLD` 25) written, read back and deleted
+per probe; the STLD and WIND key lists were compared before and after every
+run. The build string was not re-read this session. `/db/WIND` is in neither
+the manual nor this SDK; nothing here changes either. How each code computes
+is that project's business and is recorded there, not here.
+
+- **`WIND_CODE` takes the legacy names, not the display names.**
+  `GET /info/db/WIND` declares 31 code objects (`KS92` ... `NSCP2024`, `USER`)
+  and no names. `wg_api_framework.dll` carries the accepted list:
+  `KS1992, JP1987, UBC1997, ANSI1982, KS2000, IBC2000, EURO1992, BS6399(97),
+  CH2001, JP2000, NBC1995, IS875(87), TWN2002, JP2004, EURO2005, KBC(2009),
+  IBC2009, IBC2012, CH2012, NSR-10, KBC(2016), IS875(2015), CH2021,
+  KDS(41-10-15:2019), KDS(41-12:2022), DPT.1311-50:2007, USER TYPE,
+  ASCE7(2016), ASCE7(2022), NSCP 2024, RUS2016`. The display spellings the
+  same DLL lists for `/db/SWIND` (`EUROCODE-1(2005)`, `CHINA(GB50009-2001)`,
+  ...) answer `Wrong Field` here.
+- **A name-only POST tells a known name from an unknown one.** With no code
+  object, a known name answers `Unknown Error` and an unknown one `Wrong
+  Field`. All of the list above but `RUS2016` are known.
+- **Stored, with a non-zero `PROFILE`:** 19 codes (both ASCE7, NSCP 2024, the
+  three IBC, ANSI1982, NBC1995, NSR-10, EURO2005, BS6399(97), both IS875,
+  JP1987, KS1992, KS2000, KBC(2009), DPT). **Stored with a zero profile** on
+  probe values: 9 more. **Refused:** `TWN2002` (`Wrong Field` for every
+  `SITE_CATEGORY` tried, 30 strings and 0-3). `JP2004` not finished (below).
+- **String enums are codes, not labels:** `HILL_SHAPE` `2DR`/`2DE`,
+  `BLDG_LOCATION` `UP`/`DOWN`, `ECCEN_*` `POS`/`NEG`/`NONE`, `RIGIDITY`
+  `RIGID`/`FLEXIBLE`, CH2001 `STRUCTURAL_MATL` `ST`/`SW`/`RC`, IS875
+  `STRUCTURE_CLASS` `GB`/`TS`/`LH`/`IB`, BS6399 `SITE_CATEGORY`
+  `COUNTRY`/`TOWN`. Any other value answers `Wrong Field` - the "vary the value
+  first" rule again. `DPT2007` uses integers instead.
+- **Two silent failure shapes.** (1) A missing required value answers HTTP 200
+  `{"message": ""}` and stores nothing: IBC2009/IBC2012 without `PROCEDURE: 1`,
+  NSR-10 with fewer than two `TOPOGRAPHY_ITEMS`, `DPT2007` with
+  `VIBR_FREQ_PARAMS`/`VIBR_DAMP_PARAMS` not exactly three long. No `error`
+  key, so `MidasResultError` stays silent; only a GET shows it. (2) An
+  out-of-range integer is accepted and stored, and the server computes a zero
+  or `null` profile (`DPT2007` `INPUT_METHOD` 2+, `WIND_ZONE` 5+,
+  `EXP_CATEGORY` beyond the method's range, `HILL_SHAPE` 3+, `BLDG_LOCATION`
+  2+). Dropping any one of `DPT2007`'s 25 fields answers `Wrong Field`.
+- **`DPT2007` integers checked against the dialog:** a record written with
+  `INPUT_METHOD 1, WIND_ZONE 3, EXP_CATEGORY 2, HILL_SHAPE 1, BLDG_LOCATION 1`
+  opened in Gen's dialog as General Method, Zone 4A, Terrain C, 2D Escarpment,
+  Downwind; the other entered values matched too.
+- **Crash: Gen NX raised `"[Error] Failed to disconnect the work session..."`**
+  during the `JP2004` probe, while `PROCEDURE` was being swept 1-5 on a record
+  whose `PROCEDURE: 0` had just answered `Errors detected in Wind Load
+  Data.(Item:Calculation Method)` normally. The probe printed per field, so
+  the value is not known; the author chose not to pursue it. Every later call
+  timed out until the product was restarted.
+- Separately, the open document's `.mgbx` was saved at 15:42:01, between two
+  probe runs (15:41:50 end, 15:42:06 start); none of the probes saves. The
+  cause is not known.
+- Re-measuring after the restart needed the model back: the pre-test
+  `/doc/EXPORTMXT` backup was imported into the restarted product's empty
+  document (3137 nodes, STLD 1-24, WIND 5-20, 9 stories, as before) and never
+  saved.
