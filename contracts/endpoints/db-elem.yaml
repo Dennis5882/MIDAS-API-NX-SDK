@@ -106,6 +106,15 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    references:
+      tables: [/db/MATL]
+      by: id
+      onMissing: stored
+      evidence: ledger-write-2026-11-04-2
+      note: >-
+        Measured 2026-11-04 on Gen and Civil: an element naming material 99
+        that does not exist is stored as an orphan, and a per-id DELETE of a
+        material in use leaves its elements in place.
   - key: SECT
     description: >-
       Section / Thickness No.
@@ -115,6 +124,16 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    references:
+      tables: [/db/SECT, /db/THIK]
+      by: id
+      onMissing: stored
+      evidence: ledger-write-2026-11-04-2
+      note: >-
+        A /db/SECT record for line elements (BEAM, TRUSS, ...), a /db/THIK
+        record for PLATE and WALL. Measured 2026-11-04 on Gen and Civil: a
+        missing section or thickness is stored as an orphan for both a BEAM and
+        a PLATE.
   - key: NODE
     description: >-
       Node No.
@@ -126,6 +145,16 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    references:
+      tables: [/db/NODE]
+      by: id
+      each: true
+      onMissing: refused
+      evidence: ledger-write-2026-11-04-2
+      note: >-
+        Refused with an error naming the node and its position. A per-id DELETE
+        of a node in use removes the elements on it (both products,
+        2026-11-04).
   - key: ANGLE
     description: >-
       Beta Angle

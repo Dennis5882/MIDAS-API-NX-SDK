@@ -23,6 +23,12 @@ productsEvidence: >-
   Live CRUD rounds succeeded on both Civil NX and Gen NX; the live notes name
   /db/CONS among the endpoints checked in each product.
 
+recordKey:
+  kind: node_id
+  description: >-
+    The node the support is assigned to. A node that does not exist answers
+    {"message": ""} and stores nothing (both products, 2026-11-04).
+
 source:
   manual:
     status: documented
@@ -128,6 +134,16 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
+        references:
+          tables: [/db/BNGR]
+          by: name
+          nameField: NAME
+          onMissing: refused
+          evidence: ledger-write-2026-11-04-2
+          note: >-
+            A /db/LDGR name answers Unknown Error like a missing one. A /db/BNGR
+            name is accepted but reads back as an empty string (both products,
+            2026-11-04).
       - key: CONSTRAINT
         description: Constraint state for DX, DY, DZ, RX, RY, RZ and RW.
         type: string

@@ -13390,5 +13390,52 @@ recorded there, not here.
   whole-table `GET /db/SEIS` answers `Right Value Can't Empty` while the table
   holds a `DPT.1301/1302-61:2018` record** (the Thai model's keys 21-24, made
   in the dialog); the per-id GET of another record still answers.
-- Civil NX was not connected all day (`client does not exist`), so both
-  resources declare Gen only, as unchecked on Civil rather than refused.
+- **Civil NX 404s both.** Civil was not connected for most of the day
+  (`client does not exist`); once it was, `/db/WIND`, `/db/SEIS` and their
+  `/info` all answered 404, so both resources declare Gen only.
+
+## 2026-11-04 (Gen and Civil) - what each table does with a reference to a record that does not exist
+
+For contracts' new `references` and the SDKs' `plan.order()`, at the request of
+the midas-nx-mcp project's batch proposal. On both products' empty documents
+(the author: "gen civil은 빈 문서야 언제든지 실행해도 됨"): the fixture's base
+model and group seeds, then each confirmed case's create payload with one
+reference changed to something that does not exist, read back by id. **Gen NX
+and Civil NX answered every probe alike.** Ledger record
+`ledger-write-2026-11-04-2`.
+
+| Table, field | Missing target | Answer |
+| --- | --- | --- |
+| `/db/ELEM` `NODE` | node 99 | refused, `The node no. 99 ... has not been defined.` |
+| `/db/ELEM` `MATL` | material 99 | **stored**, an orphan |
+| `/db/ELEM` `SECT` | section 99, BEAM and PLATE | **stored**, an orphan |
+| `/db/CONS` key, `/db/CNLD` key, `/db/FRLS` key | node / node / element 99 | refused, `{"message": ""}` - no error key |
+| `/db/BMLD` key, `/db/PRES` key | element 99 | refused, `... entered in the element no. 99 that has not been specified.` |
+| `/db/ELNK` `NODE` | node 99 | refused, `... entered in the node no. 99 that has not been specified.` |
+| `/db/CNLD` `LCNAME`, `GROUP_NAME` | no such name | refused, `Not Found Key` |
+| `/db/BMLD` `LCNAME`, `GROUP_NAME` | no such name | refused, `Wrong Field` |
+| `/db/PRES` `LCNAME` | no such name | refused: Gen `{"error": {"message": "Wrong Key"}}`, **Civil `{"message": "Wrong Key"}` with no error key** |
+| `/db/CONS`, `/db/FRLS` `GROUP_NAME` | no such name | refused, `Unknown Error` |
+| `/db/ELNK` `BNGR_NAME` | no such name | **stored without the field** |
+| `/db/GRUP` `N_LIST`, `E_LIST` | node / element 99 | **stored without the entry** (and without the list when none is left) |
+| `/db/LCOM-GEN` `vCOMB[].LCNAME` (`ANAL: "ST"`) | no such load case | refused, nothing stored |
+
+- **Which group table a group name means**, told apart with one name that
+  exists in `/db/BNGR` and another in `/db/LDGR`: `/db/CONS`, `/db/FRLS` and
+  `/db/ELNK` take boundary groups, `/db/CNLD`, `/db/BMLD` and `/db/PRES` load
+  groups; the other table's name is refused like a missing one (ELNK drops
+  it). `/db/FRLS`'s contract described the field as "Load Group Name"; the
+  `references` note records that it is not.
+- **`/db/CONS` reads its boundary group back as `""`.** The POST with an
+  existing `/db/BNGR` name was accepted, and `GET /db/CONS/5` answered
+  `GROUP_NAME: ""`.
+- **`GET /db/LCOM-GEN/{id}` answers a record for any id.** For an id never
+  written it returns `{"NO": 0, "NAME": "", "ACTIVE": "ACTIVE", ...}` rather
+  than `Not Found Key`, so a read-back by id cannot tell a refused POST from a
+  stored one; the table GET can.
+- **Deleting something in use is not refused.** A per-id DELETE of node 2
+  removed elements 1, 2 and 50 that used it; of load case `LC_SCRATCH` the
+  nodal load in it; of material 1 and section 1 nothing else - the elements
+  stayed, now orphans. Both products alike. The midas-nx-mcp proposal had
+  recorded node deletion as refused; this measurement says otherwise for the
+  per-id route.

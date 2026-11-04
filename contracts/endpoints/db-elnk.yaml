@@ -100,6 +100,14 @@ fields:
     documentedOptional: false
     safeToOmit: unverified
     provenance: manual
+    references:
+      tables: [/db/NODE]
+      by: id
+      each: true
+      onMissing: refused
+      evidence: ledger-write-2026-11-04-2
+      note: >-
+        Refused with an error naming the node (both products, 2026-11-04).
   - key: BNGR_NAME
     description: >-
       Boundary Group Name
@@ -114,6 +122,15 @@ fields:
       in its payload. That is evidence the call is accepted, not that the
       resulting model is what an engineer wanted.
     provenance: manual
+    references:
+      tables: [/db/BNGR]
+      by: name
+      nameField: NAME
+      onMissing: dropped
+      evidence: ledger-write-2026-11-04-2
+      note: >-
+        A missing name, or a /db/LDGR one, is not refused: the link is stored
+        without BNGR_NAME (both products, 2026-11-04).
   - key: ANGLE
     description: >-
       Beta Angle (°)

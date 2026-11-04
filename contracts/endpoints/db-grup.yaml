@@ -99,6 +99,15 @@ fields:
       in its payload. That is evidence the call is accepted, not that the
       resulting model is what an engineer wanted.
     provenance: manual
+    references:
+      tables: [/db/NODE]
+      by: id
+      each: true
+      onMissing: dropped
+      evidence: ledger-write-2026-11-04-2
+      note: >-
+        A missing node is not refused: the group is stored without it, and
+        without N_LIST when none was left (both products, 2026-11-04).
   - key: E_LIST
     description: >-
       Element List
@@ -115,6 +124,14 @@ fields:
       in its payload. That is evidence the call is accepted, not that the
       resulting model is what an engineer wanted.
     provenance: manual
+    references:
+      tables: [/db/ELEM]
+      by: id
+      each: true
+      onMissing: dropped
+      evidence: ledger-write-2026-11-04-2
+      note: >-
+        As N_LIST, for elements.
 
 extraction:
   source: 02_DB_Project_Structure.md line 481

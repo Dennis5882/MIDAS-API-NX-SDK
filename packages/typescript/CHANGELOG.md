@@ -6,6 +6,8 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.10.8 - 2026-11-04
+
 ### Added
 
 - `resources.db.staticLoads.legacyWindLoad` (`/db/WIND`) and
@@ -15,12 +17,19 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
   MIDASIT keeps without maintenance, and the only API route for the overseas
   codes (ASCE7, Eurocode, IS875, NSCP, DPT, ...): `staticWindLoad` and
   `staticSeismicLoad` take KDS and USER TYPE only. Their contracts come from the
-  server's own `/info` schema and a Gen NX session on 2026-11-04; Civil NX was
-  not checked, so `products` is `["gen"]` for now.
+  server's own `/info` schema and a Gen NX session on 2026-11-04. Civil NX
+  answers neither route nor `/info` (404, same day), so `products` is `["gen"]`.
 - `WIND_CODE` takes the legacy spellings (`"EURO2005"`, `"ASCE7(2016)"`,
   `"NSCP 2024"`, `"DPT.1311-50:2007"`), and `SEIS_LOAD_CODE` the code object's
   own name (`"KBC2016"`, `"EURO2004"`). Read a record back after writing it: a
   missing required value answers `{"message": ""}` and stores nothing.
+- `plan.order(operations)`, `plan.rank(endpoint)` and `plan.dependencies()`, with
+  the `PlanOperation` type and the generated `referenceGraph`: orders `/db/*`
+  writes so a record is sent after the records it names, deletes first and in
+  reverse. Offline; nothing is sent. The graph is the contracts' new
+  `references` - measured on both products on 2026-11-04 for `/db/ELEM`,
+  `CONS`, `CNLD`, `BMLD`, `PRES`, `FRLS`, `ELNK`, `GRUP` and `LCOM-GEN` - plus
+  node- and element-keyed tables. Python's `midas_nx.plan` holds the same graph.
 
 ## 2.10.7 - 2026-11-03
 

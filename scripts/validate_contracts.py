@@ -49,6 +49,7 @@ from typing import Any
 
 from function_endpoints import function_endpoints
 from generate_typescript_sdk import _field_path
+from reference_graph import reference_graph
 
 ROOT = Path(__file__).resolve().parent.parent
 CONTRACTS = ROOT / "contracts"
@@ -356,6 +357,80 @@ def check_manual_source(contracts: list[tuple[Path, dict]], failures: Failures) 
                 path.name,
                 f"manual status is {manual['status']!r} with no justification",
             )
+
+
+def check_references(contracts: list[tuple[Path, dict]], failures: Failures) -> int:
+    """A reference names a contracted table, by a field it has, and the graph is acyclic.
+
+    A measured reference (`onMissing` other than unverified) must cite a ledger
+    record, because that is the only place a live claim is stated.
+    """
+    by_endpoint = {c["endpoint"]: c for _, c in contracts}
+    ledger_ids = {r["id"] for r in _load_yaml(VERIFICATION_DIR / "ledger.yaml")["records"]}
+    count = 0
+    for path, contract in contracts:
+        for field in _iter_fields(contract.get("fields", [])):
+            ref = field.get("references")
+            if not ref:
+                continue
+            count += 1
+            for table in ref["tables"]:
+                target = by_endpoint.get(table)
+                if target is None:
+                    failures.add(path.name, f"field {field['key']!r} references {table}, which has no contract")
+                    continue
+                if ref["by"] == "name":
+                    names = {f["key"] for f in target.get("fields", [])}
+                    if ref["nameField"] not in names:
+                        failures.add(
+                            path.name,
+                            f"field {field['key']!r} references {table} by {ref['nameField']!r}, "
+                            f"which that contract does not record",
+                        )
+            if ref["onMissing"] != "unverified" and ref["evidence"] not in ledger_ids:
+                failures.add(
+                    path.name,
+                    f"field {field['key']!r}: a measured reference must cite a ledger record, "
+                    f"not {ref['evidence']!r}",
+                )
+            if ref.get("each") and field["type"] != "array":
+                failures.add(path.name, f"field {field['key']!r}: `each` on a non-array field")
+
+    graph = reference_graph(c for _, c in contracts)
+    state: dict[str, int] = {}
+
+    def visit(node: str, trail: list[str]) -> None:
+        state[node] = 1
+        for nxt in sorted(graph.get(node, ())):
+            if state.get(nxt) == 1:
+                cycle = trail[trail.index(nxt):] + [nxt] if nxt in trail else [node, nxt]
+                failures.add("references", "reference cycle: " + " -> ".join(cycle))
+            elif nxt not in state:
+                visit(nxt, trail + [nxt])
+        state[node] = 2
+
+    for node in sorted(graph):
+        if node not in state:
+            visit(node, [node])
+    return count
+
+
+def check_plan_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> None:
+    """Python's `midas_nx.plan.DEPENDENCIES` and npm's generated `referenceGraph`
+    are the contracts' table graph, so the two SDKs order writes alike."""
+    from midas_nx import plan
+
+    expected = {k: frozenset(v) for k, v in reference_graph(c for _, c in contracts).items()}
+    if dict(plan.DEPENDENCIES) != expected:
+        failures.add("midas_nx/plan.py", "DEPENDENCIES differs from the contracts' reference graph")
+    generated = ROOT / "packages" / "typescript" / "src" / "generated" / "references.ts"
+    if not generated.exists():
+        failures.add("references.ts", "npm's generated reference graph is missing; run npm run generate")
+        return
+    text = generated.read_text(encoding="utf-8")
+    npm = json.loads(text[text.index("= ") + 2 : text.rindex(" as const")])
+    if {k: frozenset(v) for k, v in npm.items()} != expected:
+        failures.add("references.ts", "npm's reference graph differs from the contracts; run npm run generate")
 
 
 def _python_resources() -> dict[str, Any]:
@@ -1259,6 +1334,7 @@ def main(argv: list[str]) -> int:
     check_variant_discriminators(contracts, failures)
     check_safety(contracts, failures)
     check_manual_source(contracts, failures)
+    reference_count = check_references(contracts, failures)
     check_tables(
         tables, {c['endpoint'] for _, c in contracts}, risks, verification, failures
     )
@@ -1267,6 +1343,7 @@ def main(argv: list[str]) -> int:
     if not skip_parity:
         parity = check_parity(contracts, failures)
         field_parity = check_field_parity(contracts, failures)
+        check_plan_parity(contracts, failures)
 
     crash_risk = sum(
         1
@@ -1301,6 +1378,7 @@ def main(argv: list[str]) -> int:
             f"result tables: {len(tables)} contracted, {table_types} TABLE_TYPE values, "
             f"{unresolved} unresolved manual contradiction(s)"
         )
+    print(f"references: {reference_count} field(s) name another table")
     print(
         f"omission safety of {len(fields)} fields: "
         + ", ".join(f"{count} {label}" for label, count in omission.items())

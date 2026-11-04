@@ -42,8 +42,8 @@ scoreboard.
   and `MVLDeu`, `MVLDbs` and `PHGE` round-trip on those models. The design-function harness ran end to end for the first time, and the TABLE
   `EXPORT_PATH` and REPORT files were inspected on the host, so those eight
   design endpoints are write-level now (live notes, 2026-10-24).
-- **2.10.7 is published on PyPI and npm** (2026-11-03): Python gains
-  `midas_nx.db.all_resources()`; npm republished unchanged. The npm
+- **2.10.8 is published on PyPI and npm** (2026-11-04): both gain the
+  legacy `/db/WIND` / `/db/SEIS` resources and `plan.order()`. The npm
   changelog's `Unreleased` is empty.
 - **Coverage: 402/402 implemented, 317 write / 85 read.** Of the 227 `/db`
   endpoints, 215 are write-level and 12 are not. Two of them, the legacy

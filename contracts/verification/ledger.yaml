@@ -6595,3 +6595,39 @@ records:
     /db/SEIS stored KBC2016 and EURO2004 records, updated by a PUT and removed by a per-id DELETE. Both are
     undocumented; the contracts were written from /info and this session (2026-11-04, "넣어주는게 맞음").
     A JP2004 probe crashed Gen. Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-11-04-2
+  endpoints:
+  - /db/ELEM
+  - /db/CONS
+  - /db/CNLD
+  - /db/BMLD
+  - /db/PRES
+  - /db/FRLS
+  - /db/ELNK
+  - /db/GRUP
+  - /db/LCOM-GEN
+  - /db/NODE
+  - /db/MATL
+  - /db/SECT
+  - /db/STLD
+  - /db/BNGR
+  date: '2026-11-04'
+  level: write
+  products:
+  - gen
+  - civil
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-11-04 (last author-confirmed Build 10/30/2026 on 2026-11-01)
+    civil: MIDAS Civil NX 2026 (v2.3), build not re-read on 2026-11-04 (last author-confirmed Build 10/31/2026 on 2026-11-01)
+  outcome: success
+  method: >-
+    On the author's request (2026-11-04, "순서대로 진행해줘. gen civil은 빈 문서야 언제든지 실행해도 됨"), on the machine
+    holding this checkout, which is also the NX host, on both products' empty documents: the fixture's base model
+    and group seeds, then each confirmed case's payload with one reference changed to a record that does not
+    exist, read back by id. Both products answered alike. A missing node is refused everywhere (an element and an
+    elastic link say so, a /db/CONS or /db/CNLD keyed by it answers {"message": ""}); an element's missing
+    material or section is stored as an orphan; a missing load case or group name is refused, except /db/ELNK's
+    BNGR_NAME and /db/GRUP's N_LIST/E_LIST entries, stored with the value dropped. Group-name targets were told
+    apart with one name existing in /db/BNGR and another in /db/LDGR. Per-id DELETE of a node removed the elements
+    on it, of a load case the nodal loads in it, and of a material or section left its elements in place.
+    Evidence in docs/live_verification_notes.md.

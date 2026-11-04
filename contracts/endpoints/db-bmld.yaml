@@ -20,6 +20,12 @@ surface:
 
 products: [civil, gen]
 
+recordKey:
+  kind: element_id
+  description: >-
+    The element the loads are on. An element that does not exist is refused
+    with an error naming it (both products, 2026-11-04).
+
 source:
   manual:
     status: documented
@@ -125,6 +131,14 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
+        references:
+          tables: [/db/STLD]
+          by: name
+          nameField: NAME
+          onMissing: refused
+          evidence: ledger-write-2026-11-04-2
+          note: >-
+            Answers Wrong Field.
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not by
         # naming a path
       - key: GROUP_NAME
@@ -139,6 +153,15 @@ fields:
           Omitted on a PUT that adds an entry to a record already carrying loads,
           the entry joins the first entry's load group, silently.
         provenance: live_verified
+        references:
+          tables: [/db/LDGR]
+          by: name
+          nameField: NAME
+          onMissing: refused
+          evidence: ledger-write-2026-11-04-2
+          note: >-
+            A load group: a /db/LDGR name is stored, a /db/BNGR name is refused
+            like a missing one (both products, 2026-11-04).
         provenanceNote: >-
           Name, type and default are the manual's; safeToOmit is the live finding
           (Gen NX 2026-10-27, Civil NX 2026-10-28). See risk db-items-put-inherits-first-entry.

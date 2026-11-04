@@ -141,6 +141,16 @@ fields:
         documentedOptional: false
         safeToOmit: unverified
         provenance: manual
+        references:
+          tables: [/db/STLD]
+          by: name
+          nameField: NAME
+          onMissing: refused
+          evidence: ledger-write-2026-11-04-2
+          note: >-
+            Gen answers Wrong Key in an error body; Civil answers {"message":
+            "Wrong Key"} with no error key, which MidasResultError does not raise
+            on (2026-11-04).
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not
         # by naming a path
       - key: GROUP_NAME
@@ -152,6 +162,15 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
+        references:
+          tables: [/db/LDGR]
+          by: name
+          nameField: NAME
+          onMissing: refused
+          evidence: ledger-write-2026-11-04-2
+          note: >-
+            A load group: a /db/LDGR name is stored, a /db/BNGR name is refused
+            like a missing one (both products, 2026-11-04).
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(3)', not
         # by naming a path
       - key: CMD

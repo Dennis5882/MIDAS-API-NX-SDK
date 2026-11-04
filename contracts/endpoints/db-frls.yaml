@@ -20,6 +20,12 @@ surface:
 
 products: [civil, gen]
 
+recordKey:
+  kind: element_id
+  description: >-
+    The element whose ends are released. An element that does not exist
+    answers {"message": ""} and stores nothing (both products, 2026-11-04).
+
 source:
   manual:
     status: documented
@@ -121,6 +127,16 @@ fields:
         documentedOptional: true
         safeToOmit: unverified
         provenance: manual
+        references:
+          tables: [/db/BNGR]
+          by: name
+          nameField: NAME
+          onMissing: refused
+          evidence: ledger-write-2026-11-04-2
+          note: >-
+            A boundary group, despite the description: a /db/BNGR name is stored
+            and read back, a /db/LDGR name answers Unknown Error (both products,
+            2026-11-04).
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not by
         # naming a path
       - key: bVALUE

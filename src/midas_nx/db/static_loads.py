@@ -848,10 +848,9 @@ class LegacyWindLoadPayload(TypedDict, total=False):
 class LegacyWindLoad(DbResource):
     ENDPOINT = "/db/WIND"
     NAME = "Wind Loads (legacy)"
-    #: Measured on Gen NX only (2026-11-04). Civil NX was not connected that
-    #: day, so this is "unchecked on Civil", not the confirmed 404 that
-    #: GEN_ONLY records - widen it once a Civil session answers.
-    PRODUCTS = frozenset({"gen"})
+    #: Gen-only: Civil NX 404s the route and /info, measured 2026-11-04
+    #: (Civil NX 2026 v2.3) - see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY
 
 
 class LegacySeismicLoadPayload(TypedDict, total=False):
@@ -887,7 +886,6 @@ class LegacySeismicLoadPayload(TypedDict, total=False):
 class LegacySeismicLoad(DbResource):
     ENDPOINT = "/db/SEIS"
     NAME = "Seismic Loads (legacy)"
-    #: Measured on Gen NX only (2026-11-04). Civil NX was not connected that
-    #: day, so this is "unchecked on Civil", not the confirmed 404 that
-    #: GEN_ONLY records - widen it once a Civil session answers.
-    PRODUCTS = frozenset({"gen"})
+    #: Gen-only: Civil NX 404s the route and /info, measured 2026-11-04
+    #: (Civil NX 2026 v2.3) - see db/base.py's GEN_ONLY docstring.
+    PRODUCTS = GEN_ONLY

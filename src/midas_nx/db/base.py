@@ -110,6 +110,11 @@ HYPER_S_ONLY = frozenset({"civil"})
 #: ``/db/POSP`` left this set on 2026-10-11: Civil NX Build 10/10/2026 answers
 #: its route and ``/info`` (with a Civil-specific record), and a round trip
 #: passed - see ``SoilProperty`` in ``db/static_loads.py``.
+#:
+#: The undocumented legacy ``/db/WIND`` and ``/db/SEIS`` joined it on
+#: 2026-11-04: Civil NX answered both the route and ``/info`` with a 404 the
+#: same day Gen NX wrote and read them (``LegacyWindLoad``,
+#: ``LegacySeismicLoad`` in ``db/static_loads.py``). One session, not two.
 GEN_ONLY = frozenset({"gen"})
 
 #: Not a constant — a note on the mirror-image finding. On 2026-07-29, a live

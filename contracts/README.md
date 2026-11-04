@@ -467,6 +467,29 @@ Likewise, `type: unstated` records a missing Value Type cell instead of guessing
 manual explicitly gives it there; otherwise the absence remains part of the
 contract.
 
+## `references`: a value that names another table's record
+
+A field's `references` says its value is the id (`by: id`) or the name
+(`by: name`, with `nameField`) of a record of `tables`, and `onMissing` says
+what the product did with a value naming no record: `refused`, `stored` as an
+orphan, `dropped` (the record stored without that value), or `unverified`.
+
+- **A description is not a source.** "Material No." names a concept, not a
+  table, and `/db/ELEM`'s `SECT` turned out to be a `/db/SECT` or a `/db/THIK`
+  record by element type. Every reference so far was measured live
+  (`ledger-write-2026-11-04-2`), so `evidence` cites that ledger record; a
+  measured `onMissing` must cite one.
+- **The graph is published.** `scripts/reference_graph.py` builds table ->
+  tables from the `references` and from `recordKey` (`node_id` and
+  `element_id` add an edge to `/db/NODE` and `/db/ELEM`). `validate_contracts.py`
+  fails on a reference to an uncontracted table, a name field the target does
+  not record, or a cycle, and when Python's `midas_nx.plan.DEPENDENCIES` or
+  npm's generated `referenceGraph` differs from it. Both SDKs' `plan.order()`
+  sort writes by it.
+- **`refused` is not one shape.** The same refusal arrives as an error naming
+  the record, as `Wrong Field` / `Not Found Key` / `Unknown Error`, or as
+  `{"message": ""}` with no error key; say which in `note`.
+
 ## Risk and mitigation are separate axes
 
 `risk` describes the endpoint. `mitigation` describes what the SDKs do about it.

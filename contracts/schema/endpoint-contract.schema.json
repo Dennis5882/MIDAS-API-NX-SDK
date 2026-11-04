@@ -1090,6 +1090,46 @@
         },
         "provenanceNote": {
           "type": "string"
+        },
+        "references": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tables", "by", "onMissing", "evidence"],
+          "description": "The value names a record of another table. Only from a permitted source: a manual line that names the table, or a live call that sent a value naming no record and recorded what the product did - never read off an SDK, and never inferred from a description like 'Material No.' alone.",
+          "properties": {
+            "tables": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"type": "string", "pattern": "^/db/[A-Z0-9-]+$"},
+              "description": "The table(s) the value names a record of. More than one means one of them, decided by the record itself (e.g. an element's section is a /db/SECT or a /db/THIK record by element type); say how in `note`."
+            },
+            "by": {
+              "enum": ["id", "name"],
+              "description": "id = the value is the target record's Assign key. name = it is matched against the target's `nameField`."
+            },
+            "nameField": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_]+$",
+              "description": "Required when `by` is name: the target field holding the name (e.g. /db/STLD's NAME)."
+            },
+            "each": {
+              "type": "boolean",
+              "description": "True when the field is an array and each element is a reference."
+            },
+            "onMissing": {
+              "enum": ["refused", "stored", "dropped", "unverified"],
+              "description": "What the product did with a value naming no record. refused = the write failed and stored nothing (note whether it said so, or answered {\"message\": \"\"}). stored = the record was stored with the value, an orphan. dropped = the record was stored without that value, silently. unverified = not measured; a reference from the manual alone."
+            },
+            "evidence": {
+              "type": "string",
+              "description": "A contracts/verification/ledger.yaml record id, or the manual line that names the table."
+            },
+            "note": {"type": "string"}
+          },
+          "allOf": [
+            {"if": {"properties": {"by": {"const": "name"}}}, "then": {"required": ["nameField"]}}
+          ]
         }
       },
       "allOf": [

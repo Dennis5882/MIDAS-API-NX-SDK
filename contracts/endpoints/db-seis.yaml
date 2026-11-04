@@ -18,8 +18,8 @@ surface:
 
 products: [gen]
 productsEvidence: >-
-  Measured on Gen NX only, 2026-11-04. Civil NX was not connected that day, so
-  Civil is unchecked rather than refused; widen once a Civil session answers.
+  Civil NX answered both the route and GET /info/db/SEIS with a 404 on
+  2026-11-04, the same day Gen NX wrote and read them.
 
 recordKey:
   kind: record_id
