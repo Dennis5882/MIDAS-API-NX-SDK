@@ -6,6 +6,8 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.10.10 - 2026-11-05
+
 ### Changed
 
 - `plan.validate` reads an element's `SECT` from the table its `TYPE` names:
