@@ -110,6 +110,7 @@ fields:
       tables: [/db/MATL]
       by: id
       onMissing: stored
+      onTargetDelete: orphaned
       evidence: ledger-write-2026-11-04-2
       note: >-
         Measured 2026-11-04 on Gen and Civil: an element naming material 99
@@ -128,12 +129,14 @@ fields:
       tables: [/db/SECT, /db/THIK]
       by: id
       onMissing: stored
+      onTargetDelete: orphaned
       evidence: ledger-write-2026-11-04-2
       note: >-
         A /db/SECT record for line elements (BEAM, TRUSS, ...), a /db/THIK
         record for PLATE and WALL. Measured 2026-11-04 on Gen and Civil: a
         missing section or thickness is stored as an orphan for both a BEAM and
-        a PLATE.
+        a PLATE. onTargetDelete was measured by deleting a /db/SECT record in use;
+        a /db/THIK one was not tried.
   - key: NODE
     description: >-
       Node No.
@@ -150,6 +153,7 @@ fields:
       by: id
       each: true
       onMissing: refused
+      onTargetDelete: deleted
       evidence: ledger-write-2026-11-04-2
       note: >-
         Refused with an error naming the node and its position. A per-id DELETE

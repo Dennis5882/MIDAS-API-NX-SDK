@@ -117,6 +117,10 @@ operations:
     response:
       wrapper: message
 
+keyPolicy:
+  gen: honoured
+  civil: honoured
+  evidence: ledger-write-2026-11-05
 fields:
   - key: mX
     description: Translational Mass - GCS X

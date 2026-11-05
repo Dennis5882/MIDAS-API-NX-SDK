@@ -49,7 +49,7 @@ from typing import Any
 
 from function_endpoints import function_endpoints
 from generate_typescript_sdk import _field_path
-from reference_graph import reference_graph
+from reference_graph import key_policies, reference_fields, reference_graph
 
 ROOT = Path(__file__).resolve().parent.parent
 CONTRACTS = ROOT / "contracts"
@@ -362,8 +362,9 @@ def check_manual_source(contracts: list[tuple[Path, dict]], failures: Failures) 
 def check_references(contracts: list[tuple[Path, dict]], failures: Failures) -> int:
     """A reference names a contracted table, by a field it has, and the graph is acyclic.
 
-    A measured reference (`onMissing` other than unverified) must cite a ledger
-    record, because that is the only place a live claim is stated.
+    A measured reference (`onMissing` other than unverified, or any
+    `onTargetDelete`) must cite a ledger record, because that is the only place
+    a live claim is stated.
     """
     by_endpoint = {c["endpoint"]: c for _, c in contracts}
     ledger_ids = {r["id"] for r in _load_yaml(VERIFICATION_DIR / "ledger.yaml")["records"]}
@@ -387,7 +388,8 @@ def check_references(contracts: list[tuple[Path, dict]], failures: Failures) -> 
                             f"field {field['key']!r} references {table} by {ref['nameField']!r}, "
                             f"which that contract does not record",
                         )
-            if ref["onMissing"] != "unverified" and ref["evidence"] not in ledger_ids:
+            measured = ref["onMissing"] != "unverified" or "onTargetDelete" in ref
+            if measured and ref["evidence"] not in ledger_ids:
                 failures.add(
                     path.name,
                     f"field {field['key']!r}: a measured reference must cite a ledger record, "
@@ -415,6 +417,31 @@ def check_references(contracts: list[tuple[Path, dict]], failures: Failures) -> 
     return count
 
 
+def check_key_policy(contracts: list[tuple[Path, dict]], failures: Failures) -> int:
+    """A key policy cites a ledger record that covered this endpoint on exactly
+    the products it states, and only products the contract serves."""
+    records = {r["id"]: r for r in _load_yaml(VERIFICATION_DIR / "ledger.yaml")["records"]}
+    count = 0
+    for path, contract in contracts:
+        policy = contract.get("keyPolicy")
+        if not policy:
+            continue
+        count += 1
+        stated = {p for p in ("gen", "civil") if p in policy}
+        record = records.get(policy["evidence"])
+        if record is None:
+            failures.add(path.name, f"keyPolicy cites {policy['evidence']!r}, which is no ledger record")
+            continue
+        if contract["endpoint"] not in record.get("endpoints", []):
+            failures.add(path.name, f"keyPolicy cites {record['id']}, which does not list {contract['endpoint']}")
+        if stated != set(record.get("products", [])):
+            failures.add(path.name, f"keyPolicy states {sorted(stated)}, but {record['id']} covered {record.get('products')}")
+        extra = stated - set(contract.get("products", []))
+        if extra:
+            failures.add(path.name, f"keyPolicy states {sorted(extra)}, which the contract's products exclude")
+    return count
+
+
 def check_plan_parity(contracts: list[tuple[Path, dict]], failures: Failures) -> None:
     """Python's `midas_nx.plan.DEPENDENCIES` and npm's generated `referenceGraph`
     are the contracts' table graph, so the two SDKs order writes alike."""
@@ -428,9 +455,39 @@ def check_plan_parity(contracts: list[tuple[Path, dict]], failures: Failures) ->
         failures.add("references.ts", "npm's generated reference graph is missing; run npm run generate")
         return
     text = generated.read_text(encoding="utf-8")
-    npm = json.loads(text[text.index("= ") + 2 : text.rindex(" as const")])
-    if {k: frozenset(v) for k, v in npm.items()} != expected:
+
+    def exported(name: str) -> Any:
+        start = text.index(f"export const {name}")
+        start = text.index("= ", start) + 2
+        return json.loads(text[start : text.index(" as const;", start)])
+
+    if {k: frozenset(v) for k, v in exported("referenceGraph").items()} != expected:
         failures.add("references.ts", "npm's reference graph differs from the contracts; run npm run generate")
+
+    fields = reference_fields(c for _, c in contracts)
+    python_rows = [
+        {
+            "table": ref.table,
+            "field": ref.field,
+            "targets": list(ref.targets),
+            "by": ref.by,
+            **({"nameField": ref.name_field} if ref.name_field else {}),
+            "each": ref.each,
+            "onMissing": ref.on_missing,
+            **({"onTargetDelete": ref.on_target_delete} if ref.on_target_delete else {}),
+        }
+        for ref in plan.REFERENCES
+    ]
+    if python_rows != fields:
+        failures.add("midas_nx/plan.py", "REFERENCES differs from the contracts' field references")
+    if exported("referenceFields") != fields:
+        failures.add("references.ts", "npm's referenceFields differs from the contracts; run npm run generate")
+
+    policies = key_policies(c for _, c in contracts)
+    if {k: dict(v) for k, v in plan.KEY_POLICY.items()} != policies:
+        failures.add("midas_nx/plan.py", "KEY_POLICY differs from the contracts' keyPolicy")
+    if exported("keyPolicies") != policies:
+        failures.add("references.ts", "npm's keyPolicies differs from the contracts; run npm run generate")
 
 
 def _python_resources() -> dict[str, Any]:
@@ -1335,6 +1392,7 @@ def main(argv: list[str]) -> int:
     check_safety(contracts, failures)
     check_manual_source(contracts, failures)
     reference_count = check_references(contracts, failures)
+    key_policy_count = check_key_policy(contracts, failures)
     check_tables(
         tables, {c['endpoint'] for _, c in contracts}, risks, verification, failures
     )
@@ -1378,7 +1436,7 @@ def main(argv: list[str]) -> int:
             f"result tables: {len(tables)} contracted, {table_types} TABLE_TYPE values, "
             f"{unresolved} unresolved manual contradiction(s)"
         )
-    print(f"references: {reference_count} field(s) name another table")
+    print(f"references: {reference_count} field(s) name another table; {key_policy_count} table(s) record where a POST key lands")
     print(
         f"omission safety of {len(fields)} fields: "
         + ", ".join(f"{count} {label}" for label, count in omission.items())

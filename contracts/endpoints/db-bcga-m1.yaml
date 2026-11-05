@@ -86,6 +86,9 @@ operations:
       wrapper: table
       keyStability: stable
 
+keyPolicy:
+  civil: assigned
+  evidence: ledger-write-2026-11-05-civil
 fields:
   - key: BC_ASSIGN
     description: >-

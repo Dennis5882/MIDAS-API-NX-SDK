@@ -90,6 +90,9 @@ operations:
       wrapper: table
       keyStability: stable
 
+keyPolicy:
+  gen: honoured
+  evidence: ledger-write-2026-11-05-gen
 fields:
   - key: COMMON
     description: >-

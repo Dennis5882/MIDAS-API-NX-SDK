@@ -90,6 +90,9 @@ operations:
       wrapper: table
       keyStability: stable
 
+keyPolicy:
+  gen: assigned
+  evidence: ledger-write-2026-11-05-gen
 fields:
   - key: FINAL_STAGE
     description: >-

@@ -152,6 +152,19 @@
         }
       }
     },
+    "keyPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence"],
+      "minProperties": 2,
+      "description": "Where a POST lands when its Assign key is not the next free one, measured per product. honoured = under the requested key. assigned = the product picked the key itself (seen as one past the highest existing key), so a caller must read the table back to learn it. A product left out was not measured; a POST the product refused at that key records nothing here.",
+      "properties": {
+        "gen": {"enum": ["honoured", "assigned"]},
+        "civil": {"enum": ["honoured", "assigned"]},
+        "evidence": {"type": "string", "description": "A contracts/verification/ledger.yaml record id."},
+        "note": {"type": "string"}
+      }
+    },
     "source": {
       "type": "object",
       "additionalProperties": false,
@@ -1120,6 +1133,10 @@
             "onMissing": {
               "enum": ["refused", "stored", "dropped", "unverified"],
               "description": "What the product did with a value naming no record. refused = the write failed and stored nothing (note whether it said so, or answered {\"message\": \"\"}). stored = the record was stored with the value, an orphan. dropped = the record was stored without that value, silently. unverified = not measured; a reference from the manual alone."
+            },
+            "onTargetDelete": {
+              "enum": ["deleted", "orphaned"],
+              "description": "What a per-id DELETE of the named record did to this record, measured live. deleted = this record (or, inside ITEMS, the entry naming it) went with it. orphaned = it stayed, naming a record that no longer exists. Absent = not measured; never inferred. A measured value cites `evidence`, which must then be a ledger record."
             },
             "evidence": {
               "type": "string",

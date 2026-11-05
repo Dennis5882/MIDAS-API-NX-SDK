@@ -42,9 +42,9 @@ scoreboard.
   and `MVLDeu`, `MVLDbs` and `PHGE` round-trip on those models. The design-function harness ran end to end for the first time, and the TABLE
   `EXPORT_PATH` and REPORT files were inspected on the host, so those eight
   design endpoints are write-level now (live notes, 2026-10-24).
-- **2.10.8 is published on PyPI and npm** (2026-11-04): both gain the
-  legacy `/db/WIND` / `/db/SEIS` resources and `plan.order()`. The npm
-  changelog's `Unreleased` is empty.
+- **2.10.9 is published on PyPI and npm** (2026-11-05): both gain
+  `plan.references()`, `plan.validate()` and a per-product POST key policy
+  measured on 120 tables. The npm changelog's `Unreleased` is empty.
 - **Coverage: 402/402 implemented, 317 write / 85 read.** Of the 227 `/db`
   endpoints, 215 are write-level and 12 are not. Two of them, the legacy
   `/db/WIND` and `/db/SEIS`, have no manual section (2026-11-04).

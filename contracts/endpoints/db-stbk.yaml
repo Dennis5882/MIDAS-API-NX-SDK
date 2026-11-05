@@ -86,6 +86,10 @@ operations:
       wrapper: table
       keyStability: stable
 
+keyPolicy:
+  gen: honoured
+  civil: honoured
+  evidence: ledger-write-2026-11-05
 fields:
   - key: NODE1
     description: >-

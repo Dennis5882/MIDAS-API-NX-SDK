@@ -107,6 +107,13 @@ operations:
       wrapper: table
       keyStability: stable
 
+keyPolicy:
+  gen: assigned
+  civil: honoured
+  evidence: ledger-write-2026-11-05
+  note: >-
+    The two products differ: measured the same day on each product's own empty
+    document with the same payload.
 fields:
   - key: NAME
     description: >-

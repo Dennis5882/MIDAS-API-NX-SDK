@@ -115,7 +115,10 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
     table, so these are functions over one generic `get_table()`, not a resource per table).
   - `design/` — design-code chapters (`rc_kds/`, `steel_kds.py`, `src_aiksrc2k.py`).
   - `plan.py` — offline ordering of `/db/*` writes (`order()`), from the table graph the contracts'
-    `references` record; held equal to them and to npm's `src/plan.ts` by `validate_contracts.py`.
+    `references` record; `validate()` reports the references a plan leaves missing or deletes out
+    from under a record, and `key_policy()` says where a POST key lands per product. Its
+    `DEPENDENCIES`, `REFERENCES` and `KEY_POLICY` are held equal to the contracts and to npm's
+    `src/plan.ts` / `src/generated/references.ts` by `validate_contracts.py`.
 - `packages/typescript/` — the npm package. Hand-written runtime adapters live directly under `src/`;
   generated resources, operations, tables, and payload types live under `src/generated/`.
   `package.json` is the npm version source; `package-lock.json` must change with it.

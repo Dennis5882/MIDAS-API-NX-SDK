@@ -6,6 +6,25 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.10.9 - 2026-11-05
+
+Added only; nothing existing changed behaviour or type. Python gains the same
+three functions in `midas_nx.plan` (`references`, `validate`, `key_policy`).
+
+### Added
+
+- `plan.references(table?)`: every field that names another table's record,
+  with what the product does when that record is missing (`onMissing`) and,
+  where measured, when it is deleted (`onTargetDelete`). Backed by the new
+  generated `referenceFields` and its `ReferenceField` type.
+- `plan.validate(operations, existing?)`: reports, without throwing, each
+  reference a list of writes leaves missing - refused, stored as an orphan, or
+  dropped silently, as measured - and each record a DELETE in the list
+  removes or orphans. Returns `PlanFinding` objects. Offline; nothing is sent.
+- `plan.keyPolicy(endpoint, product)`: whether a POST lands under the
+  requested key (`"honoured"`) or the product picks it (`"assigned"`), for the
+  120 tables measured on 2026-11-05, from the new generated `keyPolicies`.
+
 ## 2.10.8 - 2026-11-04
 
 ### Added

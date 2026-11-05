@@ -94,6 +94,13 @@ operations:
       The documented bare-endpoint DELETE ignores the ids in its Assign body
       and empties the table, as observed in the shared live DELETE finding.
 
+keyPolicy:
+  gen: assigned
+  civil: honoured
+  evidence: ledger-write-2026-11-05
+  note: >-
+    The two products differ: measured the same day on each product's own empty
+    document with the same payload.
 fields:
   - key: NAME
     description: General spring name.

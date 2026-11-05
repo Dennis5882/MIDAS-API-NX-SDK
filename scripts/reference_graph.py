@@ -23,6 +23,52 @@ def _fields(fields: list[dict]) -> Iterable[dict]:
         yield from _fields(field.get("properties") or [])
 
 
+def reference_fields(contracts: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    """One row per field `references`, as both SDKs publish it at run time.
+
+    `field` is the path inside one record: `ITEMS[].LCNAME` for a field of each
+    `ITEMS` entry. Only behaviour is kept - `note` and `evidence` stay in the
+    contract. Sorted by table, then field.
+    """
+    rows: list[dict[str, Any]] = []
+
+    def walk(endpoint: str, fields: list[dict], prefix: str) -> None:
+        for field in fields:
+            path = f"{prefix}{field['key']}"
+            ref = field.get("references")
+            if ref:
+                row: dict[str, Any] = {
+                    "table": endpoint,
+                    "field": path,
+                    "targets": list(ref["tables"]),
+                    "by": ref["by"],
+                }
+                if "nameField" in ref:
+                    row["nameField"] = ref["nameField"]
+                row["each"] = bool(ref.get("each"))
+                row["onMissing"] = ref["onMissing"]
+                if "onTargetDelete" in ref:
+                    row["onTargetDelete"] = ref["onTargetDelete"]
+                rows.append(row)
+            nested = field.get("properties") or []
+            if nested:
+                walk(endpoint, nested, path + ("[]." if field.get("type") == "array" else "."))
+
+    for contract in contracts:
+        walk(contract["endpoint"], contract.get("fields", []), "")
+    rows.sort(key=lambda row: (row["table"], row["field"]))
+    return rows
+
+
+def key_policies(contracts: Iterable[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """Endpoint -> product -> "honoured" or "assigned", from the contracts' `keyPolicy`."""
+    return {
+        c["endpoint"]: {p: c["keyPolicy"][p] for p in ("gen", "civil") if p in c["keyPolicy"]}
+        for c in sorted(contracts, key=lambda c: c["endpoint"])
+        if c.get("keyPolicy")
+    }
+
+
 def reference_graph(contracts: Iterable[dict[str, Any]]) -> dict[str, set[str]]:
     """Table -> the tables its records name. Only tables with an edge appear."""
     graph: dict[str, set[str]] = {}

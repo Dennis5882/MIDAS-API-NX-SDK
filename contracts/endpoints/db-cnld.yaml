@@ -98,6 +98,10 @@ operations:
       wrapper: table
       keyStability: stable
 
+keyPolicy:
+  gen: honoured
+  civil: honoured
+  evidence: ledger-write-2026-11-05
 fields:
   - key: ITEMS
     description: >-
@@ -136,6 +140,7 @@ fields:
           by: name
           nameField: NAME
           onMissing: refused
+          onTargetDelete: deleted
           evidence: ledger-write-2026-11-04-2
           note: >-
             Answers Not Found Key.

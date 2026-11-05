@@ -47,3 +47,661 @@ export const referenceGraph: Readonly<Record<string, readonly string[]>> = {
     "/db/STLD"
   ]
 } as const;
+
+/** One field that names a record of another table, and what the product
+ * does when that record is missing or deleted (measured; see the contract). */
+export interface ReferenceField {
+  /** The table whose records carry the field, e.g. "/db/ELEM". */
+  readonly table: string;
+  /** Path inside one record; `ITEMS[].LCNAME` is a field of each ITEMS entry. */
+  readonly field: string;
+  /** The table(s) a value names a record of. */
+  readonly targets: readonly string[];
+  /** id = the target's Assign key; name = the target's `nameField`. */
+  readonly by: "id" | "name";
+  readonly nameField?: string;
+  /** The field is an array and each element is a reference. */
+  readonly each: boolean;
+  /** refused: the write fails. stored: kept as an orphan. dropped: kept
+   * without the value, silently. unverified: not measured. */
+  readonly onMissing: "refused" | "stored" | "dropped" | "unverified";
+  /** What a per-id DELETE of the target did to this record; absent = not measured. */
+  readonly onTargetDelete?: "deleted" | "orphaned";
+}
+
+export const referenceFields: readonly ReferenceField[] = [
+  {
+    "table": "/db/BMLD",
+    "field": "ITEMS[].GROUP_NAME",
+    "targets": [
+      "/db/LDGR"
+    ],
+    "by": "name",
+    "nameField": "NAME",
+    "each": false,
+    "onMissing": "refused"
+  },
+  {
+    "table": "/db/BMLD",
+    "field": "ITEMS[].LCNAME",
+    "targets": [
+      "/db/STLD"
+    ],
+    "by": "name",
+    "nameField": "NAME",
+    "each": false,
+    "onMissing": "refused"
+  },
+  {
+    "table": "/db/CNLD",
+    "field": "ITEMS[].GROUP_NAME",
+    "targets": [
+      "/db/LDGR"
+    ],
+    "by": "name",
+    "nameField": "NAME",
+    "each": false,
+    "onMissing": "refused"
+  },
+  {
+    "table": "/db/CNLD",
+    "field": "ITEMS[].LCNAME",
+    "targets": [
+      "/db/STLD"
+    ],
+    "by": "name",
+    "nameField": "NAME",
+    "each": false,
+    "onMissing": "refused",
+    "onTargetDelete": "deleted"
+  },
+  {
+    "table": "/db/CONS",
+    "field": "ITEMS[].GROUP_NAME",
+    "targets": [
+      "/db/BNGR"
+    ],
+    "by": "name",
+    "nameField": "NAME",
+    "each": false,
+    "onMissing": "refused"
+  },
+  {
+    "table": "/db/ELEM",
+    "field": "MATL",
+    "targets": [
+      "/db/MATL"
+    ],
+    "by": "id",
+    "each": false,
+    "onMissing": "stored",
+    "onTargetDelete": "orphaned"
+  },
+  {
+    "table": "/db/ELEM",
+    "field": "NODE",
+    "targets": [
+      "/db/NODE"
+    ],
+    "by": "id",
+    "each": true,
+    "onMissing": "refused",
+    "onTargetDelete": "deleted"
+  },
+  {
+    "table": "/db/ELEM",
+    "field": "SECT",
+    "targets": [
+      "/db/SECT",
+      "/db/THIK"
+    ],
+    "by": "id",
+    "each": false,
+    "onMissing": "stored",
+    "onTargetDelete": "orphaned"
+  },
+  {
+    "table": "/db/ELNK",
+    "field": "BNGR_NAME",
+    "targets": [
+      "/db/BNGR"
+    ],
+    "by": "name",
+    "nameField": "NAME",
+    "each": false,
+    "onMissing": "dropped"
+  },
+  {
+    "table": "/db/ELNK",
+    "field": "NODE",
+    "targets": [
+      "/db/NODE"
+    ],
+    "by": "id",
+    "each": true,
+    "onMissing": "refused"
+  },
+  {
+    "table": "/db/FRLS",
+    "field": "ITEMS[].GROUP_NAME",
+    "targets": [
+      "/db/BNGR"
+    ],
+    "by": "name",
+    "nameField": "NAME",
+    "each": false,
+    "onMissing": "refused"
+  },
+  {
+    "table": "/db/GRUP",
+    "field": "E_LIST",
+    "targets": [
+      "/db/ELEM"
+    ],
+    "by": "id",
+    "each": true,
+    "onMissing": "dropped"
+  },
+  {
+    "table": "/db/GRUP",
+    "field": "N_LIST",
+    "targets": [
+      "/db/NODE"
+    ],
+    "by": "id",
+    "each": true,
+    "onMissing": "dropped"
+  },
+  {
+    "table": "/db/LCOM-GEN",
+    "field": "vCOMB[].LCNAME",
+    "targets": [
+      "/db/STLD"
+    ],
+    "by": "name",
+    "nameField": "NAME",
+    "each": false,
+    "onMissing": "refused"
+  },
+  {
+    "table": "/db/PRES",
+    "field": "ITEMS[].GROUP_NAME",
+    "targets": [
+      "/db/LDGR"
+    ],
+    "by": "name",
+    "nameField": "NAME",
+    "each": false,
+    "onMissing": "refused"
+  },
+  {
+    "table": "/db/PRES",
+    "field": "ITEMS[].LCNAME",
+    "targets": [
+      "/db/STLD"
+    ],
+    "by": "name",
+    "nameField": "NAME",
+    "each": false,
+    "onMissing": "refused"
+  }
+] as const;
+
+/** Where a POST lands when its Assign key is not the next free one, per product:
+ * honoured = under the requested key; assigned = the product picks the key (one past
+ * the highest), so read the table back. A table or product absent = not measured. */
+export const keyPolicies: Readonly<Record<string, Readonly<{ gen?: "honoured" | "assigned"; civil?: "honoured" | "assigned" }>>> = {
+  "/DESIGN/RC/KDS-41-20-2022/BEMW": {
+    "gen": "honoured"
+  },
+  "/DESIGN/RC/KDS-41-20-2022/WMAK": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/DESIGN/STEEL/KDS-41-30-2022/SLRS": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/BCGA-M1": {
+    "civil": "assigned"
+  },
+  "/db/BCGD-M1": {
+    "civil": "honoured"
+  },
+  "/db/BNGR": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/CAMB": {
+    "civil": "assigned"
+  },
+  "/db/CCFC": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/CGLP": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/CJFG": {
+    "civil": "assigned"
+  },
+  "/db/CLDR": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/CLWP": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/CMCS": {
+    "civil": "honoured"
+  },
+  "/db/CNLD": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/CONS": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/CRGR": {
+    "civil": "assigned"
+  },
+  "/db/CUTL": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/EFCT": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/ELNK": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/EPMT": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/ETFC": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/EXLD": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/FBLD": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/FIBR": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/FIMP": {
+    "gen": "assigned",
+    "civil": "honoured"
+  },
+  "/db/GCMB": {
+    "civil": "assigned"
+  },
+  "/db/GRDP": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/GRUP": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/GSBG": {
+    "civil": "honoured"
+  },
+  "/db/GSPR": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/GSTP": {
+    "gen": "assigned",
+    "civil": "honoured"
+  },
+  "/db/HHCT": {
+    "gen": "assigned"
+  },
+  "/db/HSFC": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/HSPT": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/IEHC": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/IELC": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/INMF": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/LCOM-CONC": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/LCOM-GEN": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/LCOM-SEISMIC": {
+    "gen": "honoured"
+  },
+  "/db/LCOM-SRC": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/LCOM-STEEL": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/LCOM-STLCOMP": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/LDGR": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/LLANch": {
+    "civil": "honoured"
+  },
+  "/db/LLANid": {
+    "civil": "honoured"
+  },
+  "/db/LLANop": {
+    "civil": "honoured"
+  },
+  "/db/LLANtr": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/LTOM": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/MADO": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/MEMB": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/MLFC": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/MLSP": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/MLSR": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/MVCT": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/MVCTbs": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/MVCTid": {
+    "civil": "assigned"
+  },
+  "/db/MVCTtr": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/MVHLtr": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/MVLDch": {
+    "civil": "assigned"
+  },
+  "/db/MVLDeu": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/MVLDid": {
+    "civil": "assigned"
+  },
+  "/db/MVLDtr": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/NBOF": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/NLCT": {
+    "gen": "assigned"
+  },
+  "/db/NLLP": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/NLNK": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/NLNK-M1": {
+    "civil": "honoured"
+  },
+  "/db/NMAS": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/NODE": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/NPLN": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/NSPR": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/NTMP": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/PJCF": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/PNLA": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/PNLD": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/POGD": {
+    "civil": "assigned"
+  },
+  "/db/POLC": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/POLC-M1": {
+    "civil": "honoured"
+  },
+  "/db/POSL": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/POSP": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/PSLT": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/SBDO": {
+    "civil": "honoured"
+  },
+  "/db/SDHY": {
+    "gen": "honoured"
+  },
+  "/db/SDIS": {
+    "gen": "honoured"
+  },
+  "/db/SDSP": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/SDST": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/SDVE": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/SDVI": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/SKEW": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/SLAN": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/SLANch": {
+    "civil": "assigned"
+  },
+  "/db/SLANop": {
+    "civil": "assigned"
+  },
+  "/db/SMCT": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/SMLC": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/SMPT": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/SPAN": {
+    "civil": "assigned"
+  },
+  "/db/SPFC": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/SPLC": {
+    "gen": "assigned",
+    "civil": "honoured"
+  },
+  "/db/STAG": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/STBK": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/STLD": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/STMP": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/TDGR": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/TDME": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/TDMF": {
+    "gen": "assigned",
+    "civil": "honoured"
+  },
+  "/db/TDMT": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/TDNT": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/THFC": {
+    "gen": "assigned",
+    "civil": "honoured"
+  },
+  "/db/THGC": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/THIK": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/THIS": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/THMS": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/THNL": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/THSL": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/TSGR": {
+    "gen": "assigned",
+    "civil": "assigned"
+  },
+  "/db/ULFC": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/VBEM": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/VSEC": {
+    "gen": "honoured",
+    "civil": "honoured"
+  },
+  "/db/WMAK": {
+    "gen": "honoured",
+    "civil": "honoured"
+  }
+} as const;

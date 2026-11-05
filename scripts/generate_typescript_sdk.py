@@ -2463,6 +2463,36 @@ def _contract_reference_graph() -> dict[str, list[str]]:
     return {table: sorted(graph[table]) for table in sorted(graph)}
 
 
+def _contract_key_policies() -> dict[str, dict[str, str]]:
+    """Endpoint -> product -> honoured/assigned, from the contracts' `keyPolicy`."""
+    import sys  # noqa: PLC0415
+
+    import yaml  # noqa: PLC0415
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from reference_graph import key_policies  # noqa: PLC0415
+
+    return key_policies(
+        yaml.safe_load(path.read_text(encoding="utf-8"))
+        for path in sorted((ROOT / "contracts" / "endpoints").glob("*.yaml"))
+    )
+
+
+def _contract_reference_fields() -> list[dict]:
+    """The field rows `scripts/reference_graph.py` reads from the contracts."""
+    import sys  # noqa: PLC0415
+
+    import yaml  # noqa: PLC0415
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from reference_graph import reference_fields  # noqa: PLC0415
+
+    return reference_fields(
+        yaml.safe_load(path.read_text(encoding="utf-8"))
+        for path in sorted((ROOT / "contracts" / "endpoints").glob("*.yaml"))
+    )
+
+
 def main() -> None:
     modules = _source_modules()
     resources = _load_resources(modules)
@@ -2608,6 +2638,38 @@ def main() -> None:
             "",
             "export const referenceGraph: Readonly<Record<string, readonly string[]>> = "
             + json.dumps(_contract_reference_graph(), indent=2)
+            + " as const;",
+            "",
+            "/** One field that names a record of another table, and what the product",
+            " * does when that record is missing or deleted (measured; see the contract). */",
+            "export interface ReferenceField {",
+            "  /** The table whose records carry the field, e.g. \"/db/ELEM\". */",
+            "  readonly table: string;",
+            "  /** Path inside one record; `ITEMS[].LCNAME` is a field of each ITEMS entry. */",
+            "  readonly field: string;",
+            "  /** The table(s) a value names a record of. */",
+            "  readonly targets: readonly string[];",
+            "  /** id = the target's Assign key; name = the target's `nameField`. */",
+            "  readonly by: \"id\" | \"name\";",
+            "  readonly nameField?: string;",
+            "  /** The field is an array and each element is a reference. */",
+            "  readonly each: boolean;",
+            "  /** refused: the write fails. stored: kept as an orphan. dropped: kept",
+            "   * without the value, silently. unverified: not measured. */",
+            "  readonly onMissing: \"refused\" | \"stored\" | \"dropped\" | \"unverified\";",
+            "  /** What a per-id DELETE of the target did to this record; absent = not measured. */",
+            "  readonly onTargetDelete?: \"deleted\" | \"orphaned\";",
+            "}",
+            "",
+            "export const referenceFields: readonly ReferenceField[] = "
+            + json.dumps(_contract_reference_fields(), indent=2)
+            + " as const;",
+            "",
+            "/** Where a POST lands when its Assign key is not the next free one, per product:",
+            " * honoured = under the requested key; assigned = the product picks the key (one past",
+            " * the highest), so read the table back. A table or product absent = not measured. */",
+            "export const keyPolicies: Readonly<Record<string, Readonly<{ gen?: \"honoured\" | \"assigned\"; civil?: \"honoured\" | \"assigned\" }>>> = "
+            + json.dumps(_contract_key_policies(), indent=2)
             + " as const;",
             "",
         ]

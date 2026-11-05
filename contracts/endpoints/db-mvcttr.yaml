@@ -86,6 +86,10 @@ operations:
       wrapper: table
       keyStability: stable
 
+keyPolicy:
+  gen: assigned
+  civil: assigned
+  evidence: ledger-write-2026-11-05
 fields:
   - key: LOAD_POINT_SEL
     description: >-

@@ -84,6 +84,9 @@ operations:
       The documented bare-endpoint DELETE form ignores ids and empties the
       table; use the per-id route for a selected case.
 
+keyPolicy:
+  civil: assigned
+  evidence: ledger-write-2026-11-05-civil
 fields:
   - key: LCNAME
     description: Load case name.

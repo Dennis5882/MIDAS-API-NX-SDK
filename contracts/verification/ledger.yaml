@@ -6631,3 +6631,170 @@ records:
     apart with one name existing in /db/BNGR and another in /db/LDGR. Per-id DELETE of a node removed the elements
     on it, of a load case the nodal loads in it, and of a material or section left its elements in place.
     Evidence in docs/live_verification_notes.md.
+- id: ledger-write-2026-11-05
+  endpoints:
+  - /DESIGN/RC/KDS-41-20-2022/WMAK
+  - /DESIGN/STEEL/KDS-41-30-2022/SLRS
+  - /db/BNGR
+  - /db/CCFC
+  - /db/CGLP
+  - /db/CLDR
+  - /db/CLWP
+  - /db/CNLD
+  - /db/CONS
+  - /db/CUTL
+  - /db/EFCT
+  - /db/ELNK
+  - /db/EPMT
+  - /db/ETFC
+  - /db/EXLD
+  - /db/FBLD
+  - /db/FIBR
+  - /db/FIMP
+  - /db/GRDP
+  - /db/GRUP
+  - /db/GSPR
+  - /db/GSTP
+  - /db/HSFC
+  - /db/HSPT
+  - /db/IEHC
+  - /db/IELC
+  - /db/INMF
+  - /db/LCOM-CONC
+  - /db/LCOM-GEN
+  - /db/LCOM-SRC
+  - /db/LCOM-STEEL
+  - /db/LCOM-STLCOMP
+  - /db/LDGR
+  - /db/LLANtr
+  - /db/LTOM
+  - /db/MADO
+  - /db/MEMB
+  - /db/MLFC
+  - /db/MLSP
+  - /db/MLSR
+  - /db/MVCT
+  - /db/MVCTbs
+  - /db/MVCTtr
+  - /db/MVHLtr
+  - /db/MVLDeu
+  - /db/MVLDtr
+  - /db/NBOF
+  - /db/NLLP
+  - /db/NLNK
+  - /db/NMAS
+  - /db/NODE
+  - /db/NPLN
+  - /db/NSPR
+  - /db/NTMP
+  - /db/PJCF
+  - /db/PNLA
+  - /db/PNLD
+  - /db/POLC
+  - /db/POSL
+  - /db/POSP
+  - /db/PSLT
+  - /db/SDSP
+  - /db/SDST
+  - /db/SDVE
+  - /db/SDVI
+  - /db/SKEW
+  - /db/SLAN
+  - /db/SMCT
+  - /db/SMLC
+  - /db/SMPT
+  - /db/SPFC
+  - /db/SPLC
+  - /db/STAG
+  - /db/STBK
+  - /db/STLD
+  - /db/STMP
+  - /db/TDGR
+  - /db/TDME
+  - /db/TDMF
+  - /db/TDMT
+  - /db/TDNT
+  - /db/THFC
+  - /db/THGC
+  - /db/THIK
+  - /db/THIS
+  - /db/THMS
+  - /db/THNL
+  - /db/THSL
+  - /db/TSGR
+  - /db/ULFC
+  - /db/VBEM
+  - /db/VSEC
+  - /db/WMAK
+  date: '2026-11-05'
+  level: write
+  products:
+  - gen
+  - civil
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), Build 10/17/2026 (author-confirmed from the About dialog 2026-11-05; the 2026-11-01 records say Build 10/30/2026)
+    civil: MIDAS Civil NX 2026 (v2.3), Build 10/31/2026 (author-confirmed from the About dialog 2026-11-05)
+  outcome: success
+  method: >-
+    On the author's request (2026-11-05, "자동으로 temp 폴더에 저장하고 진행해줘"), on the NX host, through
+    scripts/live_crud_check.py run unchanged (/doc/NEW, checkpoints in C:/temp, every tier's seeds) with only
+    the per-case round trip replaced: each confirmed case's own create payload was POSTed under a gap key - five
+    past the highest key present or the case's id - and the table's keys were read before and after, then what
+    landed was removed by a per-id DELETE. 120 endpoints answered with a stored record: honoured where it landed
+    under the requested key, assigned where the product picked one past the highest existing key. Five differ by
+    product (/db/FIMP, /db/GSTP, /db/SPLC, /db/TDMF, /db/THFC: Gen assigned, Civil honoured). POSTs refused at
+    the gap key (the key names an element, material or section, or the table is a singleton) and 16 that
+    answered without storing anything are not key-policy evidence and are not listed. Same day, /info swept on
+    both products matched schema/info-baseline.json exactly (402 pairs). This record lists the endpoints
+    measured on both products; -gen and -civil list those whose case runs on one product only.
+- id: ledger-write-2026-11-05-gen
+  endpoints:
+  - /DESIGN/RC/KDS-41-20-2022/BEMW
+  - /db/HHCT
+  - /db/LCOM-SEISMIC
+  - /db/NLCT
+  - /db/SDHY
+  - /db/SDIS
+  date: '2026-11-05'
+  level: write
+  products:
+  - gen
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), Build 10/17/2026 (author-confirmed from the About dialog 2026-11-05; the 2026-11-01 records say Build 10/30/2026)
+  outcome: success
+  method: >-
+    The gen half of ledger-write-2026-11-05's key-policy probe, for endpoints whose confirmed case
+    runs on gen only. Method and evidence as there.
+- id: ledger-write-2026-11-05-civil
+  endpoints:
+  - /db/BCGA-M1
+  - /db/BCGD-M1
+  - /db/CAMB
+  - /db/CJFG
+  - /db/CMCS
+  - /db/CRGR
+  - /db/GCMB
+  - /db/GSBG
+  - /db/LLANch
+  - /db/LLANid
+  - /db/LLANop
+  - /db/MVCTid
+  - /db/MVLDch
+  - /db/MVLDid
+  - /db/NLNK-M1
+  - /db/POGD
+  - /db/POLC-M1
+  - /db/SBDO
+  - /db/SLANch
+  - /db/SLANop
+  - /db/SPAN
+  date: '2026-11-05'
+  level: write
+  products:
+  - civil
+  nxVersions:
+    civil: MIDAS Civil NX 2026 (v2.3), Build 10/31/2026 (author-confirmed from the About dialog 2026-11-05)
+  outcome: success
+  method: >-
+    The civil half of ledger-write-2026-11-05's key-policy probe, for endpoints whose confirmed case
+    runs on civil only. Method and evidence as there.

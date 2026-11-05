@@ -118,6 +118,10 @@ operations:
       nodes. There is no undo through the API and the products raise no
       confirmation dialog on the API path.
 
+keyPolicy:
+  gen: honoured
+  civil: honoured
+  evidence: ledger-write-2026-11-05
 fields:
   - key: X
     description: Coordinates - x (global coordinate system)

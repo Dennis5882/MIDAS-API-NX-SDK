@@ -489,6 +489,36 @@ orphan, `dropped` (the record stored without that value), or `unverified`.
 - **`refused` is not one shape.** The same refusal arrives as an error naming
   the record, as `Wrong Field` / `Not Found Key` / `Unknown Error`, or as
   `{"message": ""}` with no error key; say which in `note`.
+- **`onTargetDelete` is the other direction**: what a per-id DELETE of the
+  named record did to this one, `deleted` (it went too - `/db/ELEM` on its
+  node, a `/db/CNLD` entry on its load case) or `orphaned` (it stayed -
+  `/db/ELEM` on its material or section). Absent means not measured. Any
+  value makes the reference a measured one, so `evidence` must be a ledger
+  record.
+- **Field rows are published too.** `reference_fields()` flattens every
+  `references` to one row per field path (`ITEMS[].LCNAME` for a field of each
+  `ITEMS` entry), kept as Python's `midas_nx.plan.REFERENCES` and npm's
+  generated `referenceFields`, and held equal to the contracts the same way.
+  `plan.validate()` reads them.
+
+## `keyPolicy`: where a POST lands
+
+`keyPolicy` records, per product, what happened when a confirmed case's own
+create payload was POSTed under a key that was not the next free one:
+`honoured` (it landed there) or `assigned` (the product picked one past the
+highest key itself, so a caller has to read the table back to learn it).
+`evidence` cites the ledger record, which must list the endpoint and have
+covered exactly the products stated - `validate_contracts.py` checks both,
+and that Python's `midas_nx.plan.KEY_POLICY` and npm's generated
+`keyPolicies` equal the contracts.
+
+- **A product left out was not measured**, and neither was a table whose POST
+  the product refused at that key: there the key usually names an element,
+  material or section, or the table is a singleton, and a refusal says nothing
+  about numbering.
+- **The two products can differ.** `/db/FIMP`, `/db/GSTP`, `/db/SPLC`,
+  `/db/TDMF` and `/db/THFC` are `assigned` on Gen NX and `honoured` on Civil
+  NX (2026-11-05). Don't collapse a pair into one value.
 
 ## Risk and mitigation are separate axes
 

@@ -106,6 +106,10 @@ operations:
       The documented bare-endpoint DELETE ignores the ids in its Assign body
       and empties the table, as observed in the live DELETE finding.
 
+keyPolicy:
+  gen: honoured
+  civil: honoured
+  evidence: ledger-write-2026-11-05
 fields:
   - key: ITEMS
     description: Constraint supports, supplied as an array.

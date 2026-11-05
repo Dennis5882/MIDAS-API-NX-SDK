@@ -13439,3 +13439,42 @@ and Civil NX answered every probe alike.** Ledger record
   stayed, now orphans. Both products alike. The midas-nx-mcp proposal had
   recorded node deletion as refused; this measurement says otherwise for the
   per-id route.
+
+## 2026-11-05 (Gen Build 10/17/2026, Civil Build 10/31/2026) - where a POST lands when its key is not the next free one
+
+For contracts' new `keyPolicy` and the SDKs' `plan.key_policy()`, at the
+request of the midas-nx-mcp project. The author's About dialogs read Gen NX
+2026 (v2.2) Build 10/17/2026 - the 2026-11-01 records say Build 10/30/2026 -
+and Civil NX 2026 (v2.3) Build 10/31/2026. A `/info` sweep of both products
+the same day matched `schema/info-baseline.json` exactly (402 pairs), so the
+API surface has not moved since 2026-10-11.
+
+`scripts/live_crud_check.py` ran unchanged on both products' empty documents
+(the author: "자동으로 temp 폴더에 저장하고 진행해줘"; checkpoints in `C:/temp`),
+with only the per-case round trip replaced: each confirmed case's own create
+payload was POSTed under a gap key - five past the highest key present or the
+case's id - and the table's keys were read before and after. Ledger records
+`ledger-write-2026-11-05` (both products), `-gen` and `-civil` (cases that run
+on one product).
+
+- **42 tables assign the key themselves on every product
+  measured**, one past the highest key present, whatever was requested:
+  `/db/BCGA-M1`, `/db/CAMB`, `/db/CGLP`, `/db/CJFG`, `/db/CRGR`, `/db/EFCT`, `/db/EXLD`, `/db/FBLD`, `/db/GCMB`, `/db/GRDP`, `/db/HHCT`, `/db/IEHC`, `/db/IELC`, `/db/LTOM`, `/db/MLSP`, `/db/MVCT`, `/db/MVCTbs`, `/db/MVCTid`, `/db/MVCTtr`, `/db/MVLDch`, `/db/MVLDid`, `/db/NLCT`, `/db/NLLP`, `/db/PJCF`, `/db/PNLA`, `/db/PNLD`, `/db/POGD`, `/db/PSLT`, `/db/SLAN`, `/db/SLANch`, `/db/SLANop`, `/db/SMCT`, `/db/SMLC`, `/db/SMPT`, `/db/SPAN`, `/db/SPFC`, `/db/STLD`, `/db/TDME`, `/db/TDMT`, `/db/THGC`, `/db/THIS`, `/db/TSGR`. Most were measured on an empty table, where the
+  assigned key was 1; `/db/STLD`, `/db/NLLP`, `/db/TDMT`, `/db/PNLD`,
+  `/db/SMPT`, `/db/SPFC`, `/db/TDME` and `/db/THIS` were measured with keys
+  already present and landed at one past the highest.
+- **Five differ by product**: `/db/FIMP`, `/db/GSTP`, `/db/SPLC`, `/db/TDMF`, `/db/THFC` assign on Gen NX and honour the
+  key on Civil NX.
+- **73 tables honour the requested key**, `/db/NODE` and the group
+  tables among them. `/db/MATL` and `/db/SECT` have no case of their own
+  (they are base-model seeds) and were not measured.
+- **Refused at the gap key, not key-policy evidence**: 74 endpoints, where the
+  key names an element, material or section that does not exist (the
+  `/DESIGN/*` tables, `/db/BMLD`, `/db/PRES`, `/db/LENG`, ...) or the table is
+  a singleton (`/db/MVCD` answered `Key Already Exist`, `/db/EIGV` and
+  `/db/DCTL` `Wrong Key`).
+- **Accepted and stored nothing**: `/db/DOEL`, `/db/EDMP`, `/db/ESSF`, `/db/ETMP`, `/db/FRLS`, `/db/IEHG`, `/db/IEPI`, `/db/IFGS`, `/db/IMPF`, `/db/MCON`, `/db/OFFS`, `/db/PRLS`, `/db/PSSF`, `/db/RIGD`, `/db/SECF`, `/db/SSPS`. Each answered the POST
+  without an error, and no new key appeared in the table. Why was not
+  established; several (`/db/OFFS`, `/db/FRLS`, `/db/RIGD`) are records
+  attached to an element or node, and the gap key named none. Not pursued
+  further.
