@@ -6,7 +6,7 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
-## 2.11.1 - 2026-11-05
+## 2.11.0 - 2026-11-05
 
 ### Changed
 
