@@ -216,6 +216,43 @@ def test_validate_follows_a_load_case_or_group_delete_into_each_entry():
     assert [(f.reference.table, f.outcome) for f in group_only] == [("/db/BMLD", "cleared"), ("/db/CNLD", "cleared")]
 
 
+def test_validate_follows_a_node_or_element_delete_into_records_keyed_by_it():
+    assert [r.table for r in plan.key_references()] == [
+        "/db/BMLD", "/db/CNLD", "/db/CONS", "/db/FRLS", "/db/NMAS", "/db/PRES",
+    ]
+    assert _npm_export("keyReferences") == [
+        {"table": r.table, "field": "", "targets": list(r.targets), "by": "id", "each": False,
+         "onMissing": r.on_missing, "onTargetDelete": r.on_target_delete}
+        for r in plan.KEY_REFERENCES
+    ]
+    # The measured scene: beam 3 is the only element on node 4.
+    model = {
+        "/db/NODE": [1, 2, 3, 4],
+        "/db/ELEM": {
+            "1": {"TYPE": "BEAM", "NODE": [1, 2]},
+            "2": {"TYPE": "BEAM", "NODE": [2, 3]},
+            "3": {"TYPE": "BEAM", "NODE": [3, 4]},
+        },
+        "/db/CNLD": {"2": {"ITEMS": []}, "4": {"ITEMS": []}},
+        "/db/NMAS": {"4": {"mX": 1.0}},
+        "/db/BMLD": {"1": {"ITEMS": []}, "3": {"ITEMS": []}},
+        "/db/FRLS": {"2": {"ITEMS": []}},
+    }
+    ops = [Operation("/db/NODE", "DELETE", ids=[4]), Operation("/db/ELEM", "DELETE", ids=[2])]
+    found = plan.validate(ops, model)
+    assert [(f.index, f.reference.table, f.record_key, f.outcome) for f in found] == [
+        (0, "/db/ELEM", "3", "deleted"),
+        (0, "/db/CNLD", "4", "deleted"),
+        (0, "/db/NMAS", "4", "deleted"),
+        (0, "/db/BMLD", "3", "deleted"),
+        (1, "/db/FRLS", "2", "deleted"),
+    ]
+    assert "takes /db/ELEM '3' with it" in found[3].message and "its key" in found[3].message
+    # A POST keyed by a node that is not there is refused, as measured.
+    post = Operation("/db/CNLD", "POST", records={"9": {"ITEMS": []}})
+    assert [(f.kind, f.value, f.outcome) for f in plan.validate([post], model)] == [("missing", "9", "refused")]
+
+
 def test_validate_refuses_a_get():
     with pytest.raises(ValueError):
         plan.validate([Operation("/db/NODE", "GET")])

@@ -508,6 +508,16 @@ orphan, `dropped` (the record stored without that value), or `unverified`.
   `/db/ELEM`'s was told apart by `/doc/ANAL` (`ledger-write-2026-11-05-refs`),
   and only for the two types tried. The validator checks the path is a
   sibling field and every case table is one of `tables`.
+- **A record keyed by a node or element is a reference too.** `recordKey`
+  with `kind: node_id` or `element_id` takes the same `onMissing` /
+  `onTargetDelete` / `evidence` / `deleteEvidence`. Measured for all six
+  tables (`/db/CNLD`, `/db/CONS`, `/db/NMAS` by node; `/db/BMLD`, `/db/FRLS`,
+  `/db/PRES` by element): a key naming nothing is refused (2026-11-04,
+  `/db/NMAS` not tried), and deleting the node or element deletes the record
+  (`ledger-write-2026-11-05-keys`). A node delete reaches the element loads
+  too, through the elements it takes. `key_references()` publishes them as
+  rows with `field` `""` - Python's `midas_nx.plan.KEY_REFERENCES`, npm's
+  `keyReferences` - and `plan.validate()` reads them with the field rows.
 - **Field rows are published too.** `reference_fields()` flattens every
   `references` to one row per field path (`ITEMS[].LCNAME` for a field of each
   `ITEMS` entry), kept as Python's `midas_nx.plan.REFERENCES` and npm's

@@ -49,7 +49,12 @@ from typing import Any
 
 from function_endpoints import function_endpoints
 from generate_typescript_sdk import _field_path
-from reference_graph import key_policies, reference_fields, reference_graph
+from reference_graph import (
+    key_policies,
+    key_references,
+    reference_fields,
+    reference_graph,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 CONTRACTS = ROOT / "contracts"
@@ -378,6 +383,17 @@ def check_references(contracts: list[tuple[Path, dict]], failures: Failures) -> 
                 note_parents(child.get("properties") or [])
 
         note_parents(contract.get("fields", []))
+        key = contract.get("recordKey") or {}
+        if "onMissing" in key or "onTargetDelete" in key:
+            if key.get("kind") not in ("node_id", "element_id"):
+                failures.add(path.name, "recordKey: onMissing/onTargetDelete only for a node_id or element_id key")
+            needs = key.get("onMissing", "unverified") != "unverified" or (
+                "onTargetDelete" in key and "deleteEvidence" not in key
+            )
+            if needs and key.get("evidence") not in ledger_ids:
+                failures.add(path.name, f"recordKey: a measured key must cite a ledger record, not {key.get('evidence')!r}")
+            if "deleteEvidence" in key and key["deleteEvidence"] not in ledger_ids:
+                failures.add(path.name, f"recordKey: deleteEvidence {key['deleteEvidence']!r} is not a ledger record")
         for field in _iter_fields(contract.get("fields", [])):
             ref = field.get("references")
             if not ref:
@@ -497,9 +513,8 @@ def check_plan_parity(contracts: list[tuple[Path, dict]], failures: Failures) ->
     if {k: frozenset(v) for k, v in exported("referenceGraph").items()} != expected:
         failures.add("references.ts", "npm's reference graph differs from the contracts; run npm run generate")
 
-    fields = reference_fields(c for _, c in contracts)
-    python_rows = [
-        {
+    def row(ref: Any) -> dict[str, Any]:
+        return {
             "table": ref.table,
             "field": ref.field,
             "targets": list(ref.targets),
@@ -514,8 +529,15 @@ def check_plan_parity(contracts: list[tuple[Path, dict]], failures: Failures) ->
                 else {}
             ),
         }
-        for ref in plan.REFERENCES
-    ]
+
+    keyed = key_references(c for _, c in contracts)
+    if [row(ref) for ref in plan.KEY_REFERENCES] != keyed:
+        failures.add("midas_nx/plan.py", "KEY_REFERENCES differs from the contracts' recordKey")
+    if exported("keyReferences") != keyed:
+        failures.add("references.ts", "npm's keyReferences differs from the contracts; run npm run generate")
+
+    fields = reference_fields(c for _, c in contracts)
+    python_rows = [row(ref) for ref in plan.REFERENCES]
     if python_rows != fields:
         failures.add("midas_nx/plan.py", "REFERENCES differs from the contracts' field references")
     if exported("referenceFields") != fields:

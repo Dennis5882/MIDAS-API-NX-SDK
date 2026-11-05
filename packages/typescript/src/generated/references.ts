@@ -273,6 +273,78 @@ export const referenceFields: readonly ReferenceField[] = [
   }
 ] as const;
 
+/** Tables whose Assign key is a node or element id, as ReferenceField rows with
+ * `field` "" (the record key): what a key naming no node or element does, and what
+ * deleting that node or element does to the record. */
+export const keyReferences: readonly ReferenceField[] = [
+  {
+    "table": "/db/BMLD",
+    "field": "",
+    "targets": [
+      "/db/ELEM"
+    ],
+    "by": "id",
+    "each": false,
+    "onMissing": "refused",
+    "onTargetDelete": "deleted"
+  },
+  {
+    "table": "/db/CNLD",
+    "field": "",
+    "targets": [
+      "/db/NODE"
+    ],
+    "by": "id",
+    "each": false,
+    "onMissing": "refused",
+    "onTargetDelete": "deleted"
+  },
+  {
+    "table": "/db/CONS",
+    "field": "",
+    "targets": [
+      "/db/NODE"
+    ],
+    "by": "id",
+    "each": false,
+    "onMissing": "refused",
+    "onTargetDelete": "deleted"
+  },
+  {
+    "table": "/db/FRLS",
+    "field": "",
+    "targets": [
+      "/db/ELEM"
+    ],
+    "by": "id",
+    "each": false,
+    "onMissing": "refused",
+    "onTargetDelete": "deleted"
+  },
+  {
+    "table": "/db/NMAS",
+    "field": "",
+    "targets": [
+      "/db/NODE"
+    ],
+    "by": "id",
+    "each": false,
+    "onMissing": "unverified",
+    "onTargetDelete": "deleted"
+  },
+  {
+    "table": "/db/PRES",
+    "field": "",
+    "targets": [
+      "/db/ELEM"
+    ],
+    "by": "id",
+    "each": false,
+    "onMissing": "refused",
+    "onTargetDelete": "deleted"
+  }
+] as const;
+
 /** Where a POST lands when its Assign key is not the next free one, per product:
  * honoured = under the requested key; assigned = the product picks the key (one past
  * the highest), so read the table back. A table or product absent = not measured. */

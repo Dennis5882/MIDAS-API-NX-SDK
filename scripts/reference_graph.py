@@ -65,6 +65,32 @@ def reference_fields(contracts: Iterable[dict[str, Any]]) -> list[dict[str, Any]
     return rows
 
 
+def key_references(contracts: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    """One row per table whose Assign key is a node or element id, shaped like a
+    `reference_fields` row with `field` "" (the record key). `onMissing` is
+    "unverified" where the contract records none. Sorted by table.
+    """
+    rows: list[dict[str, Any]] = []
+    for contract in contracts:
+        key = contract.get("recordKey") or {}
+        target = RECORD_KEY_TABLES.get(key.get("kind", ""))
+        if not target or target == contract["endpoint"]:
+            continue
+        row: dict[str, Any] = {
+            "table": contract["endpoint"],
+            "field": "",
+            "targets": [target],
+            "by": "id",
+            "each": False,
+            "onMissing": key.get("onMissing", "unverified"),
+        }
+        if "onTargetDelete" in key:
+            row["onTargetDelete"] = key["onTargetDelete"]
+        rows.append(row)
+    rows.sort(key=lambda row: row["table"])
+    return rows
+
+
 def key_policies(contracts: Iterable[dict[str, Any]]) -> dict[str, dict[str, str]]:
     """Endpoint -> product -> "honoured" or "assigned", from the contracts' `keyPolicy`."""
     return {

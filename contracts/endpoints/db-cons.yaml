@@ -28,6 +28,10 @@ recordKey:
   description: >-
     The node the support is assigned to. A node that does not exist answers
     {"message": ""} and stores nothing (both products, 2026-11-04).
+  onMissing: refused
+  onTargetDelete: deleted
+  evidence: ledger-write-2026-11-04-2
+  deleteEvidence: ledger-write-2026-11-05-keys
 
 source:
   manual:

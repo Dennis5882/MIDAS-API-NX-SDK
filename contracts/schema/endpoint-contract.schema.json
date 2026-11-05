@@ -149,6 +149,22 @@
         },
         "description": {
           "type": "string"
+        },
+        "onMissing": {
+          "enum": ["refused", "stored", "dropped", "unverified"],
+          "description": "node_id / element_id only: what the product did with a key naming no node or element, as for a field's `references`. Absent = not measured."
+        },
+        "onTargetDelete": {
+          "enum": ["deleted", "orphaned"],
+          "description": "node_id / element_id only: what a per-id DELETE of the node or element did to the record keyed by it, measured live. Absent = not measured; never inferred."
+        },
+        "evidence": {
+          "type": "string",
+          "description": "The ledger record behind `onMissing` (and `onTargetDelete` when `deleteEvidence` is absent)."
+        },
+        "deleteEvidence": {
+          "type": "string",
+          "description": "The ledger record that measured `onTargetDelete`, when it is not the one `evidence` names."
         }
       }
     },

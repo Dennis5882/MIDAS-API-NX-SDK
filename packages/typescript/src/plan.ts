@@ -1,4 +1,10 @@
-import { keyPolicies, referenceFields, referenceGraph, type ReferenceField } from "./generated/references";
+import {
+  keyPolicies,
+  keyReferences,
+  referenceFields,
+  referenceGraph,
+  type ReferenceField,
+} from "./generated/references";
 import type { JsonObject } from "./types";
 
 /** One request to one table. `records` for POST/PUT, `ids` for DELETE. */
@@ -49,6 +55,15 @@ function references(table?: string): ReferenceField[] {
   return referenceFields.filter((ref) => table === undefined || ref.table === table);
 }
 
+/** The table(s) keyed by node or element ids, or the one for `table`; `field` is "". */
+function keyRefs(table?: string): ReferenceField[] {
+  return keyReferences.filter((ref) => table === undefined || ref.table === table);
+}
+
+function allReferences(table: string): ReferenceField[] {
+  return [...references(table), ...keyRefs(table)];
+}
+
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -82,6 +97,12 @@ function values(record: unknown, path: string, each: boolean): [unknown, Record<
   return out;
 }
 
+/** What `ref` reads from one record: its key for a key reference, else the field. */
+function refValues(ref: ReferenceField, recordKey: string, record: unknown): [unknown, Record<string, unknown>][] {
+  if (!ref.field) return [[recordKey, isObject(record) ? record : {}]];
+  return values(record, ref.field, ref.each);
+}
+
 /** The table(s) a value names, given the object that holds the field (`targetsBy`). */
 function targetsFor(ref: ReferenceField, holder: Record<string, unknown>): readonly string[] {
   if (ref.targetsBy) {
@@ -113,7 +134,9 @@ function isIterable(value: unknown): value is Iterable<number | string> {
 }
 
 /** The records still present that name something `op` removes, and what the
- * measured `onTargetDelete` then does to them in `state`. */
+ * measured `onTargetDelete` then does to them in `state`. A record that goes
+ * with it is followed in turn: a node takes its elements, and an element the
+ * loads keyed by it. */
 function deletedFindings<T extends PlanOperation>(
   index: number,
   op: T,
@@ -122,30 +145,38 @@ function deletedFindings<T extends PlanOperation>(
   known: Map<string, Set<string>>,
 ): PlanFinding<T>[] {
   const findings: PlanFinding<T>[] = [];
-  const effects = new Map<string, { table: string; recordKey: string; hits: [ReferenceField, Record<string, unknown>][] }>();
-  for (const [table, records] of state) {
-    const refs = references(table).filter((ref) => ref.targets.includes(op.endpoint));
-    for (const [recordKey, [origin, record]] of records) {
-      const where = origin === null ? "already in the model" : `operation ${origin}`;
-      for (const ref of refs) {
-        for (const [value, holder] of values(record, ref.field, ref.each)) {
-          if (!gone.has(String(value)) || !targetsFor(ref, holder).includes(op.endpoint)) continue;
-          const outcome = ref.onTargetDelete ?? "unverified";
-          findings.push({
-            index, operation: op, recordKey, reference: ref, value, kind: "deleted", outcome,
-            message:
-              `${op.endpoint} DELETE removes ${JSON.stringify(value)}, which ${table} record ${recordKey} ` +
-              `(${where}) names in ${ref.field}: ${outcome}`,
-          });
-          const id = JSON.stringify([table, recordKey]);
-          const entry = effects.get(id) ?? { table, recordKey, hits: [] };
-          entry.hits.push([ref, holder]);
-          effects.set(id, entry);
+  const queue: [string, Set<string>][] = [[op.endpoint, gone]];
+  while (queue.length) {
+    const [target, removed] = queue.shift() as [string, Set<string>];
+    const effects = new Map<string, { table: string; recordKey: string; hits: [ReferenceField, Record<string, unknown>][] }>();
+    for (const [table, records] of state) {
+      const refs = allReferences(table).filter((ref) => ref.targets.includes(target));
+      for (const [recordKey, [origin, record]] of records) {
+        const where = origin === null ? "already in the model" : `operation ${origin}`;
+        for (const ref of refs) {
+          for (const [value, holder] of refValues(ref, recordKey, record)) {
+            if (!removed.has(String(value)) || !targetsFor(ref, holder).includes(target)) continue;
+            const outcome = ref.onTargetDelete ?? "unverified";
+            const what = target === op.endpoint ? `removes ${JSON.stringify(value)}` : `takes ${target} ${JSON.stringify(value)} with it`;
+            findings.push({
+              index, operation: op, recordKey, reference: ref, value, kind: "deleted", outcome,
+              message:
+                `${op.endpoint} DELETE ${what}, which ${table} record ${recordKey} ` +
+                `(${where}) names in ${ref.field || "its key"}: ${outcome}`,
+            });
+            const id = JSON.stringify([table, recordKey]);
+            const entry = effects.get(id) ?? { table, recordKey, hits: [] };
+            entry.hits.push([ref, holder]);
+            effects.set(id, entry);
+          }
         }
       }
     }
+    for (const { table, recordKey, hits } of effects.values()) {
+      const dropped = applyDeleteEffects(state, known, table, recordKey, hits);
+      if (dropped) queue.push([table, dropped]);
+    }
   }
-  for (const { table, recordKey, hits } of effects.values()) applyDeleteEffects(state, known, table, recordKey, hits);
   return findings;
 }
 
@@ -153,7 +184,8 @@ function deletedFindings<T extends PlanOperation>(
  * Change one record in `state` as the product does: drop it or the list entries
  * ("deleted"), or empty the fields ("cleared"). The record is replaced by a
  * changed copy, never changed in place, since it may be the caller's. A path
- * deeper than one list is left as it was.
+ * deeper than one list is left as it was. Returns the key and names of the
+ * record when it is dropped.
  */
 function applyDeleteEffects(
   state: Map<string, Map<string, [number | null, unknown]>>,
@@ -161,10 +193,10 @@ function applyDeleteEffects(
   table: string,
   recordKey: string,
   hits: [ReferenceField, Record<string, unknown>][],
-): void {
+): Set<string> | undefined {
   const tableState = state.get(table);
   const current = tableState?.get(recordKey);
-  if (!tableState || !current) return;
+  if (!tableState || !current) return undefined;
   const [origin, record] = current;
   let dropRecord = false;
   const cleared: [string | null, number, string][] = [];
@@ -190,7 +222,7 @@ function applyDeleteEffects(
       dropped.set(listName, set);
     } else cleared.push([listName, position, leaf]);
   }
-  if (!dropRecord && !cleared.length && !dropped.size) return;
+  if (!dropRecord && !cleared.length && !dropped.size) return undefined;
   if (!dropRecord && isObject(record)) {
     const changed = JSON.parse(JSON.stringify(record)) as Record<string, unknown>;
     for (const [listName, position, leaf] of cleared) {
@@ -204,12 +236,14 @@ function applyDeleteEffects(
     }
     if (!dropRecord) {
       tableState.set(recordKey, [origin, changed]);
-      return;
+      return undefined;
     }
   }
+  const names = namesWritten(table, { [recordKey]: record });
   const knownSet = known.get(table);
-  if (knownSet) for (const name of namesWritten(table, { [recordKey]: record })) knownSet.delete(name);
+  if (knownSet) for (const name of names) knownSet.delete(name);
   tableState.delete(recordKey);
+  return names;
 }
 
 /**
@@ -228,13 +262,22 @@ function applyDeleteEffects(
  * entry and combination entry naming it, and a record left with none; of a
  * group, only the name, which is emptied; of a material, section or thickness,
  * nothing - the elements stay as orphans. A plate's `SECT` is a `/db/THIK`
- * number and a beam's a `/db/SECT` one (told apart by analysis).
+ * number and a beam's a `/db/SECT` one (told apart by analysis). A record keyed
+ * by a node or element (`keyReferences()`: loads, supports, masses, end
+ * releases) goes when that node or element does, and a node takes the element
+ * loads with its elements.
  */
 export const plan = {
   /** Table -> the tables its records name. */
   dependencies: (): Readonly<Record<string, readonly string[]>> => referenceGraph,
   /** Every field reference the contracts record, or the ones whose records live in `table`. */
   references,
+  /**
+   * The tables whose Assign key is a node or element id, as rows with `field`
+   * "" (the record key), or the one for `table`. A key naming no node or
+   * element is refused, and deleting it deletes the record (measured).
+   */
+  keyReferences: keyRefs,
   /**
    * Where a POST to `endpoint` lands when its Assign key is not the next free
    * one: "honoured" (the requested key), "assigned" (the product picks one past
@@ -330,8 +373,8 @@ export const plan = {
         // A PUT merges, so a field it leaves out still decides targetsBy.
         const previous = method === "PUT" ? state.get(op.endpoint)?.get(recordKey)?.[1] : undefined;
         const record = isObject(previous) && isObject(written) ? { ...previous, ...written } : written;
-        for (const ref of references(op.endpoint)) {
-          for (const [value, holder] of values(record, ref.field, ref.each)) {
+        for (const ref of allReferences(op.endpoint)) {
+          for (const [value, holder] of refValues(ref, recordKey, record)) {
             const targets = targetsFor(ref, holder);
             if (!targets.every((t) => known.has(t)) || targets.some((t) => known.get(t)?.has(String(value)))) continue;
             const createdLater = targets.flatMap((t) =>
@@ -341,7 +384,7 @@ export const plan = {
             findings.push({
               index, operation: op, recordKey, reference: ref, value, kind: "missing", outcome: ref.onMissing,
               message:
-                `${op.endpoint} record ${recordKey} names ${JSON.stringify(value)} in ${ref.field}, ` +
+                `${op.endpoint} record ${recordKey} names ${JSON.stringify(value)} in ${ref.field || "its key"}, ` +
                 `which ${targets.join("/")} will not hold: ${ref.onMissing}${hint}`,
             });
           }

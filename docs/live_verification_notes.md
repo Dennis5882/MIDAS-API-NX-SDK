@@ -13521,3 +13521,28 @@ each variant on a fresh document, saved into `C:/temp` before solving:
 So a `PLATE` reads `/db/THIK` and a `BEAM` `/db/SECT`. `WALL`, `PLSTRS`,
 `PLSTRN`, `AXISYM`, `TRUSS`, `TENSTR`, `COMPTR` and `SOLID` were not tried;
 the contract leaves them naming "one of" the two.
+
+## 2026-11-05 (Gen Build 10/17/2026, Civil Build 10/31/2026) - deleting a node or element deletes every record keyed by it
+
+The midas-nx-mcp project reported that deleting an element took its beam load
+and deleting a node its nodal load, and that `plan.validate` said nothing: the
+six tables keyed by a node or element id carried that only as `recordKey`,
+which `plan.order()` read and `plan.validate()` did not. Measured on both
+products after saving the open document to `C:/temp`: `/doc/NEW`, the
+fixture's base model (beams 1-3 on nodes 1-2, 2-3, 3-4; plate 4 on 5-8), and
+confirmed case payloads re-keyed. `/db/NMAS` went through
+`NodalMass.create()`, which sends `rmX`/`rmY`/`rmZ`; omitting them is the
+known crash. Ledger record `ledger-write-2026-11-05-keys`.
+
+| Step | `ELEM` | `CNLD` | `CONS` | `NMAS` | `BMLD` | `FRLS` | `PRES` |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| before | 1 2 3 4 | 2 4 | 1 2 4 | 2 4 | 1 2 3 | 2 3 | 4 |
+| `DELETE /db/NODE/4` | 1 2 4 | 2 | 1 2 | 2 | 1 2 | 2 | 4 |
+| `DELETE /db/ELEM/2`, `/db/ELEM/4` | 1 | 2 | 1 2 | 2 | 1 | - | - |
+
+**Gen NX and Civil NX produced the same table, key for key.** Deleting node 4
+took beam 3, the only element on it, and the records keyed by node 4. It also
+took the records keyed by beam 3, so the cascade runs two levels: node, then
+element, then the element's loads and releases. The records keyed by node 2
+and beam 1, the controls, stayed. Contracts record this as
+`recordKey.onTargetDelete: deleted` on all six tables.

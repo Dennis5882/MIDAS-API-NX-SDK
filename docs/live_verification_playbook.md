@@ -42,7 +42,9 @@ scoreboard.
   and `MVLDeu`, `MVLDbs` and `PHGE` round-trip on those models. The design-function harness ran end to end for the first time, and the TABLE
   `EXPORT_PATH` and REPORT files were inspected on the host, so those eight
   design endpoints are write-level now (live notes, 2026-10-24).
-- **2.10.10 is published on PyPI and npm** (2026-11-05): `plan.validate()`
+- **2.11.1 is published on PyPI and npm** (2026-11-05): `plan.validate()`
+  also follows a node or element delete into the six tables keyed by it.
+  2.10.10: `plan.validate()`
   reads an element's `SECT` by `TYPE`, checks a DELETE against records passed
   in `existing`, and follows every load-case and group reference's measured
   `onTargetDelete` (new outcome `cleared`). 2.10.9 added `plan.references()`,

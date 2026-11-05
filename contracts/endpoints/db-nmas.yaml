@@ -24,6 +24,8 @@ recordKey:
   kind: node_id
   description: >-
     Node number the mass is attached to. The node must already exist.
+  onTargetDelete: deleted
+  evidence: ledger-write-2026-11-05-keys
 
 source:
   manual:

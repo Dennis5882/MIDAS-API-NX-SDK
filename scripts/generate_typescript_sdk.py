@@ -2463,6 +2463,21 @@ def _contract_reference_graph() -> dict[str, list[str]]:
     return {table: sorted(graph[table]) for table in sorted(graph)}
 
 
+def _contract_key_references() -> list[dict]:
+    """Rows for the tables keyed by node or element ids, from the contracts' `recordKey`."""
+    import sys  # noqa: PLC0415
+
+    import yaml  # noqa: PLC0415
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from reference_graph import key_references  # noqa: PLC0415
+
+    return key_references(
+        yaml.safe_load(path.read_text(encoding="utf-8"))
+        for path in sorted((ROOT / "contracts" / "endpoints").glob("*.yaml"))
+    )
+
+
 def _contract_key_policies() -> dict[str, dict[str, str]]:
     """Endpoint -> product -> honoured/assigned, from the contracts' `keyPolicy`."""
     import sys  # noqa: PLC0415
@@ -2669,6 +2684,13 @@ def main() -> None:
             "",
             "export const referenceFields: readonly ReferenceField[] = "
             + json.dumps(_contract_reference_fields(), indent=2)
+            + " as const;",
+            "",
+            "/** Tables whose Assign key is a node or element id, as ReferenceField rows with",
+            " * `field` \"\" (the record key): what a key naming no node or element does, and what",
+            " * deleting that node or element does to the record. */",
+            "export const keyReferences: readonly ReferenceField[] = "
+            + json.dumps(_contract_key_references(), indent=2)
             + " as const;",
             "",
             "/** Where a POST lands when its Assign key is not the next free one, per product:",

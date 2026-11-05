@@ -18,6 +18,9 @@ load entry and combination entry naming it, and a record left with none; of a
 group, nothing but the name, which is emptied; of a material, section or
 thickness, nothing - the elements stay as orphans. A plate's ``SECT`` is a
 ``/db/THIK`` number and a beam's a ``/db/SECT`` one (told apart by analysis).
+A record keyed by a node or element (:data:`KEY_REFERENCES`: loads, supports,
+masses, end releases) goes when that node or element does, and a node takes
+the element loads with its elements.
 """
 from __future__ import annotations
 
@@ -148,6 +151,22 @@ REFERENCES: Tuple[Reference, ...] = (
         "/db/PRES", "ITEMS[].LCNAME", ("/db/STLD",), "name",
         name_field="NAME", on_missing="refused", on_target_delete="deleted",
     ),
+)
+
+
+#: The tables whose Assign key is a node or element id, as :class:`Reference`
+#: rows with ``field`` ``""`` (the record key), from the contracts' ``recordKey``.
+#: Held equal to them, and to npm's ``keyReferences``, by ``validate_contracts.py``.
+#: Measured on Gen NX and Civil NX: a key naming no node or element is refused
+#: (2026-11-04; /db/NMAS not tried), and deleting the node or element deletes the
+#: record keyed by it (2026-11-05).
+KEY_REFERENCES: Tuple[Reference, ...] = (
+    Reference("/db/BMLD", "", ("/db/ELEM",), "id", on_missing="refused", on_target_delete="deleted"),
+    Reference("/db/CNLD", "", ("/db/NODE",), "id", on_missing="refused", on_target_delete="deleted"),
+    Reference("/db/CONS", "", ("/db/NODE",), "id", on_missing="refused", on_target_delete="deleted"),
+    Reference("/db/FRLS", "", ("/db/ELEM",), "id", on_missing="refused", on_target_delete="deleted"),
+    Reference("/db/NMAS", "", ("/db/NODE",), "id", on_target_delete="deleted"),
+    Reference("/db/PRES", "", ("/db/ELEM",), "id", on_missing="refused", on_target_delete="deleted"),
 )
 
 
@@ -323,6 +342,24 @@ def references(table: Optional[str] = None) -> List[Reference]:
     return [ref for ref in REFERENCES if table is None or ref.table == table]
 
 
+def key_references(table: Optional[str] = None) -> List[Reference]:
+    """:data:`KEY_REFERENCES`, or the one for ``table``: a record keyed by a node
+    or element id, whose ``field`` is ``""``."""
+    return [ref for ref in KEY_REFERENCES if table is None or ref.table == table]
+
+
+def _all_references(table: str) -> List[Reference]:
+    return references(table) + key_references(table)
+
+
+def _ref_values(ref: Reference, record_key: str, record: Any) -> Iterator[Tuple[Any, Mapping[str, Any]]]:
+    """What ``ref`` reads from one record: its key for a key reference, else the field."""
+    if not ref.field:
+        yield record_key, (record if isinstance(record, Mapping) else {})
+    else:
+        yield from _values(record, ref.field, ref.each)
+
+
 def key_policy(endpoint: str, product: str) -> Optional[str]:
     """``"honoured"``, ``"assigned"``, or ``None`` where not measured.
 
@@ -466,8 +503,8 @@ def validate(
                 previous = state.get(op.endpoint, {}).get(str(record_key))
                 if previous and isinstance(previous[1], Mapping) and isinstance(record, Mapping):
                     record = {**previous[1], **record}
-            for ref in references(op.endpoint):
-                for value, holder in _values(record, ref.field, ref.each):
+            for ref in _all_references(op.endpoint):
+                for value, holder in _ref_values(ref, str(record_key), record):
                     targets = ref.targets_for(holder)
                     if not all(t in known for t in targets) or any(str(value) in known[t] for t in targets):
                         continue
@@ -477,7 +514,7 @@ def validate(
                     hint = f"; operation {created_later[0]} writes it later, see order()" if created_later else ""
                     findings.append(Finding(
                         index, op, str(record_key), ref, value, "missing", ref.on_missing,
-                        f"{op.endpoint} record {record_key} names {value!r} in {ref.field}, "
+                        f"{op.endpoint} record {record_key} names {value!r} in {ref.field or 'its key'}, "
                         f"which {'/'.join(targets)} will not hold: {ref.on_missing}{hint}",
                     ))
         if op.records:
@@ -500,26 +537,34 @@ def _deleted_findings(
     known: Dict[str, Set[str]],
 ) -> List[Finding]:
     """The records still present that name something ``op`` removes, and what
-    the measured ``on_target_delete`` then does to them in ``state``."""
+    the measured ``on_target_delete`` then does to them in ``state``. A record
+    that goes with it is followed in turn: a node takes its elements, and an
+    element the loads keyed by it."""
     findings: List[Finding] = []
-    effects: Dict[Tuple[str, str], List[Tuple[Reference, Mapping[str, Any]]]] = {}
-    for table, records in state.items():
-        refs = [ref for ref in references(table) if op.endpoint in ref.targets]
-        for record_key, (origin, record) in records.items():
-            where = "already in the model" if origin is None else f"operation {origin}"
-            for ref in refs:
-                for value, holder in _values(record, ref.field, ref.each):
-                    if str(value) not in gone or op.endpoint not in ref.targets_for(holder):
-                        continue
-                    outcome = ref.on_target_delete or "unverified"
-                    findings.append(Finding(
-                        index, op, record_key, ref, value, "deleted", outcome,
-                        f"{op.endpoint} DELETE removes {value!r}, which {table} record {record_key} "
-                        f"({where}) names in {ref.field}: {outcome}",
-                    ))
-                    effects.setdefault((table, record_key), []).append((ref, holder))
-    for (table, record_key), hits in effects.items():
-        _apply_delete_effects(state, known, table, record_key, hits)
+    queue: List[Tuple[str, Set[str]]] = [(op.endpoint, gone)]
+    while queue:
+        target, removed = queue.pop(0)
+        effects: Dict[Tuple[str, str], List[Tuple[Reference, Mapping[str, Any]]]] = {}
+        for table, records in state.items():
+            refs = [ref for ref in _all_references(table) if target in ref.targets]
+            for record_key, (origin, record) in records.items():
+                where = "already in the model" if origin is None else f"operation {origin}"
+                for ref in refs:
+                    for value, holder in _ref_values(ref, record_key, record):
+                        if str(value) not in removed or target not in ref.targets_for(holder):
+                            continue
+                        outcome = ref.on_target_delete or "unverified"
+                        what = f"removes {value!r}" if target == op.endpoint else f"takes {target} {value!r} with it"
+                        findings.append(Finding(
+                            index, op, record_key, ref, value, "deleted", outcome,
+                            f"{op.endpoint} DELETE {what}, which {table} record {record_key} "
+                            f"({where}) names in {ref.field or 'its key'}: {outcome}",
+                        ))
+                        effects.setdefault((table, record_key), []).append((ref, holder))
+        for (table, record_key), hits in effects.items():
+            dropped = _apply_delete_effects(state, known, table, record_key, hits)
+            if dropped:
+                queue.append((table, dropped))
     return findings
 
 
@@ -529,11 +574,12 @@ def _apply_delete_effects(
     table: str,
     record_key: str,
     hits: List[Tuple[Reference, Mapping[str, Any]]],
-) -> None:
+) -> Optional[Set[str]]:
     """Change one record in ``state`` as the product does: drop it or the list
     entries (``deleted``), or empty the fields (``cleared``). The record is
     replaced by a changed copy, never changed in place, since it may be the
-    caller's. A path deeper than one list is left as it was."""
+    caller's. A path deeper than one list is left as it was. Returns the key
+    and names of the record when it is dropped, else ``None``."""
     origin, record = state[table][record_key]
     drop_record = False
     cleared: List[Tuple[Optional[str], int, str]] = []  # (list name, position, field)
@@ -560,7 +606,7 @@ def _apply_delete_effects(
         else:
             cleared.append((list_name, position, leaf))
     if not (drop_record or cleared or dropped):
-        return
+        return None
     if not drop_record:
         changed = copy.deepcopy(dict(record))
         for holder_list, position, leaf in cleared:
@@ -570,6 +616,8 @@ def _apply_delete_effects(
             drop_record = drop_record or not changed[list_name]
         if not drop_record:
             state[table][record_key] = (origin, changed)
-            return
-    known.get(table, set()).difference_update(_names_written(table, {record_key: record}))
+            return None
+    names = _names_written(table, {record_key: record})
+    known.get(table, set()).difference_update(names)
     del state[table][record_key]
+    return names

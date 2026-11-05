@@ -30,6 +30,10 @@ recordKey:
     refused with "[Error] The element no. 1 is an element type in which
     Pressure loads cannot be assigned" and stored when moved to key 4, the
     plate. ITEMS[].ID looks like the selector and is not.
+  onMissing: refused
+  onTargetDelete: deleted
+  evidence: ledger-write-2026-11-04-2
+  deleteEvidence: ledger-write-2026-11-05-keys
 
 source:
   manual:

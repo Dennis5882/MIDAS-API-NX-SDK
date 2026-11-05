@@ -6,6 +6,23 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Changed
+
+- `plan.validate` now treats a record keyed by a node or element id as naming
+  it. Deleting a node or element reports the loads, supports, masses and end
+  releases keyed by it (`/db/CNLD`, `/db/CONS`, `/db/NMAS`, `/db/BMLD`,
+  `/db/FRLS`, `/db/PRES`), and a node delete follows through the elements it
+  takes to their loads. A POST keyed by a node or element that will not exist
+  is reported as refused (`/db/NMAS`: unverified). The message says
+  "its key" where a field path would be.
+
+### Added
+
+- `plan.keyReferences(table?)` and the generated `keyReferences`: those six
+  tables as `ReferenceField` rows with `field` `""` (the record key),
+  measured on Gen NX and Civil NX on 2026-11-05 - deleting the node or element
+  deleted every record keyed by it on both products.
+
 ## 2.10.10 - 2026-11-05
 
 ### Changed
