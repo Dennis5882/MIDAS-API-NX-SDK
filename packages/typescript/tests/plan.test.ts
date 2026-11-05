@@ -37,6 +37,70 @@ describe("plan.order", () => {
     expect(plan.rank("/db/NOT-A-TABLE")).toBe(0);
   });
 
+  it("reports a delete against records already in the model", () => {
+    const model = {
+      ...MODEL,
+      "/db/ELEM": { "7": { TYPE: "BEAM", MATL: 1, SECT: 1, NODE: [1, 2] } },
+      "/db/STLD": { "1": { NAME: "DL" } },
+      "/db/CNLD": { "2": { ITEMS: [{ ID: 1, LCNAME: "DL" }] } },
+    };
+    const ops = [del("/db/SECT", [1]), del("/db/STLD", [1])];
+    const found = plan.validate(ops, model);
+    expect(found.map((f) => [f.index, f.recordKey, f.reference.field, f.outcome])).toEqual([
+      [0, "7", "SECT", "orphaned"],
+      [1, "2", "ITEMS[].LCNAME", "deleted"],
+    ]);
+    expect(found[0]?.message).toContain("already in the model");
+    ops.push(w("/db/CNLD", { "3": { ITEMS: [{ ID: 2, LCNAME: "DL" }] } }));
+    const last = plan.validate(ops, model).at(-1);
+    expect([last?.index, last?.kind]).toEqual([2, "missing"]);
+    const rewrite: PlanOperation = { endpoint: "/db/ELEM", method: "PUT", records: { "7": { SECT: 2 } } };
+    expect(plan.validate([rewrite, ops[0] as PlanOperation], { ...model, "/db/SECT": [1, 2] })).toEqual([]);
+    expect(plan.validate(ops.slice(0, 1), { ...model, "/db/ELEM": [7] })).toEqual([]);
+  });
+
+  it("reads an element section from the table its type names", () => {
+    const ops = [
+      w("/db/ELEM", {
+        "1": { TYPE: "PLATE", MATL: 1, SECT: 1, NODE: [1, 2, 0, 0] },
+        "2": { TYPE: "BEAM", MATL: 1, SECT: 1, NODE: [1, 2] },
+        "3": { TYPE: "TRUSS", MATL: 1, SECT: 1, NODE: [1, 2] },
+      }),
+    ];
+    const found = plan.validate(ops, MODEL);
+    expect(found.map((f) => [f.recordKey, f.value, f.outcome])).toEqual([["1", 1, "stored"]]);
+    expect(found[0]?.message).toContain("/db/THIK will not hold");
+    const model = { ...MODEL, "/db/THIK": [1], "/db/ELEM": { "4": { TYPE: "PLATE", MATL: 1, SECT: 1, NODE: [1, 2] } } };
+    const put: PlanOperation = { endpoint: "/db/ELEM", method: "PUT", records: { "4": { SECT: 7 } } };
+    expect(plan.validate([put], { ...model, "/db/SECT": [1, 7] }).map((f) => [f.recordKey, f.value])).toEqual([["4", 7]]);
+    expect(plan.validate([del("/db/SECT", [1])], model)).toEqual([]);
+    expect(plan.validate([del("/db/THIK", [1])], model).map((f) => f.outcome)).toEqual(["orphaned"]);
+  });
+
+  it("follows a load case or group delete into each entry", () => {
+    const model = {
+      ...MODEL,
+      "/db/STLD": { "1": { NAME: "DL" }, "2": { NAME: "LL" } },
+      "/db/LDGR": { "1": { NAME: "G1" } },
+      "/db/BMLD": { "1": { ITEMS: [{ ID: 1, LCNAME: "LL", GROUP_NAME: "G1" }] } },
+      "/db/CNLD": { "2": { ITEMS: [{ ID: 1, LCNAME: "DL" }, { ID: 2, LCNAME: "LL", GROUP_NAME: "G1" }] } },
+      "/db/LCOM-GEN": { "1": { NAME: "C1", vCOMB: [{ ANAL: "ST", LCNAME: "LL", FACTOR: 1.0 }] } },
+    };
+    const ops = [del("/db/STLD", [2]), del("/db/LDGR", [1])];
+    expect(plan.validate(ops, model).map((f) => [f.index, f.reference.table, f.recordKey, f.outcome])).toEqual([
+      [0, "/db/BMLD", "1", "deleted"],
+      [0, "/db/CNLD", "2", "deleted"],
+      [0, "/db/LCOM-GEN", "1", "deleted"],
+    ]);
+    ops.push(del("/db/STLD", [1]));
+    const last = plan.validate(ops, model).at(-1);
+    expect([last?.index, last?.recordKey]).toEqual([2, "2"]);
+    expect(plan.validate([del("/db/LDGR", [1])], model).map((f) => [f.reference.table, f.outcome])).toEqual([
+      ["/db/BMLD", "cleared"],
+      ["/db/CNLD", "cleared"],
+    ]);
+  });
+
   it("refuses a GET", () => {
     expect(() => plan.order([{ endpoint: "/db/NODE", method: "GET" as never }])).toThrow();
   });
@@ -89,14 +153,17 @@ describe("plan.validate", () => {
     const ops = [
       w("/db/ELEM", { "1": { MATL: 1, SECT: 1, NODE: [1, 2] } }),
       w("/db/CNLD", { "1": { ITEMS: [{ ID: 1, LCNAME: "DL" }] } }),
-      del("/db/NODE", [2]),
       del("/db/MATL", [1]),
+      del("/db/NODE", [2]),
       del("/db/STLD", [1]),
     ];
     expect(plan.validate(ops, MODEL).map((f) => [f.index, f.kind, f.reference.field, f.outcome])).toEqual([
-      [2, "deleted", "NODE", "deleted"],
-      [3, "deleted", "MATL", "orphaned"],
+      [2, "deleted", "MATL", "orphaned"],
+      [3, "deleted", "NODE", "deleted"],
     ]);
+    // Deleting the node took the element with it, so a material delete after it finds nothing.
+    const swapped = [ops[0], ops[1], ops[3], ops[2]] as PlanOperation[];
+    expect(plan.validate(swapped, MODEL).map((f) => [f.index, f.reference.field])).toEqual([[2, "NODE"]]);
     const withCase = [w("/db/STLD", { "1": { NAME: "DL" } }), ...ops];
     const last = plan.validate(withCase, MODEL).at(-1);
     expect([last?.kind, last?.reference.field, last?.outcome]).toEqual(["deleted", "ITEMS[].LCNAME", "deleted"]);

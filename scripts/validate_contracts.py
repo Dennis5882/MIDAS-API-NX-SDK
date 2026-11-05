@@ -370,6 +370,14 @@ def check_references(contracts: list[tuple[Path, dict]], failures: Failures) -> 
     ledger_ids = {r["id"] for r in _load_yaml(VERIFICATION_DIR / "ledger.yaml")["records"]}
     count = 0
     for path, contract in contracts:
+        parent_fields: dict[int, list[dict]] = {}
+
+        def note_parents(fields: list[dict]) -> None:
+            for child in fields:
+                parent_fields[id(child)] = fields
+                note_parents(child.get("properties") or [])
+
+        note_parents(contract.get("fields", []))
         for field in _iter_fields(contract.get("fields", [])):
             ref = field.get("references")
             if not ref:
@@ -388,13 +396,38 @@ def check_references(contracts: list[tuple[Path, dict]], failures: Failures) -> 
                             f"field {field['key']!r} references {table} by {ref['nameField']!r}, "
                             f"which that contract does not record",
                         )
-            measured = ref["onMissing"] != "unverified" or "onTargetDelete" in ref
+            measured = ref["onMissing"] != "unverified" or (
+                "onTargetDelete" in ref and "deleteEvidence" not in ref
+            )
             if measured and ref["evidence"] not in ledger_ids:
                 failures.add(
                     path.name,
                     f"field {field['key']!r}: a measured reference must cite a ledger record, "
                     f"not {ref['evidence']!r}",
                 )
+            if "deleteEvidence" in ref:
+                if "onTargetDelete" not in ref:
+                    failures.add(path.name, f"field {field['key']!r}: deleteEvidence without onTargetDelete")
+                elif ref["deleteEvidence"] not in ledger_ids:
+                    failures.add(
+                        path.name,
+                        f"field {field['key']!r}: deleteEvidence {ref['deleteEvidence']!r} is not a ledger record",
+                    )
+            selector = ref.get("targetsBy")
+            if selector:
+                siblings = {f["key"] for f in parent_fields.get(id(field), [])}
+                if selector["path"] not in siblings:
+                    failures.add(
+                        path.name,
+                        f"field {field['key']!r}: targetsBy path {selector['path']!r} is not a field beside it",
+                    )
+                for value, tables in selector["cases"].items():
+                    stray = sorted(set(tables) - set(ref["tables"]))
+                    if stray:
+                        failures.add(
+                            path.name,
+                            f"field {field['key']!r}: targetsBy {value!r} names {stray}, not among its tables",
+                        )
             if ref.get("each") and field["type"] != "array":
                 failures.add(path.name, f"field {field['key']!r}: `each` on a non-array field")
 
@@ -475,6 +508,11 @@ def check_plan_parity(contracts: list[tuple[Path, dict]], failures: Failures) ->
             "each": ref.each,
             "onMissing": ref.on_missing,
             **({"onTargetDelete": ref.on_target_delete} if ref.on_target_delete else {}),
+            **(
+                {"targetsBy": {"path": ref.targets_by[0], "cases": {k: list(v) for k, v in sorted(ref.targets_by[1])}}}
+                if ref.targets_by
+                else {}
+            ),
         }
         for ref in plan.REFERENCES
     ]

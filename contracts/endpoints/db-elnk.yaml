@@ -131,10 +131,13 @@ fields:
       by: name
       nameField: NAME
       onMissing: dropped
+      onTargetDelete: cleared
       evidence: ledger-write-2026-11-04-2
+      deleteEvidence: ledger-write-2026-11-05-refs
       note: >-
         A missing name, or a /db/LDGR one, is not refused: the link is stored
         without BNGR_NAME (both products, 2026-11-04).
+        Deleting the group leaves the link without BNGR_NAME (both products, 2026-11-05).
   - key: ANGLE
     description: >-
       Beta Angle (°)

@@ -49,6 +49,11 @@ def reference_fields(contracts: Iterable[dict[str, Any]]) -> list[dict[str, Any]
                 row["onMissing"] = ref["onMissing"]
                 if "onTargetDelete" in ref:
                     row["onTargetDelete"] = ref["onTargetDelete"]
+                if "targetsBy" in ref:
+                    row["targetsBy"] = {
+                        "path": ref["targetsBy"]["path"],
+                        "cases": {k: list(v) for k, v in sorted(ref["targetsBy"]["cases"].items())},
+                    }
                 rows.append(row)
             nested = field.get("properties") or []
             if nested:

@@ -53,10 +53,12 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-/** The values at `path` in one record; empty slots (null, 0, "") skipped. */
-function values(record: unknown, path: string, each: boolean): unknown[] {
+/** `[value, the object holding it]` at `path` in one record; empty slots (null, 0, "") skipped. */
+function values(record: unknown, path: string, each: boolean): [unknown, Record<string, unknown>][] {
+  const parts = path.split(".");
+  const leaf = parts.pop() as string;
   let nodes: unknown[] = [record];
-  for (const part of path.split(".")) {
+  for (const part of parts) {
     const isList = part.endsWith("[]");
     const name = isList ? part.slice(0, -2) : part;
     const found: unknown[] = [];
@@ -68,14 +70,25 @@ function values(record: unknown, path: string, each: boolean): unknown[] {
     }
     nodes = found;
   }
-  const out: unknown[] = [];
-  for (const value of nodes) {
+  const out: [unknown, Record<string, unknown>][] = [];
+  for (const node of nodes) {
+    if (!isObject(node) || !(leaf in node)) continue;
+    const value = node[leaf];
     for (const item of each && Array.isArray(value) ? value : [value]) {
       if (item === null || item === undefined || item === 0 || item === "" || typeof item === "object") continue;
-      out.push(item);
+      out.push([item, node]);
     }
   }
   return out;
+}
+
+/** The table(s) a value names, given the object that holds the field (`targetsBy`). */
+function targetsFor(ref: ReferenceField, holder: Record<string, unknown>): readonly string[] {
+  if (ref.targetsBy) {
+    const picked = ref.targetsBy.cases[String(holder[ref.targetsBy.path])];
+    if (picked && holder[ref.targetsBy.path] !== undefined) return picked;
+  }
+  return ref.targets;
 }
 
 /** Every key and name a write to `endpoint` makes available as a target. */
@@ -95,6 +108,110 @@ function namesWritten(endpoint: string, records: Record<string, unknown>): Set<s
   return out;
 }
 
+function isIterable(value: unknown): value is Iterable<number | string> {
+  return typeof value === "object" && value !== null && Symbol.iterator in value;
+}
+
+/** The records still present that name something `op` removes, and what the
+ * measured `onTargetDelete` then does to them in `state`. */
+function deletedFindings<T extends PlanOperation>(
+  index: number,
+  op: T,
+  gone: Set<string>,
+  state: Map<string, Map<string, [number | null, unknown]>>,
+  known: Map<string, Set<string>>,
+): PlanFinding<T>[] {
+  const findings: PlanFinding<T>[] = [];
+  const effects = new Map<string, { table: string; recordKey: string; hits: [ReferenceField, Record<string, unknown>][] }>();
+  for (const [table, records] of state) {
+    const refs = references(table).filter((ref) => ref.targets.includes(op.endpoint));
+    for (const [recordKey, [origin, record]] of records) {
+      const where = origin === null ? "already in the model" : `operation ${origin}`;
+      for (const ref of refs) {
+        for (const [value, holder] of values(record, ref.field, ref.each)) {
+          if (!gone.has(String(value)) || !targetsFor(ref, holder).includes(op.endpoint)) continue;
+          const outcome = ref.onTargetDelete ?? "unverified";
+          findings.push({
+            index, operation: op, recordKey, reference: ref, value, kind: "deleted", outcome,
+            message:
+              `${op.endpoint} DELETE removes ${JSON.stringify(value)}, which ${table} record ${recordKey} ` +
+              `(${where}) names in ${ref.field}: ${outcome}`,
+          });
+          const id = JSON.stringify([table, recordKey]);
+          const entry = effects.get(id) ?? { table, recordKey, hits: [] };
+          entry.hits.push([ref, holder]);
+          effects.set(id, entry);
+        }
+      }
+    }
+  }
+  for (const { table, recordKey, hits } of effects.values()) applyDeleteEffects(state, known, table, recordKey, hits);
+  return findings;
+}
+
+/**
+ * Change one record in `state` as the product does: drop it or the list entries
+ * ("deleted"), or empty the fields ("cleared"). The record is replaced by a
+ * changed copy, never changed in place, since it may be the caller's. A path
+ * deeper than one list is left as it was.
+ */
+function applyDeleteEffects(
+  state: Map<string, Map<string, [number | null, unknown]>>,
+  known: Map<string, Set<string>>,
+  table: string,
+  recordKey: string,
+  hits: [ReferenceField, Record<string, unknown>][],
+): void {
+  const tableState = state.get(table);
+  const current = tableState?.get(recordKey);
+  if (!tableState || !current) return;
+  const [origin, record] = current;
+  let dropRecord = false;
+  const cleared: [string | null, number, string][] = [];
+  const dropped = new Map<string, Set<number>>();
+  for (const [ref, holder] of hits) {
+    const leaf = ref.field.split(".").pop() as string;
+    if (ref.onTargetDelete !== "deleted" && ref.onTargetDelete !== "cleared") continue;
+    if (!ref.field.includes("[]")) {
+      if (ref.onTargetDelete === "deleted") dropRecord = true;
+      else cleared.push([null, -1, leaf]);
+      continue;
+    }
+    const cut = ref.field.indexOf("[].");
+    const listName = ref.field.slice(0, cut);
+    const rest = ref.field.slice(cut + 3);
+    const entries = isObject(record) ? record[listName] : undefined;
+    if (rest.includes(".") || !Array.isArray(entries)) continue;
+    const position = entries.findIndex((entry) => entry === holder);
+    if (position < 0) continue;
+    if (ref.onTargetDelete === "deleted") {
+      const set = dropped.get(listName) ?? new Set<number>();
+      set.add(position);
+      dropped.set(listName, set);
+    } else cleared.push([listName, position, leaf]);
+  }
+  if (!dropRecord && !cleared.length && !dropped.size) return;
+  if (!dropRecord && isObject(record)) {
+    const changed = JSON.parse(JSON.stringify(record)) as Record<string, unknown>;
+    for (const [listName, position, leaf] of cleared) {
+      const target = listName === null ? changed : ((changed[listName] as unknown[])[position] as Record<string, unknown>);
+      target[leaf] = "";
+    }
+    for (const [listName, positions] of dropped) {
+      const kept = (changed[listName] as unknown[]).filter((_, i) => !positions.has(i));
+      changed[listName] = kept;
+      if (!kept.length) dropRecord = true;
+    }
+    if (!dropRecord) {
+      tableState.set(recordKey, [origin, changed]);
+      return;
+    }
+  }
+  const knownSet = known.get(table);
+  if (knownSet) for (const name of namesWritten(table, { [recordKey]: record })) knownSet.delete(name);
+  tableState.delete(recordKey);
+}
+
 /**
  * Order `/db/*` writes so a record is sent after the records it names.
  *
@@ -107,8 +224,11 @@ function namesWritten(endpoint: string, records: Record<string, unknown>): Set<s
  * When the order is wrong, a missing node, load case or group name is refused,
  * but an element naming a material or section that does not exist is stored as
  * an orphan, and `/db/GRUP` and `/db/ELNK` drop a missing entry silently. A
- * per-id DELETE of a node removes the elements on it, and of a load case the
- * loads in it.
+ * per-id DELETE of a node removes the elements on it; of a load case, each load
+ * entry and combination entry naming it, and a record left with none; of a
+ * group, only the name, which is emptied; of a material, section or thickness,
+ * nothing - the elements stay as orphans. A plate's `SECT` is a `/db/THIK`
+ * number and a beam's a `/db/SECT` one (told apart by analysis).
  */
 export const plan = {
   /** Table -> the tables its records name. */
@@ -146,26 +266,37 @@ export const plan = {
    * dropping. Offline and pure; never throws for a finding. Operations are read
    * **in the order given** - run `order()` first to check what will be sent.
    *
-   * `existing` maps a table to the ids or names already in the model (ids for a
-   * table named by id, `NAME` values for one named by name). A target table
-   * absent from it is unknown, and a value naming it is never reported missing;
-   * pass `{"/db/NODE": []}` to say a table is empty. `0`, `""` and `null` are
-   * empty slots (`/db/ELEM` pads `NODE` with zeros) and are skipped.
+   * `existing` describes what is already in the model, per table, as either the
+   * ids or names in it (an array or other iterable: ids for a table named by id,
+   * `NAME` values for one named by name) or its records keyed by id, as a GET of
+   * the table returns them. A target table absent from it is unknown, and a
+   * value naming it is never reported missing; pass `{"/db/NODE": []}` to say a
+   * table is empty. `0`, `""` and `null` are empty slots (`/db/ELEM` pads `NODE`
+   * with zeros) and are skipped.
    *
-   * A DELETE reports the records written earlier in the list that name what it
-   * removes, with the measured `onTargetDelete`. Records already in the model
-   * cannot be seen from here, and a name-keyed target removed by a DELETE is
-   * tracked only when the list wrote it.
+   * A DELETE reports every record that names what it removes and is still there
+   * when it is sent: one written earlier in the list, or one passed as a record
+   * in `existing`. A table given only as ids has no records to look in. Where
+   * the measured `onTargetDelete` is "deleted", the records it takes with it are
+   * gone from then on.
    */
   validate: <T extends PlanOperation>(
     operations: readonly T[],
-    existing: Readonly<Record<string, Iterable<number | string>>> = {},
+    existing: Readonly<Record<string, Iterable<number | string> | Readonly<Record<string, unknown>>>> = {},
   ): PlanFinding<T>[] => {
     checkMethods(operations);
-    const known = new Map<string, Set<string>>(
-      Object.entries(existing).map(([table, ids]) => [table, new Set([...ids].map(String))]),
-    );
-    const byId = new Map<string, Map<string, Set<string>>>();
+    const known = new Map<string, Set<string>>();
+    /** table -> key -> [operation index or null, record] */
+    const state = new Map<string, Map<string, [number | null, unknown]>>();
+    for (const [table, given] of Object.entries(existing)) {
+      if (isIterable(given)) {
+        known.set(table, new Set([...given].map(String)));
+      } else {
+        const records = Object.fromEntries(Object.entries(given));
+        known.set(table, namesWritten(table, records));
+        state.set(table, new Map(Object.entries(records).map(([key, record]) => [key, [null, record]])));
+      }
+    }
     const later = new Map<string, [number, Set<string>][]>();
     operations.forEach((op, index) => {
       const method = String(op.method).toUpperCase();
@@ -177,42 +308,33 @@ export const plan = {
     });
 
     const findings: PlanFinding<T>[] = [];
-    const written: [number, T][] = [];
     operations.forEach((op, index) => {
-      if (String(op.method).toUpperCase() === "DELETE") {
-        const gone = new Set((op.ids ?? []).map(String));
-        const table = byId.get(op.endpoint);
-        for (const key of [...gone]) {
-          for (const name of table?.get(key) ?? []) gone.add(name);
-          table?.delete(key);
+      const method = String(op.method).toUpperCase();
+      if (method === "DELETE") {
+        const tableState = state.get(op.endpoint);
+        const gone = new Set<string>();
+        for (const key of (op.ids ?? []).map(String)) {
+          gone.add(key);
+          const entry = tableState?.get(key);
+          if (entry) {
+            for (const name of namesWritten(op.endpoint, { [key]: entry[1] })) gone.add(name);
+            tableState?.delete(key);
+          }
         }
         const knownSet = known.get(op.endpoint);
         if (knownSet) for (const name of gone) knownSet.delete(name);
-        for (const [earlierIndex, earlier] of written) {
-          for (const ref of references(earlier.endpoint)) {
-            if (!ref.targets.includes(op.endpoint)) continue;
-            for (const [recordKey, record] of Object.entries(earlier.records ?? {})) {
-              for (const value of values(record, ref.field, ref.each)) {
-                if (!gone.has(String(value))) continue;
-                const outcome = ref.onTargetDelete ?? "unverified";
-                findings.push({
-                  index, operation: op, recordKey, reference: ref, value, kind: "deleted", outcome,
-                  message:
-                    `${op.endpoint} DELETE removes ${JSON.stringify(value)}, which ${earlier.endpoint} ` +
-                    `record ${recordKey} (operation ${earlierIndex}) names in ${ref.field}: ${outcome}`,
-                });
-              }
-            }
-          }
-        }
+        findings.push(...deletedFindings(index, op, gone, state, known));
         return;
       }
-      for (const [recordKey, record] of Object.entries(op.records ?? {})) {
+      for (const [recordKey, written] of Object.entries(op.records ?? {})) {
+        // A PUT merges, so a field it leaves out still decides targetsBy.
+        const previous = method === "PUT" ? state.get(op.endpoint)?.get(recordKey)?.[1] : undefined;
+        const record = isObject(previous) && isObject(written) ? { ...previous, ...written } : written;
         for (const ref of references(op.endpoint)) {
-          if (!ref.targets.every((t) => known.has(t))) continue;
-          for (const value of values(record, ref.field, ref.each)) {
-            if (ref.targets.some((t) => known.get(t)?.has(String(value)))) continue;
-            const createdLater = ref.targets.flatMap((t) =>
+          for (const [value, holder] of values(record, ref.field, ref.each)) {
+            const targets = targetsFor(ref, holder);
+            if (!targets.every((t) => known.has(t)) || targets.some((t) => known.get(t)?.has(String(value)))) continue;
+            const createdLater = targets.flatMap((t) =>
               (later.get(t) ?? []).filter(([i, names]) => i > index && names.has(String(value))).map(([i]) => i),
             );
             const hint = createdLater.length ? `; operation ${createdLater[0]} writes it later, see order()` : "";
@@ -220,23 +342,21 @@ export const plan = {
               index, operation: op, recordKey, reference: ref, value, kind: "missing", outcome: ref.onMissing,
               message:
                 `${op.endpoint} record ${recordKey} names ${JSON.stringify(value)} in ${ref.field}, ` +
-                `which ${ref.targets.join("/")} will not hold: ${ref.onMissing}${hint}`,
+                `which ${targets.join("/")} will not hold: ${ref.onMissing}${hint}`,
             });
           }
         }
       }
       if (op.records) {
-        const names = namesWritten(op.endpoint, op.records);
         const knownSet = known.get(op.endpoint);
-        if (knownSet) for (const name of names) knownSet.add(name);
-        const table = byId.get(op.endpoint) ?? new Map<string, Set<string>>();
-        byId.set(op.endpoint, table);
+        if (knownSet) for (const name of namesWritten(op.endpoint, op.records)) knownSet.add(name);
+        const tableState = state.get(op.endpoint) ?? new Map<string, [number | null, unknown]>();
+        state.set(op.endpoint, tableState);
         for (const [key, record] of Object.entries(op.records)) {
-          const entry = table.get(key) ?? new Set<string>();
-          for (const name of namesWritten(op.endpoint, { [key]: record })) if (name !== key) entry.add(name);
-          table.set(key, entry);
+          const previous = tableState.get(key)?.[1];
+          const merged = method === "PUT" && isObject(previous) && isObject(record) ? { ...previous, ...record } : record;
+          tableState.set(key, [index, merged]);
         }
-        written.push([index, op]);
       }
     });
     return findings;

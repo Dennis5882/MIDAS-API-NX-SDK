@@ -12,11 +12,16 @@ tables that name nothing.
 What the product does when the order is wrong, measured the same day: a missing
 node, load case or group name is refused, but an element naming a material or
 section that does not exist is stored as an orphan, and ``/db/GRUP`` and
-``/db/ELNK`` drop a missing entry silently. The other way round, a per-id DELETE
-of a node removes the elements on it, and of a load case the loads in it.
+``/db/ELNK`` drop a missing entry silently. The other way round (2026-11-04 and
+-05), a per-id DELETE of a node removes the elements on it; of a load case, each
+load entry and combination entry naming it, and a record left with none; of a
+group, nothing but the name, which is emptied; of a material, section or
+thickness, nothing - the elements stay as orphans. A plate's ``SECT`` is a
+``/db/THIK`` number and a beam's a ``/db/SECT`` one (told apart by analysis).
 """
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass
 from typing import (
     Any,
@@ -30,6 +35,7 @@ from typing import (
     Sequence,
     Set,
     Tuple,
+    Union,
 )
 
 #: Table -> the tables its records name. Written here rather than read at run
@@ -60,7 +66,14 @@ class Reference:
     naming no record - ``refused`` (the write fails), ``stored`` (kept, an
     orphan), ``dropped`` (kept without the value, silently) or ``unverified``.
     ``on_target_delete`` is what a per-id DELETE of the named record did to
-    this one - ``deleted`` or ``orphaned`` - and ``None`` where not measured.
+    this one, and ``None`` where not measured: ``deleted`` (the record went,
+    or for a field inside a list the entry naming it, and the record once no
+    entry was left), ``orphaned`` (it stayed, naming nothing) or ``cleared``
+    (it stayed with the field emptied).
+
+    ``targets_by`` says which of ``targets`` a value names when another field
+    beside it decides: ``("TYPE", (("BEAM", ("/db/SECT",)), ...))``. A value of
+    that field not listed names one of ``targets``; :meth:`targets_for` applies it.
     """
 
     table: str
@@ -71,30 +84,70 @@ class Reference:
     each: bool = False  # the field is an array and each element is a reference
     on_missing: str = "unverified"
     on_target_delete: Optional[str] = None
+    targets_by: Optional[Tuple[str, Tuple[Tuple[str, Tuple[str, ...]], ...]]] = None
+
+    def targets_for(self, container: Any) -> Tuple[str, ...]:
+        """The table(s) a value names, given the mapping that holds the field."""
+        if self.targets_by and isinstance(container, Mapping):
+            path, cases = self.targets_by
+            for value, tables in cases:
+                if container.get(path) == value:
+                    return tables
+        return self.targets
 
 
 #: Every field reference the contracts record, sorted by table and field.
 #: Held equal to them, and to npm's ``referenceFields``, by ``validate_contracts.py``.
 REFERENCES: Tuple[Reference, ...] = (
-    Reference("/db/BMLD", "ITEMS[].GROUP_NAME", ("/db/LDGR",), "name", name_field="NAME", on_missing="refused"),
-    Reference("/db/BMLD", "ITEMS[].LCNAME", ("/db/STLD",), "name", name_field="NAME", on_missing="refused"),
-    Reference("/db/CNLD", "ITEMS[].GROUP_NAME", ("/db/LDGR",), "name", name_field="NAME", on_missing="refused"),
+    Reference(
+        "/db/BMLD", "ITEMS[].GROUP_NAME", ("/db/LDGR",), "name",
+        name_field="NAME", on_missing="refused", on_target_delete="cleared",
+    ),
+    Reference(
+        "/db/BMLD", "ITEMS[].LCNAME", ("/db/STLD",), "name",
+        name_field="NAME", on_missing="refused", on_target_delete="deleted",
+    ),
+    Reference(
+        "/db/CNLD", "ITEMS[].GROUP_NAME", ("/db/LDGR",), "name",
+        name_field="NAME", on_missing="refused", on_target_delete="cleared",
+    ),
     Reference(
         "/db/CNLD", "ITEMS[].LCNAME", ("/db/STLD",), "name",
         name_field="NAME", on_missing="refused", on_target_delete="deleted",
     ),
-    Reference("/db/CONS", "ITEMS[].GROUP_NAME", ("/db/BNGR",), "name", name_field="NAME", on_missing="refused"),
+    Reference(
+        "/db/CONS", "ITEMS[].GROUP_NAME", ("/db/BNGR",), "name",
+        name_field="NAME", on_missing="refused", on_target_delete="cleared",
+    ),
     Reference("/db/ELEM", "MATL", ("/db/MATL",), "id", on_missing="stored", on_target_delete="orphaned"),
     Reference("/db/ELEM", "NODE", ("/db/NODE",), "id", each=True, on_missing="refused", on_target_delete="deleted"),
-    Reference("/db/ELEM", "SECT", ("/db/SECT", "/db/THIK"), "id", on_missing="stored", on_target_delete="orphaned"),
-    Reference("/db/ELNK", "BNGR_NAME", ("/db/BNGR",), "name", name_field="NAME", on_missing="dropped"),
+    Reference(
+        "/db/ELEM", "SECT", ("/db/SECT", "/db/THIK"), "id", on_missing="stored", on_target_delete="orphaned",
+        targets_by=("TYPE", (("BEAM", ("/db/SECT",)), ("PLATE", ("/db/THIK",)))),
+    ),
+    Reference(
+        "/db/ELNK", "BNGR_NAME", ("/db/BNGR",), "name",
+        name_field="NAME", on_missing="dropped", on_target_delete="cleared",
+    ),
     Reference("/db/ELNK", "NODE", ("/db/NODE",), "id", each=True, on_missing="refused"),
-    Reference("/db/FRLS", "ITEMS[].GROUP_NAME", ("/db/BNGR",), "name", name_field="NAME", on_missing="refused"),
+    Reference(
+        "/db/FRLS", "ITEMS[].GROUP_NAME", ("/db/BNGR",), "name",
+        name_field="NAME", on_missing="refused", on_target_delete="cleared",
+    ),
     Reference("/db/GRUP", "E_LIST", ("/db/ELEM",), "id", each=True, on_missing="dropped"),
     Reference("/db/GRUP", "N_LIST", ("/db/NODE",), "id", each=True, on_missing="dropped"),
-    Reference("/db/LCOM-GEN", "vCOMB[].LCNAME", ("/db/STLD",), "name", name_field="NAME", on_missing="refused"),
-    Reference("/db/PRES", "ITEMS[].GROUP_NAME", ("/db/LDGR",), "name", name_field="NAME", on_missing="refused"),
-    Reference("/db/PRES", "ITEMS[].LCNAME", ("/db/STLD",), "name", name_field="NAME", on_missing="refused"),
+    Reference(
+        "/db/LCOM-GEN", "vCOMB[].LCNAME", ("/db/STLD",), "name",
+        name_field="NAME", on_missing="refused", on_target_delete="deleted",
+    ),
+    Reference(
+        "/db/PRES", "ITEMS[].GROUP_NAME", ("/db/LDGR",), "name",
+        name_field="NAME", on_missing="refused", on_target_delete="cleared",
+    ),
+    Reference(
+        "/db/PRES", "ITEMS[].LCNAME", ("/db/STLD",), "name",
+        name_field="NAME", on_missing="refused", on_target_delete="deleted",
+    ),
 )
 
 
@@ -315,10 +368,12 @@ def order(operations: Sequence[Operation]) -> List[Operation]:
     return [op for _, op in sorted(enumerate(operations), key=key)]
 
 
-def _values(record: Any, path: str, each: bool) -> Iterator[Any]:
-    """The values at ``path`` in one record; empty slots (None, 0, "") skipped."""
+def _values(record: Any, path: str, each: bool) -> Iterator[Tuple[Any, Mapping[str, Any]]]:
+    """``(value, the mapping holding it)`` at ``path`` in one record; empty
+    slots (None, 0, "") skipped."""
+    *parents, leaf = path.split(".")
     nodes: List[Any] = [record]
-    for part in path.split("."):
+    for part in parents:
         is_list = part.endswith("[]")
         name = part[:-2] if is_list else part
         found: List[Any] = []
@@ -331,11 +386,14 @@ def _values(record: Any, path: str, each: bool) -> Iterator[Any]:
             else:
                 found.append(value)
         nodes = found
-    for value in nodes:
+    for node in nodes:
+        if not isinstance(node, Mapping) or leaf not in node:
+            continue
+        value = node[leaf]
         for item in value if each and isinstance(value, list) else [value]:
             if item is None or item == 0 or item == "" or isinstance(item, (Mapping, list)):
                 continue
-            yield item
+            yield item, node
 
 
 def _names_written(endpoint: str, records: Mapping[str, Any]) -> Set[str]:
@@ -351,7 +409,7 @@ def _names_written(endpoint: str, records: Mapping[str, Any]) -> Set[str]:
 
 def validate(
     operations: Sequence[Operation],
-    existing: Optional[Mapping[str, Iterable[Any]]] = None,
+    existing: Optional[Mapping[str, Union[Iterable[Any], Mapping[Any, Any]]]] = None,
 ) -> List[Finding]:
     """Report each reference the product will answer by refusing, orphaning or dropping.
 
@@ -359,75 +417,159 @@ def validate(
     operation order. The operations are read **in the order given** - run
     :func:`order` first to check what will actually be sent.
 
-    ``existing`` maps a table to the ids or names already in the model (ids for
-    a table named by id, ``NAME`` values for one named by name). A target table
-    absent from it is unknown, and a value naming it is never reported missing:
-    a write earlier in the list does not prove a record is the only one. Pass
-    ``{"/db/NODE": []}`` to say a table is empty. A value of ``0``, ``""`` or
-    ``None`` is an empty slot (``/db/ELEM`` pads ``NODE`` with zeros) and is
-    skipped.
+    ``existing`` describes what is already in the model, per table, as either
+    the ids or names in it (ids for a table named by id, ``NAME`` values for one
+    named by name) or its records, keyed by id, as a GET of the table returns
+    them. A target table absent from it is unknown, and a value naming it is
+    never reported missing: a write earlier in the list does not prove a record
+    is the only one. Pass ``{"/db/NODE": []}`` to say a table is empty. A value
+    of ``0``, ``""`` or ``None`` is an empty slot (``/db/ELEM`` pads ``NODE``
+    with zeros) and is skipped.
 
-    A DELETE reports the records written earlier in the list that name what it
-    removes, with the measured ``on_target_delete``. Records already in the
-    model cannot be seen from here. A name-keyed target removed by a DELETE is
-    tracked only when the list wrote it.
+    A DELETE reports every record that names what it removes and is still there
+    when it is sent: one written earlier in the list, or one passed as a record
+    in ``existing``. A table given only as ids has no records to look in. Where
+    the measured ``on_target_delete`` is ``"deleted"``, the records it takes with
+    it are gone from then on.
     """
     _check_methods(operations)
-    known: Dict[str, Set[str]] = {table: {str(v) for v in values} for table, values in (existing or {}).items()}
-    by_id: Dict[str, Dict[str, Set[str]]] = {}  # table -> key -> names written under it
+    known: Dict[str, Set[str]] = {}
+    state: Dict[str, Dict[str, Tuple[Optional[int], Any]]] = {}  # table -> key -> (operation index or None, record)
+    for table, given in (existing or {}).items():
+        if isinstance(given, Mapping):
+            records = {str(key): record for key, record in given.items()}
+            known[table] = _names_written(table, records)
+            state[table] = {key: (None, record) for key, record in records.items()}
+        else:
+            known[table] = {str(v) for v in given}
     later: Dict[str, List[Tuple[int, Set[str]]]] = {}
     for index, op in enumerate(operations):
         if op.method.upper() in WRITE_METHODS and op.records:
             later.setdefault(op.endpoint, []).append((index, _names_written(op.endpoint, op.records)))
 
     findings: List[Finding] = []
-    written: List[Tuple[int, Operation]] = []
     for index, op in enumerate(operations):
         method = op.method.upper()
         if method == "DELETE":
-            removed = {str(i) for i in op.ids or ()}
-            gone = set(removed)
-            for key in removed:
-                gone |= by_id.get(op.endpoint, {}).pop(key, set())
+            table_state = state.get(op.endpoint, {})
+            gone: Set[str] = set()
+            for key in (str(i) for i in op.ids or ()):
+                gone.add(key)
+                if key in table_state:
+                    gone |= _names_written(op.endpoint, {key: table_state.pop(key)[1]})
             if op.endpoint in known:
                 known[op.endpoint] -= gone
-            for earlier_index, earlier in written:
-                for ref in references(earlier.endpoint):
-                    if op.endpoint not in ref.targets:
-                        continue
-                    for record_key, record in (earlier.records or {}).items():
-                        for value in _values(record, ref.field, ref.each):
-                            if str(value) in gone:
-                                outcome = ref.on_target_delete or "unverified"
-                                findings.append(Finding(
-                                    index, op, str(record_key), ref, value, "deleted", outcome,
-                                    f"{op.endpoint} DELETE removes {value!r}, which {earlier.endpoint} "
-                                    f"record {record_key} (operation {earlier_index}) names in "
-                                    f"{ref.field}: {outcome}",
-                                ))
+            findings.extend(_deleted_findings(index, op, gone, state, known))
             continue
         for record_key, record in (op.records or {}).items():
+            if method == "PUT":  # a PUT merges, so a field it leaves out still decides targets_by
+                previous = state.get(op.endpoint, {}).get(str(record_key))
+                if previous and isinstance(previous[1], Mapping) and isinstance(record, Mapping):
+                    record = {**previous[1], **record}
             for ref in references(op.endpoint):
-                if not all(t in known for t in ref.targets):
-                    continue
-                for value in _values(record, ref.field, ref.each):
-                    if any(str(value) in known[t] for t in ref.targets):
+                for value, holder in _values(record, ref.field, ref.each):
+                    targets = ref.targets_for(holder)
+                    if not all(t in known for t in targets) or any(str(value) in known[t] for t in targets):
                         continue
                     created_later = [
-                        i for t in ref.targets for i, names in later.get(t, []) if i > index and str(value) in names
+                        i for t in targets for i, names in later.get(t, []) if i > index and str(value) in names
                     ]
                     hint = f"; operation {created_later[0]} writes it later, see order()" if created_later else ""
                     findings.append(Finding(
                         index, op, str(record_key), ref, value, "missing", ref.on_missing,
                         f"{op.endpoint} record {record_key} names {value!r} in {ref.field}, "
-                        f"which {'/'.join(ref.targets)} will not hold: {ref.on_missing}{hint}",
+                        f"which {'/'.join(targets)} will not hold: {ref.on_missing}{hint}",
                     ))
         if op.records:
-            names = _names_written(op.endpoint, op.records)
             if op.endpoint in known:
-                known[op.endpoint] |= names
+                known[op.endpoint] |= _names_written(op.endpoint, op.records)
+            table_state = state.setdefault(op.endpoint, {})
             for key, record in op.records.items():
-                entry = by_id.setdefault(op.endpoint, {}).setdefault(str(key), set())
-                entry |= _names_written(op.endpoint, {key: record}) - {str(key)}
-            written.append((index, op))
+                previous = table_state.get(str(key))
+                if method == "PUT" and previous and isinstance(previous[1], Mapping) and isinstance(record, Mapping):
+                    record = {**previous[1], **record}
+                table_state[str(key)] = (index, record)
     return findings
+
+
+def _deleted_findings(
+    index: int,
+    op: Operation,
+    gone: Set[str],
+    state: Dict[str, Dict[str, Tuple[Optional[int], Any]]],
+    known: Dict[str, Set[str]],
+) -> List[Finding]:
+    """The records still present that name something ``op`` removes, and what
+    the measured ``on_target_delete`` then does to them in ``state``."""
+    findings: List[Finding] = []
+    effects: Dict[Tuple[str, str], List[Tuple[Reference, Mapping[str, Any]]]] = {}
+    for table, records in state.items():
+        refs = [ref for ref in references(table) if op.endpoint in ref.targets]
+        for record_key, (origin, record) in records.items():
+            where = "already in the model" if origin is None else f"operation {origin}"
+            for ref in refs:
+                for value, holder in _values(record, ref.field, ref.each):
+                    if str(value) not in gone or op.endpoint not in ref.targets_for(holder):
+                        continue
+                    outcome = ref.on_target_delete or "unverified"
+                    findings.append(Finding(
+                        index, op, record_key, ref, value, "deleted", outcome,
+                        f"{op.endpoint} DELETE removes {value!r}, which {table} record {record_key} "
+                        f"({where}) names in {ref.field}: {outcome}",
+                    ))
+                    effects.setdefault((table, record_key), []).append((ref, holder))
+    for (table, record_key), hits in effects.items():
+        _apply_delete_effects(state, known, table, record_key, hits)
+    return findings
+
+
+def _apply_delete_effects(
+    state: Dict[str, Dict[str, Tuple[Optional[int], Any]]],
+    known: Dict[str, Set[str]],
+    table: str,
+    record_key: str,
+    hits: List[Tuple[Reference, Mapping[str, Any]]],
+) -> None:
+    """Change one record in ``state`` as the product does: drop it or the list
+    entries (``deleted``), or empty the fields (``cleared``). The record is
+    replaced by a changed copy, never changed in place, since it may be the
+    caller's. A path deeper than one list is left as it was."""
+    origin, record = state[table][record_key]
+    drop_record = False
+    cleared: List[Tuple[Optional[str], int, str]] = []  # (list name, position, field)
+    dropped: Dict[str, Set[int]] = {}
+    for ref, holder in hits:
+        leaf = ref.field.rsplit(".", 1)[-1]
+        if ref.on_target_delete not in ("deleted", "cleared"):
+            continue
+        if "[]" not in ref.field:
+            if ref.on_target_delete == "deleted":
+                drop_record = True
+            else:
+                cleared.append((None, -1, leaf))
+            continue
+        list_name, rest = ref.field.split("[].", 1)
+        entries = record.get(list_name) if isinstance(record, Mapping) else None
+        if "." in rest or not isinstance(entries, list):
+            continue
+        position = next((i for i, entry in enumerate(entries) if entry is holder), None)
+        if position is None:
+            continue
+        if ref.on_target_delete == "deleted":
+            dropped.setdefault(list_name, set()).add(position)
+        else:
+            cleared.append((list_name, position, leaf))
+    if not (drop_record or cleared or dropped):
+        return
+    if not drop_record:
+        changed = copy.deepcopy(dict(record))
+        for holder_list, position, leaf in cleared:
+            (changed if holder_list is None else changed[holder_list][position])[leaf] = ""
+        for list_name, positions in dropped.items():
+            changed[list_name] = [e for i, e in enumerate(changed[list_name]) if i not in positions]
+            drop_record = drop_record or not changed[list_name]
+        if not drop_record:
+            state[table][record_key] = (origin, changed)
+            return
+    known.get(table, set()).difference_update(_names_written(table, {record_key: record}))
+    del state[table][record_key]

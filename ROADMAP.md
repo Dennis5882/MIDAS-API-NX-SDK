@@ -127,6 +127,7 @@ Each row is one `(date, Gen build, Civil build)` combination the ledger cites, *
 | 2026-11-04 | MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-11-04 (last author-confirmed Build 10/30/2026 on 2026-11-01) | ? |
 | 2026-11-04 | MIDAS Gen NX 2026 (v2.2), build not re-read on 2026-11-04 (last author-confirmed Build 10/30/2026 on 2026-11-01) | MIDAS Civil NX 2026 (v2.3), build not re-read on 2026-11-04 (last author-confirmed Build 10/31/2026 on 2026-11-01) |
 | 2026-11-05 | ? | MIDAS Civil NX 2026 (v2.3), Build 10/31/2026 (author-confirmed from the About dialog 2026-11-05) |
+| 2026-11-05 | MIDAS Gen NX 2026 (v2.2), Build 10/17/2026 (author-confirmed from the About dialog 2026-11-05) | MIDAS Civil NX 2026 (v2.3), Build 10/31/2026 (author-confirmed from the About dialog 2026-11-05) |
 | 2026-11-05 | MIDAS Gen NX 2026 (v2.2), Build 10/17/2026 (author-confirmed from the About dialog 2026-11-05; the 2026-11-01 records say Build 10/30/2026) | ? |
 | 2026-11-05 | MIDAS Gen NX 2026 (v2.2), Build 10/17/2026 (author-confirmed from the About dialog 2026-11-05; the 2026-11-01 records say Build 10/30/2026) | MIDAS Civil NX 2026 (v2.3), Build 10/31/2026 (author-confirmed from the About dialog 2026-11-05) |
 

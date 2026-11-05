@@ -143,11 +143,14 @@ fields:
           by: name
           nameField: NAME
           onMissing: refused
+          onTargetDelete: cleared
           evidence: ledger-write-2026-11-04-2
+          deleteEvidence: ledger-write-2026-11-05-refs
           note: >-
             A /db/LDGR name answers Unknown Error like a missing one. A /db/BNGR
             name is accepted but reads back as an empty string (both products,
             2026-11-04).
+            Deleting the group leaves the record with GROUP_NAME "" (both products, 2026-11-05).
       - key: CONSTRAINT
         description: Constraint state for DX, DY, DZ, RX, RY, RZ and RW.
         type: string

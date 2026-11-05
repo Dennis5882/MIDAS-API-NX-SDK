@@ -131,12 +131,26 @@ fields:
       onMissing: stored
       onTargetDelete: orphaned
       evidence: ledger-write-2026-11-04-2
+      targetsBy:
+        path: TYPE
+        cases:
+          BEAM: [/db/SECT]
+          PLATE: [/db/THIK]
+        evidence: ledger-write-2026-11-05-refs
+        note: >-
+          Told apart by a solve on both products: a PLATE whose thickness was
+          deleted fails analysis (Gen names the thickness) and one pointed at a
+          number only /db/THIK holds solves; a BEAM pointed at a number only
+          /db/THIK holds fails (Gen names the section). Other element types were
+          not tried and stay "one of /db/SECT, /db/THIK".
       note: >-
-        A /db/SECT record for line elements (BEAM, TRUSS, ...), a /db/THIK
-        record for PLATE and WALL. Measured 2026-11-04 on Gen and Civil: a
-        missing section or thickness is stored as an orphan for both a BEAM and
-        a PLATE. onTargetDelete was measured by deleting a /db/SECT record in use;
-        a /db/THIK one was not tried.
+        A /db/SECT record or a /db/THIK record by element type (targetsBy).
+        Measured 2026-11-04 on Gen and Civil: a missing section or thickness is
+        stored as an orphan for both a BEAM and a PLATE, so the write never
+        tells which table a number was read from - only an analysis does.
+        onTargetDelete was measured by deleting a /db/SECT record in use
+        (2026-11-04) and a /db/THIK record in use (2026-11-05): the element
+        stays either way.
   - key: NODE
     description: >-
       Node No.

@@ -126,13 +126,16 @@ def test_validate_reports_what_a_delete_does_to_records_written_before_it():
     ops = [
         Operation("/db/ELEM", "POST", records={"1": {"MATL": 1, "SECT": 1, "NODE": [1, 2]}}),
         Operation("/db/CNLD", "POST", records={"1": {"ITEMS": [{"ID": 1, "LCNAME": "DL"}]}}),
-        Operation("/db/NODE", "DELETE", ids=[2]),
         Operation("/db/MATL", "DELETE", ids=[1]),
+        Operation("/db/NODE", "DELETE", ids=[2]),
         Operation("/db/STLD", "DELETE", ids=[1]),
     ]
     found = [(f.index, f.kind, f.reference.field, f.outcome) for f in plan.validate(ops, MODEL)]
     # /db/STLD is named by NAME and the list never wrote record 1, so its name is unknown.
-    assert found == [(2, "deleted", "NODE", "deleted"), (3, "deleted", "MATL", "orphaned")]
+    assert found == [(2, "deleted", "MATL", "orphaned"), (3, "deleted", "NODE", "deleted")]
+    # Deleting the node took the element with it, so a material delete after it finds nothing.
+    swapped = [ops[0], ops[1], ops[3], ops[2]]
+    assert [(f.index, f.reference.field) for f in plan.validate(swapped, MODEL)] == [(2, "NODE")]
     ops[4] = Operation("/db/STLD", "DELETE", ids=[1])
     ops.insert(0, Operation("/db/STLD", "POST", records={"1": {"NAME": "DL"}}))
     assert [(f.kind, f.reference.field, f.outcome) for f in plan.validate(ops, MODEL)][-1] == (
@@ -142,6 +145,75 @@ def test_validate_reports_what_a_delete_does_to_records_written_before_it():
     ops.append(Operation("/db/ELEM", "POST", records={"2": {"MATL": 1, "SECT": 1, "NODE": [1, 2]}}))
     tail = [(f.index, f.reference.field, f.value) for f in plan.validate(ops, MODEL) if f.kind == "missing"]
     assert tail == [(6, "MATL", 1), (6, "NODE", 2)]
+
+
+def test_validate_reports_a_delete_against_records_already_in_the_model():
+    model = {
+        **MODEL,
+        "/db/ELEM": {"7": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [1, 2]}},
+        "/db/STLD": {"1": {"NAME": "DL"}},
+        "/db/CNLD": {"2": {"ITEMS": [{"ID": 1, "LCNAME": "DL"}]}},
+    }
+    ops = [Operation("/db/SECT", "DELETE", ids=[1]), Operation("/db/STLD", "DELETE", ids=[1])]
+    found = plan.validate(ops, model)
+    assert [(f.index, f.record_key, f.reference.field, f.outcome) for f in found] == [
+        (0, "7", "SECT", "orphaned"),
+        (1, "2", "ITEMS[].LCNAME", "deleted"),
+    ]
+    assert "already in the model" in found[0].message
+    # The load case's name came from its record, so a write naming it afterwards is missing.
+    ops.append(Operation("/db/CNLD", "POST", records={"3": {"ITEMS": [{"ID": 2, "LCNAME": "DL"}]}}))
+    assert [(f.index, f.kind) for f in plan.validate(ops, model)][-1] == (2, "missing")
+    # A record the list rewrote no longer names what it used to.
+    rewrite = Operation("/db/ELEM", "PUT", records={"7": {"SECT": 2}})
+    assert plan.validate([rewrite, ops[0]], {**model, "/db/SECT": [1, 2]}) == []
+    # Ids alone give nothing to look in.
+    assert plan.validate(ops[:1], {**model, "/db/ELEM": [7]}) == []
+
+
+def test_validate_reads_an_element_section_from_the_table_its_type_names():
+    ops = [
+        Operation("/db/ELEM", "POST", records={
+            "1": {"TYPE": "PLATE", "MATL": 1, "SECT": 1, "NODE": [1, 2, 0, 0]},
+            "2": {"TYPE": "BEAM", "MATL": 1, "SECT": 1, "NODE": [1, 2]},
+            "3": {"TYPE": "TRUSS", "MATL": 1, "SECT": 1, "NODE": [1, 2]},
+        }),
+    ]
+    found = plan.validate(ops, MODEL)  # SECT 1 exists, THIK is empty
+    assert [(f.record_key, f.value, f.outcome) for f in found] == [("1", 1, "stored")]
+    assert "/db/THIK will not hold" in found[0].message
+    # A PUT that leaves TYPE out is still judged by the record's TYPE.
+    model = {**MODEL, "/db/THIK": [1], "/db/ELEM": {"4": {"TYPE": "PLATE", "MATL": 1, "SECT": 1, "NODE": [1, 2]}}}
+    put = Operation("/db/ELEM", "PUT", records={"4": {"SECT": 7}})
+    assert [(f.record_key, f.value) for f in plan.validate([put], {**model, "/db/SECT": [1, 7]})] == [("4", 7)]
+    # Deleting a section does not touch a plate that names the same number.
+    assert plan.validate([Operation("/db/SECT", "DELETE", ids=[1])], model) == []
+    assert [f.outcome for f in plan.validate([Operation("/db/THIK", "DELETE", ids=[1])], model)] == ["orphaned"]
+
+
+def test_validate_follows_a_load_case_or_group_delete_into_each_entry():
+    model = {
+        **MODEL,
+        "/db/STLD": {"1": {"NAME": "DL"}, "2": {"NAME": "LL"}},
+        "/db/LDGR": {"1": {"NAME": "G1"}},
+        "/db/BMLD": {"1": {"ITEMS": [{"ID": 1, "LCNAME": "LL", "GROUP_NAME": "G1"}]}},
+        "/db/CNLD": {"2": {"ITEMS": [{"ID": 1, "LCNAME": "DL"}, {"ID": 2, "LCNAME": "LL", "GROUP_NAME": "G1"}]}},
+        "/db/LCOM-GEN": {"1": {"NAME": "C1", "vCOMB": [{"ANAL": "ST", "LCNAME": "LL", "FACTOR": 1.0}]}},
+    }
+    ops = [Operation("/db/STLD", "DELETE", ids=[2]), Operation("/db/LDGR", "DELETE", ids=[1])]
+    found = [(f.index, f.reference.table, f.record_key, f.outcome) for f in plan.validate(ops, model)]
+    assert found == [
+        (0, "/db/BMLD", "1", "deleted"),
+        (0, "/db/CNLD", "2", "deleted"),
+        (0, "/db/LCOM-GEN", "1", "deleted"),
+        # The LL entries carrying G1 went with the load case, so the group names nothing left.
+    ]
+    # CNLD 2 kept its DL entry: deleting DL afterwards still finds it.
+    ops.append(Operation("/db/STLD", "DELETE", ids=[1]))
+    assert [(f.index, f.record_key) for f in plan.validate(ops, model)][-1] == (2, "2")
+    # A group delete on its own clears the name and leaves the record.
+    group_only = plan.validate([Operation("/db/LDGR", "DELETE", ids=[1])], model)
+    assert [(f.reference.table, f.outcome) for f in group_only] == [("/db/BMLD", "cleared"), ("/db/CNLD", "cleared")]
 
 
 def test_validate_refuses_a_get():

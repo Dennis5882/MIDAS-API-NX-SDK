@@ -490,11 +490,24 @@ orphan, `dropped` (the record stored without that value), or `unverified`.
   the record, as `Wrong Field` / `Not Found Key` / `Unknown Error`, or as
   `{"message": ""}` with no error key; say which in `note`.
 - **`onTargetDelete` is the other direction**: what a per-id DELETE of the
-  named record did to this one, `deleted` (it went too - `/db/ELEM` on its
-  node, a `/db/CNLD` entry on its load case) or `orphaned` (it stayed -
-  `/db/ELEM` on its material or section). Absent means not measured. Any
-  value makes the reference a measured one, so `evidence` must be a ledger
-  record.
+  named record did to this one. `deleted`: it went too - `/db/ELEM` on its
+  node; for a field inside a list, the entry naming it, and the record only
+  once no entry is left (a `/db/CNLD` record keeps its other load cases'
+  entries). `orphaned`: it stayed, naming nothing - `/db/ELEM` on its
+  material, section or thickness. `cleared`: it stayed with the field
+  emptied - every group name, read back as `""` or (`/db/ELNK`) left out.
+  Absent means not measured. A value must cite a ledger record:
+  `deleteEvidence` when the delete was measured in another session than
+  `evidence`, else `evidence` itself.
+- **`targetsBy` picks among `tables`.** When another field beside this one
+  decides which table a value names, `targetsBy` records it: `/db/ELEM`'s
+  `SECT` is a `/db/SECT` record for `TYPE: BEAM` and a `/db/THIK` record for
+  `TYPE: PLATE`. A value missing from `cases`, or a record without the field,
+  still names one of `tables`. It needs its own source, because the write
+  cannot show it - a missing section or thickness is stored either way - so
+  `/db/ELEM`'s was told apart by `/doc/ANAL` (`ledger-write-2026-11-05-refs`),
+  and only for the two types tried. The validator checks the path is a
+  sibling field and every case table is one of `tables`.
 - **Field rows are published too.** `reference_fields()` flattens every
   `references` to one row per field path (`ITEMS[].LCNAME` for a field of each
   `ITEMS` entry), kept as Python's `midas_nx.plan.REFERENCES` and npm's

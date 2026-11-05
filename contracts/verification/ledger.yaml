@@ -6798,3 +6798,45 @@ records:
   method: >-
     The civil half of ledger-write-2026-11-05's key-policy probe, for endpoints whose confirmed case
     runs on civil only. Method and evidence as there.
+- id: ledger-write-2026-11-05-refs
+  endpoints:
+  - /db/STLD
+  - /db/CNLD
+  - /db/BMLD
+  - /db/PRES
+  - /db/LCOM-GEN
+  - /db/LDGR
+  - /db/BNGR
+  - /db/CONS
+  - /db/FRLS
+  - /db/ELNK
+  - /db/THIK
+  - /db/SECT
+  - /db/ELEM
+  - /doc/ANAL
+  date: '2026-11-05'
+  level: write
+  products:
+  - gen
+  - civil
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), Build 10/17/2026 (author-confirmed from the About dialog 2026-11-05)
+    civil: MIDAS Civil NX 2026 (v2.3), Build 10/31/2026 (author-confirmed from the About dialog 2026-11-05)
+  outcome: success
+  method: >-
+    At the midas-nx-mcp project's feedback on plan.validate, on the machine holding this checkout, which is
+    also the NX host, after saving each open document to C:/temp (the author: "자동으로 temp 폴더에 저장하고
+    진행해줘"; "좋아" to measuring these). Both products answered alike throughout. (1) Per-id DELETE of a
+    load case, a group and a thickness that records name, on /doc/NEW + the fixture's base model and group
+    seeds, with confirmed case payloads naming them, read back by table: deleting load case LC_SCRATCH removed
+    the /db/CNLD, /db/BMLD and /db/PRES records naming it and its /db/LCOM-GEN vCOMB entry, and the
+    combination whose only entry it was; with a second ITEMS entry naming DL, only the LC_B entry went and the
+    record stayed. Deleting load group LG_SEED left the /db/CNLD, /db/BMLD and /db/PRES records with
+    GROUP_NAME ""; boundary group BG_SEED left /db/CONS and /db/FRLS with GROUP_NAME "" and /db/ELNK without
+    BNGR_NAME. Deleting thickness 1 left plate element 4 in place. (2) Which table an element's SECT is read
+    from, told apart by /doc/ANAL on the same base model with the plate's corners 5 and 6 fixed, each variant
+    saved into C:/temp first: the control solved; with thickness 1 deleted Gen answered "[Error] Thickness no.
+    1 of the element no. 4 has not been defined." and Civil "Analysis failed."; with the plate pointed at
+    thickness 2, which /db/SECT does not hold, both solved; with the beams pointed at 2, which only /db/THIK
+    holds, Gen answered "[Error] Section no. 2 of the element no. 3 has not been defined." and Civil
+    "Analysis failed.". Other element types were not tried.

@@ -13478,3 +13478,46 @@ on one product).
   established; several (`/db/OFFS`, `/db/FRLS`, `/db/RIGD`) are records
   attached to an element or node, and the gap key named none. Not pursued
   further.
+
+## 2026-11-05 (Gen Build 10/17/2026, Civil Build 10/31/2026) - what deleting a load case, a group or a thickness does to the records naming it, and which table an element's SECT is
+
+At the midas-nx-mcp project's feedback on `plan.validate`: a plate naming a
+section number went unreported, a delete was checked only against records in
+the same list, and deleting a load case reported nothing for `/db/BMLD`, whose
+`onTargetDelete` had never been measured. On both products, after saving the
+open document to `C:/temp`, on `/doc/NEW` + the fixture's base model and group
+seeds, with confirmed case payloads. **Gen NX and Civil NX answered every
+probe alike.** Ledger record `ledger-write-2026-11-05-refs`.
+
+| Deleted | Records naming it | Afterwards |
+| --- | --- | --- |
+| load case `LC_SCRATCH` | `/db/CNLD`, `/db/BMLD`, `/db/PRES` with one entry naming it | **records gone** |
+| load case `LC_SCRATCH` | `/db/LCOM-GEN` with entries DL + LC_SCRATCH; another with LC_SCRATCH only | first keeps its DL entry; **second gone** |
+| load case `LC_B` | `/db/CNLD`, `/db/BMLD`, `/db/PRES` with entries DL + LC_B | **only the LC_B entry gone**, records stay |
+| load group `LG_SEED` | `/db/CNLD`, `/db/BMLD`, `/db/PRES` entries naming it | stay, `GROUP_NAME: ""` |
+| boundary group `BG_SEED` | `/db/CONS`, `/db/FRLS` entries; `/db/ELNK` | stay, `GROUP_NAME: ""`; ELNK **without `BNGR_NAME`** |
+| thickness 1 | plate element 4 | stays, an orphan |
+
+- **The first multi-entry probe deleted nothing, and the reason is this
+  repo's own finding.** `/db/STLD` assigns its keys (`keyPolicy`, the same
+  day): a load case POSTed under key 3 landed at 2, so `DELETE /db/STLD/3`
+  answered `{"STLD": {}}`. Deleted again at the key read back.
+- **`/db/CONS` renumbers an entry's `ID` when its group is deleted**: the
+  record at node 3, sent and read back with `ITEMS[0].ID: 2`, read back
+  `ID: 1` afterwards, on both products. Not pursued.
+
+**Which table an element's `SECT` names cannot be seen from a write**: a
+missing section or thickness is stored either way (2026-11-04). It was told
+apart by `/doc/ANAL` on the base model with the plate's corners 5 and 6 fixed,
+each variant on a fresh document, saved into `C:/temp` before solving:
+
+| Variant | Gen | Civil |
+| --- | --- | --- |
+| control (SECT 1 and THIK 1) | solved | solved |
+| THIK 1 deleted | `[Error] Thickness no. 1 of the element no. 4 has not been defined.` | `Analysis failed.` |
+| plate `SECT: 2`, THIK 2 added, no SECT 2 | solved | solved |
+| beams `SECT: 2`, THIK 2 added, no SECT 2 | `[Error] Section no. 2 of the element no. 3 has not been defined.` | `Analysis failed.` |
+
+So a `PLATE` reads `/db/THIK` and a `BEAM` `/db/SECT`. `WALL`, `PLSTRS`,
+`PLSTRN`, `AXISYM`, `TRUSS`, `TENSTR`, `COMPTR` and `SOLID` were not tried;
+the contract leaves them naming "one of" the two.

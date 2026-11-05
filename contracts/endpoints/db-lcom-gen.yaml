@@ -244,13 +244,16 @@ fields:
           by: name
           nameField: NAME
           onMissing: refused
+          onTargetDelete: deleted
           evidence: ledger-write-2026-11-04-2
+          deleteEvidence: ledger-write-2026-11-05-refs
           note: >-
             Measured for ANAL ST only, where the name is a static load case; other
             ANAL values name other kinds of case and were not measured. The refusal
             stored nothing, but GET /db/LCOM-GEN/{id} answers a default record
             (NAME "", NO 0) for any id, so read the table, not the id, to tell
             (both products, 2026-11-04).
+            Deleting the load case removes its vCOMB entry, and the combination once no entry is left (both products, 2026-11-05).
         # RESOLVED: the manual nests this under 'vCOMB' by naming it in the
         # description, with no number of its own - `| — | (vCOMB) ... |`. The
         # contract published it as a sibling of vCOMB until 2026-09-04; GET

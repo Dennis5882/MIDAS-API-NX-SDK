@@ -116,7 +116,10 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
   - `design/` — design-code chapters (`rc_kds/`, `steel_kds.py`, `src_aiksrc2k.py`).
   - `plan.py` — offline ordering of `/db/*` writes (`order()`), from the table graph the contracts'
     `references` record; `validate()` reports the references a plan leaves missing or deletes out
-    from under a record, and `key_policy()` says where a POST key lands per product. Its
+    from under a record (including records passed in `existing`, and following each measured
+    `onTargetDelete` - `deleted`, `orphaned`, `cleared` - into later operations), reading an
+    element's `SECT` from `/db/SECT` or `/db/THIK` by `TYPE` (`targetsBy`), and `key_policy()` says
+    where a POST key lands per product. Its
     `DEPENDENCIES`, `REFERENCES` and `KEY_POLICY` are held equal to the contracts and to npm's
     `src/plan.ts` / `src/generated/references.ts` by `validate_contracts.py`.
 - `packages/typescript/` — the npm package. Hand-written runtime adapters live directly under `src/`;

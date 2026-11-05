@@ -6,6 +6,38 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Changed
+
+- `plan.validate` reads an element's `SECT` from the table its `TYPE` names:
+  `/db/THIK` for a `PLATE`, `/db/SECT` for a `BEAM`, both measured by analysis
+  on Gen NX and Civil NX on 2026-11-05. A plate naming a section number that
+  `/db/THIK` does not hold is now reported (`stored`, an orphan); before, any
+  number either table held passed. Other element types still accept either
+  table, since they were not measured.
+- `plan.validate`'s `existing` also takes a table's records keyed by id, as a
+  GET returns them. A DELETE then reports the records already in the model
+  that name what it removes, not only those written earlier in the list. Ids
+  alone still work as before.
+- A DELETE now changes what later operations see, as the product does: a
+  record its target's deletion removes is gone afterwards, so a later DELETE
+  no longer reports it again (deleting a node and then the material of the
+  element on it reports only the node). A PUT is judged against the record it
+  merges into.
+- `ReferenceField.onTargetDelete`, and so `PlanFinding.outcome`, gains
+  `"cleared"`: the record stays with the field emptied. A `switch` over either
+  that lists every value needs the new case.
+
+### Added
+
+- Measured `onTargetDelete` for every load-case and group reference
+  (2026-11-05, both products alike): deleting a load case removes each
+  `/db/BMLD`, `/db/CNLD` and `/db/PRES` entry and `/db/LCOM-GEN` `vCOMB` entry
+  naming it, and a record left with none (`deleted`); deleting a load or
+  boundary group empties `GROUP_NAME` / `BNGR_NAME` and keeps the record
+  (`cleared`). Deleting a thickness in use leaves the plate (`orphaned`).
+- `ReferenceField.targetsBy`: which of `targets` a value names when another
+  field of the record decides (`/db/ELEM` `SECT` by `TYPE`).
+
 ## 2.10.9 - 2026-11-05
 
 Added only; nothing existing changed behaviour or type. Python gains the same

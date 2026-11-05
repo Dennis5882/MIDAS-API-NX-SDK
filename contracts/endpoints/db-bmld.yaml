@@ -136,9 +136,12 @@ fields:
           by: name
           nameField: NAME
           onMissing: refused
+          onTargetDelete: deleted
           evidence: ledger-write-2026-11-04-2
+          deleteEvidence: ledger-write-2026-11-05-refs
           note: >-
             Answers Wrong Field.
+            Deleting the load case removes the entry naming it, and the record once no entry is left (both products, 2026-11-05).
         # RESOLVED: the manual nests this under 'ITEMS' by numbering it '(2)', not by
         # naming a path
       - key: GROUP_NAME
@@ -158,10 +161,13 @@ fields:
           by: name
           nameField: NAME
           onMissing: refused
+          onTargetDelete: cleared
           evidence: ledger-write-2026-11-04-2
+          deleteEvidence: ledger-write-2026-11-05-refs
           note: >-
             A load group: a /db/LDGR name is stored, a /db/BNGR name is refused
             like a missing one (both products, 2026-11-04).
+            Deleting the group leaves the record with GROUP_NAME "" (both products, 2026-11-05).
         provenanceNote: >-
           Name, type and default are the manual's; safeToOmit is the live finding
           (Gen NX 2026-10-27, Civil NX 2026-10-28). See risk db-items-put-inherits-first-entry.

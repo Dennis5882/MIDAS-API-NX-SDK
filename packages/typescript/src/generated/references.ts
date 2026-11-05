@@ -65,8 +65,14 @@ export interface ReferenceField {
   /** refused: the write fails. stored: kept as an orphan. dropped: kept
    * without the value, silently. unverified: not measured. */
   readonly onMissing: "refused" | "stored" | "dropped" | "unverified";
-  /** What a per-id DELETE of the target did to this record; absent = not measured. */
-  readonly onTargetDelete?: "deleted" | "orphaned";
+  /** What a per-id DELETE of the target did to this record; absent = not measured.
+   * deleted: the record went, or for a field inside a list the entry naming it, and
+   * the record once no entry was left. orphaned: it stayed, naming nothing.
+   * cleared: it stayed with the field emptied. */
+  readonly onTargetDelete?: "deleted" | "orphaned" | "cleared";
+  /** Which of `targets` a value names when the field `path` beside it decides;
+   * a value of `path` not in `cases` names one of `targets`. */
+  readonly targetsBy?: { readonly path: string; readonly cases: Readonly<Record<string, readonly string[]>> };
 }
 
 export const referenceFields: readonly ReferenceField[] = [
@@ -79,7 +85,8 @@ export const referenceFields: readonly ReferenceField[] = [
     "by": "name",
     "nameField": "NAME",
     "each": false,
-    "onMissing": "refused"
+    "onMissing": "refused",
+    "onTargetDelete": "cleared"
   },
   {
     "table": "/db/BMLD",
@@ -90,7 +97,8 @@ export const referenceFields: readonly ReferenceField[] = [
     "by": "name",
     "nameField": "NAME",
     "each": false,
-    "onMissing": "refused"
+    "onMissing": "refused",
+    "onTargetDelete": "deleted"
   },
   {
     "table": "/db/CNLD",
@@ -101,7 +109,8 @@ export const referenceFields: readonly ReferenceField[] = [
     "by": "name",
     "nameField": "NAME",
     "each": false,
-    "onMissing": "refused"
+    "onMissing": "refused",
+    "onTargetDelete": "cleared"
   },
   {
     "table": "/db/CNLD",
@@ -124,7 +133,8 @@ export const referenceFields: readonly ReferenceField[] = [
     "by": "name",
     "nameField": "NAME",
     "each": false,
-    "onMissing": "refused"
+    "onMissing": "refused",
+    "onTargetDelete": "cleared"
   },
   {
     "table": "/db/ELEM",
@@ -158,7 +168,18 @@ export const referenceFields: readonly ReferenceField[] = [
     "by": "id",
     "each": false,
     "onMissing": "stored",
-    "onTargetDelete": "orphaned"
+    "onTargetDelete": "orphaned",
+    "targetsBy": {
+      "path": "TYPE",
+      "cases": {
+        "BEAM": [
+          "/db/SECT"
+        ],
+        "PLATE": [
+          "/db/THIK"
+        ]
+      }
+    }
   },
   {
     "table": "/db/ELNK",
@@ -169,7 +190,8 @@ export const referenceFields: readonly ReferenceField[] = [
     "by": "name",
     "nameField": "NAME",
     "each": false,
-    "onMissing": "dropped"
+    "onMissing": "dropped",
+    "onTargetDelete": "cleared"
   },
   {
     "table": "/db/ELNK",
@@ -190,7 +212,8 @@ export const referenceFields: readonly ReferenceField[] = [
     "by": "name",
     "nameField": "NAME",
     "each": false,
-    "onMissing": "refused"
+    "onMissing": "refused",
+    "onTargetDelete": "cleared"
   },
   {
     "table": "/db/GRUP",
@@ -221,7 +244,8 @@ export const referenceFields: readonly ReferenceField[] = [
     "by": "name",
     "nameField": "NAME",
     "each": false,
-    "onMissing": "refused"
+    "onMissing": "refused",
+    "onTargetDelete": "deleted"
   },
   {
     "table": "/db/PRES",
@@ -232,7 +256,8 @@ export const referenceFields: readonly ReferenceField[] = [
     "by": "name",
     "nameField": "NAME",
     "each": false,
-    "onMissing": "refused"
+    "onMissing": "refused",
+    "onTargetDelete": "cleared"
   },
   {
     "table": "/db/PRES",
@@ -243,7 +268,8 @@ export const referenceFields: readonly ReferenceField[] = [
     "by": "name",
     "nameField": "NAME",
     "each": false,
-    "onMissing": "refused"
+    "onMissing": "refused",
+    "onTargetDelete": "deleted"
   }
 ] as const;
 
