@@ -1,4 +1,4 @@
-# midas-nx 2.11.1
+# midas-nx 2.11.0
 
 A shared PyPI/npm release in which `plan.validate()` reports one more kind of
 delete. No resource, payload type or request changed.
