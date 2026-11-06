@@ -6,6 +6,8 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+## 2.11.1 - 2026-11-06
+
 ### Fixed
 
 - `plan.validate` merges a PUT into a load record's `ITEMS` by `ID`, as Gen NX
