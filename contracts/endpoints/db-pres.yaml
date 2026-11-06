@@ -35,6 +35,19 @@ recordKey:
   evidence: ledger-write-2026-11-04-2
   deleteEvidence: ledger-write-2026-11-05-keys
 
+itemRows:
+  path: ITEMS
+  by: ID
+  caseField: LCNAME
+  description: >-
+    One record holds every load case's entries for its element. A PUT merges
+    ITEMS by ID - an entry it names is changed, the rest are kept - so it
+    cannot remove an entry, and ITEMS [] changes nothing. A per-id DELETE
+    removes the record with every entry in it; leaving out one case means
+    deleting the record and posting the entries to keep (both products,
+    2026-11-06).
+  evidence: ledger-write-2026-11-06-items
+
 source:
   manual:
     status: documented

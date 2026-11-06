@@ -13546,3 +13546,34 @@ took the records keyed by beam 3, so the cascade runs two levels: node, then
 element, then the element's loads and releases. The records keyed by node 2
 and beam 1, the controls, stayed. Contracts record this as
 `recordKey.onTargetDelete: deleted` on all six tables.
+
+## 2026-11-06 (Gen Build 10/17/2026, Civil Build 10/31/2026, not re-read) - a load row holds every load case, and a PUT cannot remove one
+
+The midas-nx-mcp project reported that `/db/BMLD`, `/db/CNLD` and `/db/PRES`
+hold every load case of a node or element in one record, and that the only
+way to drop one case is to delete the record and re-create it. Re-measured here
+on both products (`ledger-write-2026-11-06-items`). Each document was empty
+(0 nodes) and was saved to `C:/temp` before `/doc/NEW`. The fixture's base
+model was then built, and one record per table (CNLD on node 3, BMLD on beam 2,
+PRES on plate 4) was written with two entries: ID 1 `LC_SCRATCH` (the confirmed
+create payload) and ID 2 `DL` (the same payload, value doubled). Writes went
+through `NodalLoad`, `BeamLoad` and `PressureLoad`, and the record was read back
+after every step:
+
+| Step | Read back (all three tables, both products) |
+| --- | --- |
+| per-id DELETE of the record | gone, both entries with it |
+| PUT `ITEMS: []` | unchanged |
+| PUT of ID 1 alone, value x3 | ID 1 changed, ID 2 kept |
+| PUT of ID 2 alone, value x2.5 | ID 2 changed, ID 1 kept |
+| per-id DELETE, then POST of ID 2 alone | only ID 2 `DL`, under ID 2 |
+
+No response carried an error. So a PUT merges `ITEMS` by `ID` and can never
+remove an entry, which confirms 2026-10-27's Gen-only CNLD row for empty
+`ITEMS` on Civil and on two more tables. A PUT of an entry with every load
+component at 0 was not tried, so whether that removes it is unknown. The
+contracts record this as `itemRows`. `plan.validate()` now merges a PUT into
+`ITEMS` by `ID`; it used to replace the list and lose the other entries'
+`LCNAME`. It also reports each entry a record DELETE takes, as kind `"items"`.
+`plan.remove_items()` / `plan.removeItems()` return the DELETE and POST that
+leave out one case.

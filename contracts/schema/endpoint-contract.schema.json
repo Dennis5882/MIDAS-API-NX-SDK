@@ -168,6 +168,19 @@
         }
       }
     },
+    "itemRows": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The record holds a list of entries (one per load case) that a PUT merges by `by`: what was measured about changing one entry. A PUT cannot remove an entry and an empty list changes nothing; a per-id DELETE removes the record with every entry in it.",
+      "required": ["path", "by", "caseField", "evidence"],
+      "properties": {
+        "path": {"type": "string", "description": "The list field, e.g. ITEMS."},
+        "by": {"type": "string", "description": "The entry field a PUT merges by, e.g. ID."},
+        "caseField": {"type": "string", "description": "The entry field naming the load case, e.g. LCNAME."},
+        "description": {"type": "string"},
+        "evidence": {"type": "string", "description": "The ledger record that measured it."}
+      }
+    },
     "keyPolicy": {
       "type": "object",
       "additionalProperties": false,

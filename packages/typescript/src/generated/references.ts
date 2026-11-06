@@ -345,6 +345,40 @@ export const keyReferences: readonly ReferenceField[] = [
   }
 ] as const;
 
+/** A table whose record holds a list of entries, one per load case, that a PUT
+ * merges by `by` (measured): a PUT cannot remove an entry, and a per-id DELETE
+ * removes the record with every entry in it. */
+export interface ItemRow {
+  readonly table: string;
+  /** The list field, e.g. ITEMS. */
+  readonly path: string;
+  /** The entry field a PUT merges by, e.g. ID. */
+  readonly by: string;
+  /** The entry field naming the load case, e.g. LCNAME. */
+  readonly caseField: string;
+}
+
+export const itemRows: readonly ItemRow[] = [
+  {
+    "table": "/db/BMLD",
+    "path": "ITEMS",
+    "by": "ID",
+    "caseField": "LCNAME"
+  },
+  {
+    "table": "/db/CNLD",
+    "path": "ITEMS",
+    "by": "ID",
+    "caseField": "LCNAME"
+  },
+  {
+    "table": "/db/PRES",
+    "path": "ITEMS",
+    "by": "ID",
+    "caseField": "LCNAME"
+  }
+] as const;
+
 /** Where a POST lands when its Assign key is not the next free one, per product:
  * honoured = under the requested key; assigned = the product picks the key (one past
  * the highest), so read the table back. A table or product absent = not measured. */

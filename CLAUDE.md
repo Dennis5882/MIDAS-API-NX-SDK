@@ -119,9 +119,11 @@ still holding the gate. An already-built `dist/` runs fine without any of this.
     from under a record (including records passed in `existing`, and following each measured
     `onTargetDelete` - `deleted`, `orphaned`, `cleared` - into later operations), reading an
     element's `SECT` from `/db/SECT` or `/db/THIK` by `TYPE` (`targetsBy`), and treating a record keyed by a
-    node or element id as a reference too (`KEY_REFERENCES`, from `recordKey`), and `key_policy()` says
-    where a POST key lands per product. Its
-    `DEPENDENCIES`, `REFERENCES`, `KEY_REFERENCES` and `KEY_POLICY` are held equal to the contracts and to npm's
+    node or element id as a reference too (`KEY_REFERENCES`, from `recordKey`), merging a PUT into a
+    load record's `ITEMS` by `ID` and reporting each entry a record DELETE takes (`ITEM_ROWS`, from
+    `itemRows`; `remove_items()` builds the delete-and-repost that drops one load case), and
+    `key_policy()` says where a POST key lands per product. Its
+    `DEPENDENCIES`, `REFERENCES`, `KEY_REFERENCES`, `ITEM_ROWS` and `KEY_POLICY` are held equal to the contracts and to npm's
     `src/plan.ts` / `src/generated/references.ts` by `validate_contracts.py`.
 - `packages/typescript/` — the npm package. Hand-written runtime adapters live directly under `src/`;
   generated resources, operations, tables, and payload types live under `src/generated/`.

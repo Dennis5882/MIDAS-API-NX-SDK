@@ -518,6 +518,14 @@ orphan, `dropped` (the record stored without that value), or `unverified`.
   too, through the elements it takes. `key_references()` publishes them as
   rows with `field` `""` - Python's `midas_nx.plan.KEY_REFERENCES`, npm's
   `keyReferences` - and `plan.validate()` reads them with the field rows.
+- **`itemRows`: a record that is a list of load-case entries.** `/db/BMLD`,
+  `/db/CNLD` and `/db/PRES` record `path: ITEMS`, `by: ID`,
+  `caseField: LCNAME` and the `evidence`. A PUT merges entries by `by`, so it
+  cannot remove one, and an empty list changes nothing. A per-id DELETE
+  removes the record with every entry (`ledger-write-2026-11-06-items`, both
+  products). `item_rows()` publishes them as Python's `midas_nx.plan.ITEM_ROWS`
+  and npm's `itemRows`, held equal like the rest. `plan.validate()` merges
+  PUTs by them, and `remove_items()` builds the delete and re-post.
 - **Field rows are published too.** `reference_fields()` flattens every
   `references` to one row per field path (`ITEMS[].LCNAME` for a field of each
   `ITEMS` entry), kept as Python's `midas_nx.plan.REFERENCES` and npm's

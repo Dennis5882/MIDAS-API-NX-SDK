@@ -6,6 +6,30 @@ repository's `docs/release_notes_v*.md` files and `py-v*` GitHub Releases.
 
 ## Unreleased
 
+### Fixed
+
+- `plan.validate` merges a PUT into a load record's `ITEMS` by `ID`, as Gen NX
+  and Civil NX do, instead of replacing the list. Before, a PUT of one entry
+  made it forget the others, so a later load-case DELETE missed the entries
+  that still name it.
+
+### Changed
+
+- `plan.validate` reports each entry a DELETE of a known `/db/BMLD`,
+  `/db/CNLD` or `/db/PRES` record takes, one finding per entry, with
+  `kind: "items"`, `value` the load case and `outcome: "deleted"`. Deleting the
+  row removes every load case in it. `PlanFinding.kind` gains `"items"`.
+
+### Added
+
+- `plan.itemRows(table?)` and the generated `itemRows` / `ItemRow`: the three
+  load tables whose record holds a list of entries, one per load case, that a
+  PUT merges by `ID`. Measured on both products on 2026-11-06: a PUT cannot
+  remove an entry, and `ITEMS: []` changes nothing.
+- `plan.removeItems(endpoint, key, record, { case } | { ids })`: the per-id
+  DELETE and the POST of the entries kept, which is the only way to drop one
+  load case from a record (measured to leave just those, under their own `ID`).
+
 ## 2.11.0 - 2026-11-05
 
 ### Changed

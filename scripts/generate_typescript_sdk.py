@@ -2478,6 +2478,21 @@ def _contract_key_references() -> list[dict]:
     )
 
 
+def _contract_item_rows() -> list[dict]:
+    """Rows for the tables whose record is a list of entries merged by id, from `itemRows`."""
+    import sys  # noqa: PLC0415
+
+    import yaml  # noqa: PLC0415
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from reference_graph import item_rows  # noqa: PLC0415
+
+    return item_rows(
+        yaml.safe_load(path.read_text(encoding="utf-8"))
+        for path in sorted((ROOT / "contracts" / "endpoints").glob("*.yaml"))
+    )
+
+
 def _contract_key_policies() -> dict[str, dict[str, str]]:
     """Endpoint -> product -> honoured/assigned, from the contracts' `keyPolicy`."""
     import sys  # noqa: PLC0415
@@ -2691,6 +2706,23 @@ def main() -> None:
             " * deleting that node or element does to the record. */",
             "export const keyReferences: readonly ReferenceField[] = "
             + json.dumps(_contract_key_references(), indent=2)
+            + " as const;",
+            "",
+            "/** A table whose record holds a list of entries, one per load case, that a PUT",
+            " * merges by `by` (measured): a PUT cannot remove an entry, and a per-id DELETE",
+            " * removes the record with every entry in it. */",
+            "export interface ItemRow {",
+            "  readonly table: string;",
+            "  /** The list field, e.g. ITEMS. */",
+            "  readonly path: string;",
+            "  /** The entry field a PUT merges by, e.g. ID. */",
+            "  readonly by: string;",
+            "  /** The entry field naming the load case, e.g. LCNAME. */",
+            "  readonly caseField: string;",
+            "}",
+            "",
+            "export const itemRows: readonly ItemRow[] = "
+            + json.dumps(_contract_item_rows(), indent=2)
             + " as const;",
             "",
             "/** Where a POST lands when its Assign key is not the next free one, per product:",

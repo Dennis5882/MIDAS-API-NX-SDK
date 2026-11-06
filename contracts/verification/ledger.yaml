@@ -6869,3 +6869,27 @@ records:
     removed beam 3, the only element on it, and the records keyed by node 4 (CNLD, CONS, NMAS) and by beam 3
     (BMLD, FRLS). DELETE /db/ELEM/2 and /db/ELEM/4 then removed BMLD 2, FRLS 2 and PRES 4. Records keyed
     by node 2 and beam 1 stayed. Both products answered identically.
+- id: ledger-write-2026-11-06-items
+  endpoints:
+  - /db/CNLD
+  - /db/BMLD
+  - /db/PRES
+  date: '2026-11-06'
+  level: write
+  products:
+  - gen
+  - civil
+  nxVersions:
+    gen: MIDAS Gen NX 2026 (v2.2), Build 10/17/2026 (not re-read; last author-confirmed 2026-11-05)
+    civil: MIDAS Civil NX 2026 (v2.3), Build 10/31/2026 (not re-read; last author-confirmed 2026-11-05)
+  outcome: success
+  method: >-
+    At the midas-nx-mcp project's report that a load row holds every load case and a PUT cannot remove
+    one (the author: "제품 두개는 다 켬. 진행해볼래?"), on the machine holding this checkout, which is also
+    the NX host, each open document (empty, 0 nodes) saved to C:/temp first: /doc/NEW, the fixture's base
+    model, then per table - /db/CNLD on node 3, /db/BMLD on beam 2, /db/PRES on plate 4 - a record of two
+    entries, ID 1 LC_SCRATCH and ID 2 DL (the confirmed create payload, value doubled), written through
+    NodalLoad, BeamLoad and PressureLoad and read back after every step. A per-id DELETE removed the
+    record with both entries. PUT ITEMS [] changed nothing. A PUT of ID 1 alone changed ID 1 and kept
+    ID 2, and of ID 2 alone the reverse. A per-id DELETE then a POST of ID 2 alone left only ID 2 (DL),
+    under ID 2. No response carried an error. Both products answered identically.

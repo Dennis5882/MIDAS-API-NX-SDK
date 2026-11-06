@@ -1,6 +1,8 @@
 import {
+  itemRows,
   keyPolicies,
   keyReferences,
+  type ItemRow,
   referenceFields,
   referenceGraph,
   type ReferenceField,
@@ -26,9 +28,15 @@ export interface PlanFinding<T extends PlanOperation = PlanOperation> {
   recordKey: string;
   reference: ReferenceField;
   value: unknown;
-  /** missing: names a record that will not exist when sent. deleted: a later DELETE removes what it names. */
-  kind: "missing" | "deleted";
-  /** `reference.onMissing` for a missing value, `reference.onTargetDelete` for a deleted one, else "unverified". */
+  /**
+   * missing: names a record that will not exist when sent. deleted: a later
+   * DELETE removes what it names. items: a DELETE of an `itemRows` record
+   * removes this entry with it (one per entry; `value` is the load case,
+   * `reference` the case field's).
+   */
+  kind: "missing" | "deleted" | "items";
+  /** `reference.onMissing` for a missing value, `reference.onTargetDelete` for a deleted one,
+   * "deleted" for an entry, else "unverified". */
   outcome: ReferenceField["onMissing"] | NonNullable<ReferenceField["onTargetDelete"]>;
   message: string;
 }
@@ -62,6 +70,59 @@ function keyRefs(table?: string): ReferenceField[] {
 
 function allReferences(table: string): ReferenceField[] {
   return [...references(table), ...keyRefs(table)];
+}
+
+function rows(table?: string): ItemRow[] {
+  return itemRows.filter((row) => table === undefined || row.table === table);
+}
+
+/** What a PUT of `record` leaves over `previous`: fields replaced, and an
+ * `itemRows` list merged entry by entry on `by` (as measured). */
+function mergePut(endpoint: string, previous: unknown, record: unknown): unknown {
+  if (!isObject(previous) || !isObject(record)) return record;
+  const merged: Record<string, unknown> = { ...previous, ...record };
+  for (const row of rows(endpoint)) {
+    const old = previous[row.path];
+    const next = record[row.path];
+    if (!Array.isArray(old) || !Array.isArray(next)) continue;
+    const entries = [...old];
+    const at = new Map<string, number>();
+    entries.forEach((entry, i) => {
+      if (isObject(entry)) at.set(String(entry[row.by]), i);
+    });
+    for (const entry of next) {
+      const key = isObject(entry) ? String(entry[row.by]) : undefined;
+      const i = key === undefined ? undefined : at.get(key);
+      if (i !== undefined) {
+        entries[i] = { ...(entries[i] as Record<string, unknown>), ...(entry as Record<string, unknown>) };
+      } else {
+        if (key !== undefined) at.set(key, entries.length);
+        entries.push(entry);
+      }
+    }
+    merged[row.path] = entries;
+  }
+  return merged;
+}
+
+function itemFindings<T extends PlanOperation>(index: number, op: T, key: string, record: unknown): PlanFinding<T>[] {
+  const findings: PlanFinding<T>[] = [];
+  for (const row of rows(op.endpoint)) {
+    const ref = referenceFields.find((r) => r.table === op.endpoint && r.field === `${row.path}[].${row.caseField}`);
+    const entries = isObject(record) ? record[row.path] : undefined;
+    if (!ref || !Array.isArray(entries)) continue;
+    for (const entry of entries) {
+      if (!isObject(entry)) continue;
+      const value = entry[row.caseField];
+      findings.push({
+        index, operation: op, recordKey: key, reference: ref, value, kind: "items", outcome: "deleted",
+        message:
+          `${op.endpoint} DELETE removes record ${key} with every ${row.path} entry, ` +
+          `including ${row.by} ${JSON.stringify(entry[row.by])} for ${JSON.stringify(value)}: deleted`,
+      });
+    }
+  }
+  return findings;
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -279,6 +340,49 @@ export const plan = {
    */
   keyReferences: keyRefs,
   /**
+   * The tables whose record holds a list of load-case entries that a PUT merges
+   * by `by`, or the one for `table`. A PUT cannot remove an entry and an empty
+   * list changes nothing; a per-id DELETE removes the record with every entry
+   * (measured on both products, 2026-11-06).
+   */
+  itemRows: rows,
+  /**
+   * The operations that leave one `itemRows` record without some entries.
+   * `record` is the record as read (a GET of the table, keyed by `key`); give
+   * exactly one of `case` (drop that load case's entries) or `ids` (drop the
+   * entries with those `ID` values). A PUT cannot remove an entry, so this is a
+   * per-id DELETE of the record, then a POST of the entries kept, as they were
+   * read - measured to leave just those, under their own `ID`. Empty when no
+   * entry matches; the DELETE alone when none is kept. Between the two the
+   * record is gone: if the POST is refused, the kept entries are only in
+   * `record`. Throws for a table not in `itemRows`.
+   */
+  removeItems: (
+    endpoint: string,
+    key: number | string,
+    record: Readonly<Record<string, unknown>>,
+    select: { case?: string; ids?: readonly (number | string)[] },
+  ): PlanOperation[] => {
+    const row = rows(endpoint)[0];
+    if (!row) throw new Error(`${endpoint}: not a table of load-case entries merged by id (see itemRows)`);
+    if ((select.case === undefined) === (select.ids === undefined)) {
+      throw new Error("removeItems: give exactly one of case or ids");
+    }
+    const entries = record[row.path];
+    if (!Array.isArray(entries)) throw new Error(`${endpoint} record ${key}: no ${row.path} list`);
+    const wanted = new Set((select.ids ?? []).map(String));
+    const drop = (entry: unknown): boolean =>
+      isObject(entry) &&
+      (select.case !== undefined ? entry[row.caseField] === select.case : wanted.has(String(entry[row.by])));
+    const kept = entries.filter((entry) => !drop(entry)).map((entry) => structuredClone(entry));
+    if (kept.length === entries.length) return [];
+    const operations: PlanOperation[] = [{ endpoint, method: "DELETE", ids: [key] }];
+    if (kept.length) {
+      operations.push({ endpoint, method: "POST", records: { [String(key)]: { ...record, [row.path]: kept } } as JsonObject });
+    }
+    return operations;
+  },
+  /**
    * Where a POST to `endpoint` lands when its Assign key is not the next free
    * one: "honoured" (the requested key), "assigned" (the product picks one past
    * the highest - read the table back), or undefined where not measured.
@@ -322,6 +426,12 @@ export const plan = {
    * in `existing`. A table given only as ids has no records to look in. Where
    * the measured `onTargetDelete` is "deleted", the records it takes with it are
    * gone from then on.
+   *
+   * A PUT merges into the record it names, and an `itemRows` list entry by entry
+   * on its `ID`, as the product does. A DELETE of such a record that is known
+   * (earlier in the list, or a record in `existing`) reports each entry it
+   * takes, kind "items": deleting the row removes every load case in it, not
+   * only the one a caller may mean. See `removeItems`.
    */
   validate: <T extends PlanOperation>(
     operations: readonly T[],
@@ -360,6 +470,7 @@ export const plan = {
           gone.add(key);
           const entry = tableState?.get(key);
           if (entry) {
+            findings.push(...itemFindings(index, op, key, entry[1]));
             for (const name of namesWritten(op.endpoint, { [key]: entry[1] })) gone.add(name);
             tableState?.delete(key);
           }
@@ -372,7 +483,7 @@ export const plan = {
       for (const [recordKey, written] of Object.entries(op.records ?? {})) {
         // A PUT merges, so a field it leaves out still decides targetsBy.
         const previous = method === "PUT" ? state.get(op.endpoint)?.get(recordKey)?.[1] : undefined;
-        const record = isObject(previous) && isObject(written) ? { ...previous, ...written } : written;
+        const record = previous === undefined ? written : mergePut(op.endpoint, previous, written);
         for (const ref of allReferences(op.endpoint)) {
           for (const [value, holder] of refValues(ref, recordKey, record)) {
             const targets = targetsFor(ref, holder);
@@ -397,7 +508,7 @@ export const plan = {
         state.set(op.endpoint, tableState);
         for (const [key, record] of Object.entries(op.records)) {
           const previous = tableState.get(key)?.[1];
-          const merged = method === "PUT" && isObject(previous) && isObject(record) ? { ...previous, ...record } : record;
+          const merged = method === "PUT" && previous !== undefined ? mergePut(op.endpoint, previous, record) : record;
           tableState.set(key, [index, merged]);
         }
       }

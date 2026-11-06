@@ -218,3 +218,49 @@ describe("plan.keyPolicy", () => {
     expect(plan.keyPolicy("/db/NOT-A-TABLE", "gen")).toBeUndefined();
   });
 });
+
+const loadModel = {
+  "/db/STLD": { "1": { NAME: "DL" }, "2": { NAME: "LC" } },
+  "/db/BMLD": { "2": { ITEMS: [{ ID: 1, LCNAME: "LC", P: [-5] }, { ID: 2, LCNAME: "DL", P: [-10] }] } },
+};
+
+describe("plan.itemRows and removeItems", () => {
+  it("lists the three load tables", () => {
+    expect(plan.itemRows().map((r) => r.table)).toEqual(["/db/BMLD", "/db/CNLD", "/db/PRES"]);
+    expect(plan.itemRows("/db/NODE")).toEqual([]);
+  });
+
+  it("merges a PUT into ITEMS by id, as measured", () => {
+    const ops: PlanOperation[] = [
+      { endpoint: "/db/BMLD", method: "PUT", records: { "2": { ITEMS: [{ ID: 1, LCNAME: "LC", P: [-15] }] } } },
+      { endpoint: "/db/STLD", method: "DELETE", ids: [1] },
+    ];
+    expect(plan.validate(ops, loadModel).map((f) => [f.kind, f.recordKey, f.value])).toEqual([["deleted", "2", "DL"]]);
+    ops[0] = { endpoint: "/db/BMLD", method: "PUT", records: { "2": { ITEMS: [] } } };
+    expect(plan.validate(ops, loadModel).map((f) => [f.kind, f.value])).toEqual([["deleted", "DL"]]);
+  });
+
+  it("reports each entry a load row delete takes", () => {
+    const found = plan.validate([{ endpoint: "/db/BMLD", method: "DELETE", ids: [2] }], loadModel);
+    expect(found.map((f) => [f.kind, f.value, f.outcome, f.reference.field])).toEqual([
+      ["items", "LC", "deleted", "ITEMS[].LCNAME"],
+      ["items", "DL", "deleted", "ITEMS[].LCNAME"],
+    ]);
+    expect(found[1]?.message).toContain('removes record 2 with every ITEMS entry, including ID 2 for "DL"');
+    expect(plan.validate([{ endpoint: "/db/BMLD", method: "DELETE", ids: [7] }], loadModel)).toEqual([]);
+  });
+
+  it("deletes the row and posts back what is kept", () => {
+    const record = loadModel["/db/BMLD"]["2"];
+    const ops = plan.removeItems("/db/BMLD", 2, record, { case: "LC" });
+    expect(ops).toEqual([
+      { endpoint: "/db/BMLD", method: "DELETE", ids: [2] },
+      { endpoint: "/db/BMLD", method: "POST", records: { "2": { ITEMS: [{ ID: 2, LCNAME: "DL", P: [-10] }] } } },
+    ]);
+    expect(plan.removeItems("/db/BMLD", 2, record, { ids: [1, 2] }).map((o) => o.method)).toEqual(["DELETE"]);
+    expect(plan.removeItems("/db/BMLD", 2, record, { case: "WIND" })).toEqual([]);
+    expect(() => plan.removeItems("/db/NODE", 2, record, { case: "LC" })).toThrow();
+    expect(() => plan.removeItems("/db/BMLD", 2, record, {})).toThrow();
+    expect(() => plan.removeItems("/db/BMLD", 2, record, { case: "LC", ids: [1] })).toThrow();
+  });
+});

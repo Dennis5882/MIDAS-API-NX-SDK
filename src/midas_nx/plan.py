@@ -21,6 +21,12 @@ thickness, nothing - the elements stay as orphans. A plate's ``SECT`` is a
 A record keyed by a node or element (:data:`KEY_REFERENCES`: loads, supports,
 masses, end releases) goes when that node or element does, and a node takes
 the element loads with its elements.
+
+A load record (:data:`ITEM_ROWS`: nodal, beam and pressure loads) holds every
+load case's entries for its node or element, and a PUT merges them by ``ID``:
+it cannot remove an entry, and ``ITEMS: []`` changes nothing. A per-id DELETE
+removes the record with all of them (2026-11-06, both products), so
+:func:`remove_items` deletes the record and posts back the entries to keep.
 """
 from __future__ import annotations
 
@@ -170,6 +176,28 @@ KEY_REFERENCES: Tuple[Reference, ...] = (
 )
 
 
+@dataclass(frozen=True)
+class ItemRow:
+    """A table whose record holds a list of entries, one per load case, that a
+    PUT merges by ``by`` (measured): a PUT cannot remove an entry, and a per-id
+    DELETE removes the record with every entry in it."""
+
+    table: str
+    path: str  # the list field, "ITEMS"
+    by: str  # the entry field a PUT merges by, "ID"
+    case_field: str  # the entry field naming the load case, "LCNAME"
+
+
+#: The tables whose record is a list of load-case entries merged by id, from the
+#: contracts' ``itemRows``. Held equal to them, and to npm's ``itemRows``, by
+#: ``validate_contracts.py``. Measured on Gen NX and Civil NX, 2026-11-06.
+ITEM_ROWS: Tuple[ItemRow, ...] = (
+    ItemRow("/db/BMLD", "ITEMS", "ID", "LCNAME"),
+    ItemRow("/db/CNLD", "ITEMS", "ID", "LCNAME"),
+    ItemRow("/db/PRES", "ITEMS", "ID", "LCNAME"),
+)
+
+
 #: Where a POST lands when its Assign key is not the next free one, per product:
 #: ``"honoured"`` = under the requested key; ``"assigned"`` = the product picks
 #: the key itself (one past the highest), so read the table back to learn it.
@@ -316,10 +344,13 @@ class Finding:
     """What :func:`validate` expects the product to do with one value.
 
     ``kind`` is ``"missing"`` (the value names a record that will not exist when
-    the operation is sent) or ``"deleted"`` (a DELETE later in the list removes
-    a record this one names). ``outcome`` is the measured answer:
-    ``reference.on_missing`` for a missing value, ``reference.on_target_delete``
-    for a deleted one, ``"unverified"`` where nothing was measured.
+    the operation is sent), ``"deleted"`` (a DELETE later in the list removes
+    a record this one names) or ``"items"`` (a DELETE of an :data:`ITEM_ROWS`
+    record removes this entry with it; one finding per entry, ``value`` the
+    load case, ``reference`` the case field's). ``outcome`` is the measured
+    answer: ``reference.on_missing`` for a missing value,
+    ``reference.on_target_delete`` for a deleted one, ``"deleted"`` for an
+    entry, ``"unverified"`` where nothing was measured.
     """
 
     index: int  # position of the operation in the list given
@@ -346,6 +377,103 @@ def key_references(table: Optional[str] = None) -> List[Reference]:
     """:data:`KEY_REFERENCES`, or the one for ``table``: a record keyed by a node
     or element id, whose ``field`` is ``""``."""
     return [ref for ref in KEY_REFERENCES if table is None or ref.table == table]
+
+
+def item_rows(table: Optional[str] = None) -> List[ItemRow]:
+    """:data:`ITEM_ROWS`, or the one for ``table``."""
+    return [row for row in ITEM_ROWS if table is None or row.table == table]
+
+
+def _merge_put(endpoint: str, previous: Any, record: Any) -> Any:
+    """What a PUT of ``record`` leaves over ``previous``: fields replaced, and an
+    :data:`ITEM_ROWS` list merged entry by entry on ``by`` (as measured)."""
+    if not isinstance(previous, Mapping) or not isinstance(record, Mapping):
+        return record
+    merged = {**previous, **record}
+    for row in item_rows(endpoint):
+        old, new = previous.get(row.path), record.get(row.path)
+        if not isinstance(old, list) or not isinstance(new, list):
+            continue
+        entries = list(old)
+        at = {str(e.get(row.by)): i for i, e in enumerate(entries) if isinstance(e, Mapping)}
+        for entry in new:
+            key = str(entry.get(row.by)) if isinstance(entry, Mapping) else None
+            if key is not None and key in at:
+                entries[at[key]] = {**entries[at[key]], **entry}
+            else:
+                if key is not None:
+                    at[key] = len(entries)
+                entries.append(entry)
+        merged[row.path] = entries
+    return merged
+
+
+def remove_items(
+    endpoint: str,
+    key: Any,
+    record: Mapping[str, Any],
+    *,
+    case: Optional[str] = None,
+    ids: Optional[Iterable[Any]] = None,
+) -> List[Operation]:
+    """The operations that leave one :data:`ITEM_ROWS` record without some entries.
+
+    ``record`` is the record as read (a GET of the table, keyed by ``key``);
+    give exactly one of ``case`` (drop the entries for that load case) or
+    ``ids`` (drop the entries with those ``ID`` values). A PUT cannot remove an
+    entry, so this is a per-id DELETE of the record, then a POST of the entries
+    kept, as they were read - measured to leave just those, under their own
+    ``ID`` (2026-11-06, both products). Empty when no entry matches; the DELETE
+    alone when none is kept.
+
+    Between the two the record is gone: if the POST is refused, the kept
+    entries are only in ``record``. Send it through the table's resource class
+    (``BeamLoad.create`` ...), which fills each entry's defaults.
+    """
+    row = next(iter(item_rows(endpoint)), None)
+    if row is None:
+        raise ValueError(f"{endpoint}: not a table of load-case entries merged by id (see ITEM_ROWS)")
+    if (case is None) == (ids is None):
+        raise ValueError("remove_items: give exactly one of case or ids")
+    entries = record.get(row.path) if isinstance(record, Mapping) else None
+    if not isinstance(entries, list):
+        raise ValueError(f"{endpoint} record {key}: no {row.path} list")
+    wanted = {str(i) for i in ids} if ids is not None else set()
+
+    def drop(entry: Any) -> bool:
+        if not isinstance(entry, Mapping):
+            return False
+        if case is not None:
+            return entry.get(row.case_field) == case
+        return str(entry.get(row.by)) in wanted
+
+    kept = [copy.deepcopy(e) for e in entries if not drop(e)]
+    if len(kept) == len(entries):
+        return []
+    operations = [Operation(endpoint, "DELETE", ids=[key])]
+    if kept:
+        operations.append(Operation(endpoint, "POST", records={str(key): {**record, row.path: kept}}))
+    return operations
+
+
+def _item_findings(index: int, op: Operation, key: str, record: Any) -> List[Finding]:
+    """One ``"items"`` finding per entry a DELETE of an :data:`ITEM_ROWS` record takes."""
+    findings: List[Finding] = []
+    for row in item_rows(op.endpoint):
+        ref = next((r for r in REFERENCES if r.table == op.endpoint and r.field == f"{row.path}[].{row.case_field}"), None)
+        entries = record.get(row.path) if isinstance(record, Mapping) else None
+        if ref is None or not isinstance(entries, list):
+            continue
+        for entry in entries:
+            if not isinstance(entry, Mapping):
+                continue
+            case = entry.get(row.case_field)
+            findings.append(Finding(
+                index, op, key, ref, case, "items", "deleted",
+                f"{op.endpoint} DELETE removes record {key} with every {row.path} entry, "
+                f"including {row.by} {entry.get(row.by)!r} for {case!r}: deleted",
+            ))
+    return findings
 
 
 def _all_references(table: str) -> List[Reference]:
@@ -468,6 +596,12 @@ def validate(
     in ``existing``. A table given only as ids has no records to look in. Where
     the measured ``on_target_delete`` is ``"deleted"``, the records it takes with
     it are gone from then on.
+
+    A PUT merges into the record it names, and an :data:`ITEM_ROWS` list entry
+    by entry on its ``ID``, as the product does. A DELETE of such a record that
+    is known (earlier in the list, or a record in ``existing``) reports each
+    entry it takes, kind ``"items"``: deleting the row removes every load case
+    in it, not only the one a caller may mean. See :func:`remove_items`.
     """
     _check_methods(operations)
     known: Dict[str, Set[str]] = {}
@@ -493,6 +627,7 @@ def validate(
             for key in (str(i) for i in op.ids or ()):
                 gone.add(key)
                 if key in table_state:
+                    findings.extend(_item_findings(index, op, key, table_state[key][1]))
                     gone |= _names_written(op.endpoint, {key: table_state.pop(key)[1]})
             if op.endpoint in known:
                 known[op.endpoint] -= gone
@@ -501,8 +636,8 @@ def validate(
         for record_key, record in (op.records or {}).items():
             if method == "PUT":  # a PUT merges, so a field it leaves out still decides targets_by
                 previous = state.get(op.endpoint, {}).get(str(record_key))
-                if previous and isinstance(previous[1], Mapping) and isinstance(record, Mapping):
-                    record = {**previous[1], **record}
+                if previous:
+                    record = _merge_put(op.endpoint, previous[1], record)
             for ref in _all_references(op.endpoint):
                 for value, holder in _ref_values(ref, str(record_key), record):
                     targets = ref.targets_for(holder)
@@ -523,8 +658,8 @@ def validate(
             table_state = state.setdefault(op.endpoint, {})
             for key, record in op.records.items():
                 previous = table_state.get(str(key))
-                if method == "PUT" and previous and isinstance(previous[1], Mapping) and isinstance(record, Mapping):
-                    record = {**previous[1], **record}
+                if method == "PUT" and previous:
+                    record = _merge_put(op.endpoint, previous[1], record)
                 table_state[str(key)] = (index, record)
     return findings
 

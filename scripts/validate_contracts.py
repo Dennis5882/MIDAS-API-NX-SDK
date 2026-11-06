@@ -50,6 +50,7 @@ from typing import Any
 from function_endpoints import function_endpoints
 from generate_typescript_sdk import _field_path
 from reference_graph import (
+    item_rows,
     key_policies,
     key_references,
     reference_fields,
@@ -383,6 +384,9 @@ def check_references(contracts: list[tuple[Path, dict]], failures: Failures) -> 
                 note_parents(child.get("properties") or [])
 
         note_parents(contract.get("fields", []))
+        items = contract.get("itemRows")
+        if items and items["evidence"] not in ledger_ids:
+            failures.add(path.name, f"itemRows: evidence {items['evidence']!r} is not a ledger record")
         key = contract.get("recordKey") or {}
         if "onMissing" in key or "onTargetDelete" in key:
             if key.get("kind") not in ("node_id", "element_id"):
@@ -529,6 +533,15 @@ def check_plan_parity(contracts: list[tuple[Path, dict]], failures: Failures) ->
                 else {}
             ),
         }
+
+    rows = item_rows(c for _, c in contracts)
+    python_items = [
+        {"table": r.table, "path": r.path, "by": r.by, "caseField": r.case_field} for r in plan.ITEM_ROWS
+    ]
+    if python_items != rows:
+        failures.add("midas_nx/plan.py", "ITEM_ROWS differs from the contracts' itemRows")
+    if exported("itemRows") != rows:
+        failures.add("references.ts", "npm's itemRows differs from the contracts; run npm run generate")
 
     keyed = key_references(c for _, c in contracts)
     if [row(ref) for ref in plan.KEY_REFERENCES] != keyed:

@@ -91,6 +91,23 @@ def key_references(contracts: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     return rows
 
 
+def item_rows(contracts: Iterable[dict[str, Any]]) -> list[dict[str, str]]:
+    """One row per table whose record is a list of entries a PUT merges by id,
+    from the contracts' `itemRows`. Sorted by table."""
+    rows = [
+        {
+            "table": c["endpoint"],
+            "path": c["itemRows"]["path"],
+            "by": c["itemRows"]["by"],
+            "caseField": c["itemRows"]["caseField"],
+        }
+        for c in contracts
+        if c.get("itemRows")
+    ]
+    rows.sort(key=lambda row: row["table"])
+    return rows
+
+
 def key_policies(contracts: Iterable[dict[str, Any]]) -> dict[str, dict[str, str]]:
     """Endpoint -> product -> "honoured" or "assigned", from the contracts' `keyPolicy`."""
     return {

@@ -266,3 +266,59 @@ def test_key_policy_is_per_product_and_npm_publishes_the_same():
     assert (plan.key_policy("/db/GSTP", "gen"), plan.key_policy("/db/GSTP", "civil")) == ("assigned", "honoured")
     assert plan.key_policy("/db/NOT-A-TABLE", "gen") is None
     assert _npm_export("keyPolicies") == plan.KEY_POLICY
+
+
+_LOAD_MODEL = {
+    "/db/STLD": {"1": {"NAME": "DL"}, "2": {"NAME": "LC"}},
+    "/db/BMLD": {"2": {"ITEMS": [{"ID": 1, "LCNAME": "LC", "P": [-5]}, {"ID": 2, "LCNAME": "DL", "P": [-10]}]}},
+}
+
+
+def test_item_rows_are_the_three_load_tables_and_npm_publishes_the_same():
+    assert [r.table for r in plan.item_rows()] == ["/db/BMLD", "/db/CNLD", "/db/PRES"]
+    assert plan.item_rows("/db/NODE") == []
+    assert _npm_export("itemRows") == [
+        {"table": r.table, "path": r.path, "by": r.by, "caseField": r.case_field} for r in plan.ITEM_ROWS
+    ]
+
+
+def test_validate_merges_a_put_into_items_by_id():
+    # A PUT of entry 1 keeps entry 2 (measured), so deleting DL still finds it.
+    ops = [
+        Operation("/db/BMLD", "PUT", records={"2": {"ITEMS": [{"ID": 1, "LCNAME": "LC", "P": [-15]}]}}),
+        Operation("/db/STLD", "DELETE", ids=[1]),
+    ]
+    found = plan.validate(ops, _LOAD_MODEL)
+    assert [(f.kind, f.record_key, f.value) for f in found] == [("deleted", "2", "DL")]
+    # ITEMS [] changes nothing.
+    ops[0] = Operation("/db/BMLD", "PUT", records={"2": {"ITEMS": []}})
+    assert [(f.kind, f.value) for f in plan.validate(ops, _LOAD_MODEL)] == [("deleted", "DL")]
+
+
+def test_validate_reports_each_entry_a_load_row_delete_takes():
+    found = plan.validate([Operation("/db/BMLD", "DELETE", ids=[2])], _LOAD_MODEL)
+    assert [(f.kind, f.value, f.outcome, f.reference.field) for f in found] == [
+        ("items", "LC", "deleted", "ITEMS[].LCNAME"),
+        ("items", "DL", "deleted", "ITEMS[].LCNAME"),
+    ]
+    assert "removes record 2 with every ITEMS entry, including ID 2 for 'DL'" in found[1].message
+    # Not known: nothing to report.
+    assert plan.validate([Operation("/db/BMLD", "DELETE", ids=[7])], _LOAD_MODEL) == []
+
+
+def test_remove_items_deletes_the_row_and_posts_back_what_is_kept():
+    record = _LOAD_MODEL["/db/BMLD"]["2"]
+    ops = plan.remove_items("/db/BMLD", 2, record, case="LC")
+    assert [(o.method, o.ids, o.records) for o in ops] == [
+        ("DELETE", [2], None),
+        ("POST", None, {"2": {"ITEMS": [{"ID": 2, "LCNAME": "DL", "P": [-10]}]}}),
+    ]
+    assert ops[1].records["2"]["ITEMS"][0] is not record["ITEMS"][1]  # a copy
+    assert [o.method for o in plan.remove_items("/db/BMLD", 2, record, ids=[1, 2])] == ["DELETE"]
+    assert plan.remove_items("/db/BMLD", 2, record, case="WIND") == []
+    with pytest.raises(ValueError):
+        plan.remove_items("/db/NODE", 2, record, case="LC")
+    with pytest.raises(ValueError):
+        plan.remove_items("/db/BMLD", 2, record)
+    with pytest.raises(ValueError):
+        plan.remove_items("/db/BMLD", 2, record, case="LC", ids=[1])
